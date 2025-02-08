@@ -54,7 +54,7 @@ public class Wrist extends SubsystemBase {
   /*
    * moves wrist a specified speed
    */
-  public void moveWrist(double speed){
+  public void move(double speed){
     wrist.set(speed);
   }
 
@@ -62,7 +62,7 @@ public class Wrist extends SubsystemBase {
     wristController.setReference(position, ControlType.kPosition);
   }
 
-  public DutyCycleEncoder getThrough(){
+  public DutyCycleEncoder getThroughBore(){
     return throughBore;
   }
 
