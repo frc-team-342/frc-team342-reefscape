@@ -32,7 +32,6 @@ public class Wrist extends SubsystemBase {
   private final SparkMax wrist;
   private final SparkMaxConfig wristConfig;
   private final SparkClosedLoopController wristController;
-  private final SmartMotionConfig wristControllerSmartConfig;
   private final DutyCycleEncoder throughBore;
 
   /** Creates a new Wrist. */
@@ -40,7 +39,6 @@ public class Wrist extends SubsystemBase {
     // wrist instantiatiion
     wrist = new SparkMax(WRIST_ID, SparkLowLevel.MotorType.kBrushless);
     wristConfig = new SparkMaxConfig();
-    wristControllerSmartConfig = new SmartMotionConfig();
     wristController = wrist.getClosedLoopController();
 
     //wrist idle mode & smart current limit

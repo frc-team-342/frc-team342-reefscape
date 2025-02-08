@@ -25,7 +25,7 @@ public final class Constants {
   
     public static final double WRIST_SPEED = 0.7;
 
-    //Wrist PID values
+    //Wrist PID values; they're a list for sake of simplicity
     public static final double[] WRIST_PID_VALUES = {1, 0, 0.01};
   
     //Wrist position Values (absolute enocder values I think)
@@ -33,10 +33,11 @@ public final class Constants {
     public static final double HIGH_WRIST_POS = 0.30;
 
     //Zeroes below are placeholders for the time being
+    //Because L2 and L3 have the same angles, only L2 will be used
     public static final double L1_POSITION = 0;
     public static final double L2_POSITION = 0;
-    public static final double L3_POSITION = 0;
     public static final double L4_POSITION = 0;
+    public static final double ALGAE_POSITION = 0;
   
     public static final double MAX_DISTANCE = 83;
     

@@ -25,18 +25,20 @@ public class WristToPosition extends Command {
   private PIDController pidController;
   private boolean goingDown;
 
+  private double currentPosition;
+  private double speed;
+
   private double position;
   /** Creates a new WristToPosition. */
   public WristToPosition(Wrist wrist, double position) {
     this.wrist = wrist;
+    this.position = position;
 
     goingDown = false;
-
-    this.position = position;
+    
     pidController = new PIDController(WRIST_PID_VALUES[0], WRIST_PID_VALUES[1], WRIST_PID_VALUES[2]);
 
     addRequirements(wrist );
-    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
@@ -46,28 +48,24 @@ public class WristToPosition extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double currentPosition = wrist.getThroughBore().get();
-
-    double speed = pidController.calculate(currentPosition, position);
+    currentPosition = wrist.getThroughBore().get();
+    speed = pidController.calculate(currentPosition, position);
     speed = MathUtil.clamp(speed, 1, -1);
-
     goingDown = currentPosition < position;
 
-    //these make sure the motors don't try to go further than possible and cause damage
-    if(goingDown && currentPosition < LOW_WRIST_POS)
+    //These are being used as soft stops so when we're tuning the PID values the wrist won't slam into the mechanical stops
+    if((goingDown && currentPosition <= LOW_WRIST_POS) || (!goingDown && currentPosition >= HIGH_WRIST_POS))
+      wrist.move(0);
+    else
       wrist.move(speed);
 
-    else if(!goingDown && currentPosition > HIGH_WRIST_POS)
-      wrist.move(speed);
-
-    //planning on using this to debug PID tuning
+    //Planning on using this to debug PID tuning and to see what the robot is thinking
     SmartDashboard.putNumber("Wrist Position", currentPosition);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    wrist.move(0);
   }
 
   // Returns true when the command should end.

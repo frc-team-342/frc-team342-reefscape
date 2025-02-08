@@ -45,12 +45,13 @@ public class WristWithJoystick extends Command {
   public void execute() {
     currentPosition = wrist.getThroughBore().get();
     speed = MathUtil.applyDeadband(0.15, joy.getRightY());
+
     goingDown = (speed < 0);
 
     if((goingDown && currentPosition <= LOW_WRIST_POS) || (!goingDown && currentPosition >= HIGH_WRIST_POS))
       wrist.move(0);
     else 
-      //Divided by four to recuce speed
+      //Divided by four to reduce speed
       wrist.move(speed/4);
   }
 
