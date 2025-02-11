@@ -61,6 +61,7 @@ public class RobotContainer {
 
     operator = new XboxController(1);
 
+    //Creates commands telling the wrist to go to different coral branches
     wristToL1 = new WristToPosition(wrist, L1_POSITION);
     wristToL2 = new WristToPosition(wrist, L2_POSITION);
     wristToL4 = new WristToPosition(wrist, L4_POSITION);
@@ -98,6 +99,7 @@ public class RobotContainer {
     // cancelling on release.
     m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
+    //Moves the wrist to a certain position based on what button is pressed
     l1Button.onTrue(wristToL1);
     l2Button.onTrue(wristToL2);
     l4Button.onTrue(wristToL4);
