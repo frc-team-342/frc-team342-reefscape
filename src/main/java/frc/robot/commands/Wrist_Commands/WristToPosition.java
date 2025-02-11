@@ -21,7 +21,6 @@ import frc.robot.subsystems.Wrist;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class WristToPosition extends Command {
   private Wrist wrist;
-  private XboxController joystick;
   private PIDController pidController;
   private boolean goingDown;
 
@@ -34,10 +33,6 @@ public class WristToPosition extends Command {
     this.wrist = wrist;
     this.position = position;
 
-    goingDown = false;
-    
-    pidController = new PIDController(WRIST_PID_VALUES[0], WRIST_PID_VALUES[1], WRIST_PID_VALUES[2]);
-
     addRequirements(wrist );
   }
 
@@ -48,19 +43,7 @@ public class WristToPosition extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    currentPosition = wrist.getThroughBore().get();
-    speed = pidController.calculate(currentPosition, position);
-    speed = MathUtil.clamp(speed, 1, -1);
-    goingDown = currentPosition < position;
-
-    //These are being used as soft stops so when we're tuning the PID values the wrist won't slam into the mechanical stops
-    if((goingDown && currentPosition <= LOW_WRIST_POS) || (!goingDown && currentPosition >= HIGH_WRIST_POS))
-      wrist.move(0);
-    else
-      wrist.move(speed);
-
-    //Planning on using this to debug PID tuning and to see what the robot is thinking
-    SmartDashboard.putNumber("Wrist Position", currentPosition);
+    wrist.wristToPosition(position);
   }
 
   // Called once the command ends or is interrupted.

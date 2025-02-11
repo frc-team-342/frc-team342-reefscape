@@ -30,6 +30,9 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.util.sendable.Sendable;
 
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
+
 
 public class Wrist extends SubsystemBase {
   private final SparkMax wrist;
@@ -56,6 +59,9 @@ public class Wrist extends SubsystemBase {
     //Encoder instantiation
     throughBore = new DutyCycleEncoder(0);
     
+    currentPosition = throughBore.get();
+
+  
   }
 
   /*
