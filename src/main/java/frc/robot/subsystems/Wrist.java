@@ -68,7 +68,6 @@ public class Wrist extends SubsystemBase {
    * Moves wrist at a specified speed
    */
   public void move(double speed){
-    
     wrist.set(speed);
   }
 
