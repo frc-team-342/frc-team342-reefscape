@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.Wrist_Commands;
+package frc.robot.commands.Wrist;
 
 import static frc.robot.Constants.WristConstants.HIGH_WRIST_POS;
 import static frc.robot.Constants.WristConstants.LOW_WRIST_POS;
@@ -33,7 +33,7 @@ public class WristToPosition extends Command {
     this.wrist = wrist;
     this.position = position;
 
-    addRequirements(wrist );
+    addRequirements(wrist);
   }
 
   // Called when the command is initially scheduled.

@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.Wrist_Commands;
+package frc.robot.commands.Wrist;
 
 import frc.robot.subsystems.Wrist;
 import frc.robot.Constants.WristConstants;
