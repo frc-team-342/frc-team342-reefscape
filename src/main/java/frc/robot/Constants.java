@@ -13,6 +13,8 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+ 
+  /* FINAL NEEDS TO BE ADDED TO ALL OF THESE WHEN ACTAULLY VALUES ARE FOUND */
   
 public static class DriveConstants {
 
@@ -27,6 +29,27 @@ public static class DriveConstants {
   public static int FRONT_RIGHT_ROTATE_ID;
   public static int BACK_LEFT_ROTATE_ID;
   public static int BACK_RIGHT_ROTATE_ID;
+
+  // Drive PID Values 
+  public static double DRIVE_P_VALUE;
+  public static double DRIVE_I_VALUE;
+  public static double DRIVE_D_VALUE;
+  public static double DRIVE_FF_VALUE;
+
+  // Rotate PID Values
+  public static double ROTATE_P_VALUE;
+  public static double ROTATE_I_VALUE;
+  public static double ROTATE_D_VALUE;
+  public static double ROTATE_FF_VALUE;
+
+  // Factors
+  public static double DRIVE_POSITION_CONVERSION;
+  public static double DRIVE_VELOCITY_CONVERSION;
+
+  public static double ROTATE_POSITION_CONVERSION;
+  public static double ROTATE_VELOCITY_CONVERSION;
+
+
 
 }
 
