@@ -15,11 +15,14 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Encoder;
 import frc.robot.Constants.DriveConstants;
 
 
@@ -37,12 +40,12 @@ public class SwerveModule {
     private RelativeEncoder driveEnconder;
     private RelativeEncoder rotateEncoder;
 
-    private AnalogInput analogInput;
+    private AnalogInput absoluteEncoder;
 
     //private PIDController rotatePID;
 
     private SparkClosedLoopController driveController;
-    //private SparkClosedLoopController rotateController;
+    private SparkClosedLoopController rotateController;
 
     private double encoderOffset;
 
@@ -59,8 +62,9 @@ public class SwerveModule {
 
             /** not sure weather its supposed to be brake or coast lol so come back to this lol 
              * And make sure to update the numver withing the stalllimit lol*/  
+
         driveConfig.smartCurrentLimit(60).idleMode(IdleMode.kCoast).inverted(invertDrive);
-        rotateConfig.smartCurrentLimit(60).idleMode(IdleMode.kCoast).inverted(invertDrive);
+        rotateConfig.smartCurrentLimit(60).idleMode(IdleMode.kCoast).inverted(invertRotate);
 
 
         /** Get the encoders from the respective motors */
@@ -68,18 +72,16 @@ public class SwerveModule {
         rotateEncoder = rotateMotor.getEncoder();
 
         /* Sets the Drive converstion (Posistion and Velocity)  factors  */
-        driveConfig.encoder.positionConversionFactor(DriveConstants.DRIVE_POSITION_CONVERSION);
-        driveConfig.encoder.velocityConversionFactor(DriveConstants.DRIVE_VELOCITY_CONVERSION);
+        driveConfig.encoder.positionConversionFactor(DriveConstants.DRIVE_POSITION_CONVERSION); //POSITION
+        driveConfig.encoder.velocityConversionFactor(DriveConstants.DRIVE_VELOCITY_CONVERSION); //VELOCITY
 
         /* Set the Rotate conversion (Posistion and Velocity) factors */
-        driveConfig.encoder.positionConversionFactor(DriveConstants.DRIVE_POSITION_CONVERSION);
-        driveConfig.encoder.velocityConversionFactor(DriveConstants.DRIVE_VELOCITY_CONVERSION);
-
-
+        driveConfig.encoder.positionConversionFactor(DriveConstants.DRIVE_POSITION_CONVERSION); //POSITION
+        driveConfig.encoder.velocityConversionFactor(DriveConstants.DRIVE_VELOCITY_CONVERSION); //VELOCITY
 
         /** Get the PIDController from the respective motors */
-            driveController = driveMotor.getClosedLoopController();
-            //rotateController = rotateMotor.getClosedLoopController();
+        driveController = driveMotor.getClosedLoopController();
+        rotateController = rotateMotor.getClosedLoopController();
 
         /* Sets the feedback sensor for each motor */
         driveConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
@@ -97,19 +99,22 @@ public class SwerveModule {
         rotateConfig.closedLoop.positionWrappingMinInput(90);
 
          /* Rotate PID values */
-        rotateConfig.closedLoop.p(0);
-        rotateConfig.closedLoop.i(0);
-        rotateConfig.closedLoop.d(0);
-        rotateConfig.closedLoop.velocityFF(0);
+        rotateConfig.closedLoop.p(DriveConstants.ROTATE_P_VALUE);
+        rotateConfig.closedLoop.i(DriveConstants.ROTATE_I_VALUE);
+        rotateConfig.closedLoop.d(DriveConstants.ROTATE_D_VALUE);
+        rotateConfig.closedLoop.velocityFF(DriveConstants.ROTATE_FF_VALUE);
 
 
      /* Configures drive and rotate motors with there SparkMaxConfig NOT FINISHED*/
 
-        driveMotor.configure(driveConfig, null,PersistMode.kPersistParameters);
-        rotateMotor.configure(driveConfig, null, null);
+        driveMotor.configure(driveConfig, null, PersistMode.kPersistParameters);
+        rotateMotor.configure(driveConfig, null, PersistMode.kPersistParameters);
 
         this.encoderOffset = encoderOffset;
         this.label = label;
+
+        driveEnconder.setPosition(0);
+        //rotateEncoder.setPosition(encoder.getAbsouleteEncoderPosition)
 
     }
 
@@ -135,7 +140,14 @@ public class SwerveModule {
 
     public double getAbsouleteEncoderPosition() {
 
-        return analogInput.getVoltage();
+        return absoluteEncoder.getVoltage();
+    }
+
+    public void setState(SwerveModuleState state){
+
+        driveController.setReference(state.speedMetersPerSecond, ControlType.kVelocity);
+        rotateController.setReference(state.angle.getDegrees(), ControlType.kPosition);
+
     }
 
     
