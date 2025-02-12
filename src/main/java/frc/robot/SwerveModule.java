@@ -37,12 +37,11 @@ public class SwerveModule {
     private RelativeEncoder driveEnconder;
     private RelativeEncoder rotateEncoder;
 
-
-    private AbsoluteEncoder absoluteEncoder;
+    private AnalogInput analogInput;
 
     //private PIDController rotatePID;
 
-    //private SparkClosedLoopController driveController;
+    private SparkClosedLoopController driveController;
     //private SparkClosedLoopController rotateController;
 
     private double encoderOffset;
@@ -50,7 +49,7 @@ public class SwerveModule {
     private String label;
 
 
-    public SwerveModule (int driveID, int rotateID, boolean invertRotate, boolean invertDrive, double encoderOffset, String label){
+    public SwerveModule (int driveID, int rotateID, int magEncoderPort, boolean invertRotate, boolean invertDrive, double encoderOffset, String label){
 
         driveMotor = new SparkMax(driveID, MotorType.kBrushless);
         rotateMotor = new SparkMax(rotateID, MotorType.kBrushless);
@@ -79,7 +78,7 @@ public class SwerveModule {
 
 
         /** Get the PIDController from the respective motors */
-            //driveController = driveMotor.getClosedLoopController();
+            driveController = driveMotor.getClosedLoopController();
             //rotateController = rotateMotor.getClosedLoopController();
 
         /* Sets the feedback sensor for each motor */
@@ -102,7 +101,7 @@ public class SwerveModule {
         rotateConfig.closedLoop.i(0);
         rotateConfig.closedLoop.d(0);
         rotateConfig.closedLoop.velocityFF(0);
-        
+
 
      /* Configures drive and rotate motors with there SparkMaxConfig NOT FINISHED*/
 
@@ -132,6 +131,11 @@ public class SwerveModule {
     /* Returns the Drive Encoder velocity meters/second */
     public double getDriveVelocity() {
         return driveEnconder.getVelocity();
+    }
+
+    public double getAbsouleteEncoderPosition() {
+
+        return analogInput.getVoltage();
     }
 
     
