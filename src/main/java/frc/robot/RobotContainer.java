@@ -104,6 +104,7 @@ public class RobotContainer {
     moveElevatorL4 = new MoveElevatorToPosition(elevator, ElevatorConstants.L4_HEIGHT);
     moveElevatorProcessor = new MoveElevatorToPosition(elevator, ElevatorConstants.PROCESSOR_HEIGHT);
 
+    //Runs the elevator and wrist commands at the same time for simplicity
     goToL1 = new ParallelCommandGroup(wristToL1, moveElevatorL1);
     goToL2 = new ParallelCommandGroup(wristToL2, moveElevatorL2);
     goToL3 = new ParallelCommandGroup(wristToL2, moveElevatorL3);
