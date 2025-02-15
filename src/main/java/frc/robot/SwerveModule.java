@@ -18,11 +18,14 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.SparkAnalogSensor;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Constants.DriveConstants;
 
 
@@ -110,11 +113,13 @@ public class SwerveModule {
         driveMotor.configure(driveConfig, null, PersistMode.kPersistParameters);
         rotateMotor.configure(driveConfig, null, PersistMode.kPersistParameters);
 
+        /* Gives the absoulete Encoder the Correct RIO port for each module */
+        absoluteEncoder = new AnalogInput(magEncoderPort);
+
         this.encoderOffset = encoderOffset;
         this.label = label;
 
-        driveEnconder.setPosition(0);
-        //rotateEncoder.setPosition(encoder.getAbsouleteEncoderPosition)
+        resetEncoder();
 
     }
 
@@ -138,10 +143,31 @@ public class SwerveModule {
         return driveEnconder.getVelocity();
     }
 
+    /* Absoulete encoder angle in radians with offset removed SAME MIGHT TRY AND REWROKK  */
     public double getAbsouleteEncoderPosition() {
+        double angle = absoluteEncoder.getVoltage() / RobotController.getCurrent5V();
+        angle *= 2 * Math.PI;
+        angle -= encoderOffset;
+        angle %= 2 * Math.PI;
 
-        return absoluteEncoder.getVoltage();
+        return angle;
+        
     }
+
+    public void resetEncoder() {
+        driveEnconder.setPosition(0);
+        rotateEncoder.setPosition(getAbsouleteEncoderPosition());
+    }
+
+    public void stop() {
+       driveMotor.set(0);
+       rotateMotor.set(0);
+    }
+
+    public void printLabel() {
+        System.out.println(label);
+    }
+
 
     public void setState(SwerveModuleState state){
 
