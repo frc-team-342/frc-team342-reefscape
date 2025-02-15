@@ -20,14 +20,9 @@ import frc.robot.subsystems.Wrist;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class WristToPosition extends Command {
-  private Wrist wrist;
-  private PIDController pidController;
-  private boolean goingDown;
+  private final Wrist wrist;
+  private final double position;
 
-  private double currentPosition;
-  private double speed;
-
-  private double position;
   /** Creates a new WristToPosition. */
   public WristToPosition(Wrist wrist, double position) {
     this.wrist = wrist;

@@ -10,6 +10,8 @@ import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.commands.Elevator.MoveElevatorToPosition;
 import frc.robot.commands.Elevator.MoveElevatorWithJoystick;
+import frc.robot.commands.Funnel.FunnelToPosition;
+import frc.robot.commands.Funnel.FunnelWithJoystick;
 import frc.robot.commands.Wrist.WristToPosition;
 import frc.robot.commands.Wrist.WristWithJoystick;
 import frc.robot.subsystems.Elevator;
@@ -17,6 +19,8 @@ import frc.robot.Constants.ElevatorConstants;
 
 import frc.robot.subsystems.*;
 
+import static frc.robot.Constants.FunnelConstants.HIGH_FUNNEL_POSITION;
+import static frc.robot.Constants.FunnelConstants.LOW_FUNNEL_POSITION;
 import static frc.robot.Constants.WristConstants.ALGAE_POSITION;
 import static frc.robot.Constants.WristConstants.L1_POSITION;
 import static frc.robot.Constants.WristConstants.L2_POSITION;
@@ -47,6 +51,7 @@ public class RobotContainer {
 
   private final Elevator elevator;
   private final Wrist wrist;
+  private final Funnel funnel;
 
   private final MoveElevatorToPosition moveElevatorProcessor;
   private final MoveElevatorToPosition moveElevatorL1;
@@ -54,18 +59,21 @@ public class RobotContainer {
   private final MoveElevatorToPosition moveElevatorL3;
   private final MoveElevatorToPosition moveElevatorL4;
   private final MoveElevatorWithJoystick moveElevatorWithJoystick;
+  
+  //Because the angles are the same for both L2 & L3, there will only be an L2 command that will be used for both
+  private final WristToPosition wristToL1;
+  private final WristToPosition wristToL2;
+  private final WristToPosition wristToL4;
+  private final WristToPosition wristToAlgae;
+
+  private final FunnelToPosition funnelToLow;
+  private final FunnelToPosition funnelToHigh;
 
   private final ParallelCommandGroup goToL1;
   private final ParallelCommandGroup goToL2;
   private final ParallelCommandGroup goToL3;
   private final ParallelCommandGroup goToL4;
   private final ParallelCommandGroup goToProcessor;
-
-  //Because the angles are the same for both L2 & L3, there will only be an L2 command that will be used for both
-  private final WristToPosition wristToL1;
-  private final WristToPosition wristToL2;
-  private final WristToPosition wristToL4;
-  private final WristToPosition wristToAlgae;
 
   private final WristWithJoystick wristWithJoy;
 
@@ -75,6 +83,8 @@ public class RobotContainer {
   private final POVButton l4Button;
   private final JoystickButton processorButton;
 
+  private final JoystickButton lowFunnelButton;
+  private final JoystickButton highFunnelButton;
 
   private final CommandXboxController m_driverController;
   private final ExampleSubsystem m_exampleSubsystem;
@@ -88,6 +98,7 @@ public class RobotContainer {
     m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
     wrist = new Wrist();
     elevator = new Elevator();
+    funnel = new Funnel();
 
     operator = new XboxController(1);
 
@@ -103,6 +114,9 @@ public class RobotContainer {
     moveElevatorL3 = new MoveElevatorToPosition(elevator, ElevatorConstants.L3_HEIGHT);
     moveElevatorL4 = new MoveElevatorToPosition(elevator, ElevatorConstants.L4_HEIGHT);
     moveElevatorProcessor = new MoveElevatorToPosition(elevator, ElevatorConstants.PROCESSOR_HEIGHT);
+
+    funnelToLow = new FunnelToPosition(funnel, LOW_FUNNEL_POSITION);
+    funnelToHigh = new FunnelToPosition(funnel, HIGH_FUNNEL_POSITION);
 
     //Runs the elevator and wrist commands at the same time for simplicity
     goToL1 = new ParallelCommandGroup(wristToL1, moveElevatorL1);
@@ -120,6 +134,9 @@ public class RobotContainer {
     l3Button = new POVButton(operator, 270);
     l4Button = new POVButton(operator, 0);
     processorButton = new JoystickButton(operator, XboxController.Button.kA.value);
+
+    lowFunnelButton = new JoystickButton(operator, XboxController.Button.kLeftBumper.value);
+    highFunnelButton = new JoystickButton(operator, XboxController.Button.kRightBumper.value);
 
     wrist.setDefaultCommand(wristWithJoy);
     elevator.setDefaultCommand(moveElevatorWithJoystick);
@@ -144,6 +161,9 @@ private void configureBindings() {
   l3Button.onTrue(goToL3); // left button on d-pad
   l4Button.onTrue(goToL4); // top button on d-pad
   processorButton.onTrue(goToProcessor); // the A button
+
+  lowFunnelButton.onTrue(funnelToLow); // the left bumper
+  highFunnelButton.onTrue(funnelToHigh); // the right bumper
 
   // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
   new Trigger(m_exampleSubsystem::exampleCondition)

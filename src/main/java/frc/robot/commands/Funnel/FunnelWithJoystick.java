@@ -2,38 +2,31 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.Wrist;
+package frc.robot.commands.Funnel;
 
-import frc.robot.subsystems.Wrist;
-import frc.robot.Constants.WristConstants;
 import edu.wpi.first.wpilibj2.command.Command;
-
-import static frc.robot.Constants.WristConstants.HIGH_WRIST_POS;
-import static frc.robot.Constants.WristConstants.LOW_WRIST_POS;
-
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.XboxController;
-
+import frc.robot.subsystems.Funnel;
+import static frc.robot.Constants.FunnelConstants.*;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class WristWithJoystick extends Command {
-
+public class FunnelWithJoystick extends Command {
+  /** Creates a new FunnelWithJoystick. */
   private final XboxController joy;
-  private final Wrist wrist;
+  private final Funnel funnel;
 
   private double currentPosition;
   private double speed;
 
   private boolean goingDown;
-
-  /** Creates a new WristWithJoystick. */
-  public WristWithJoystick(XboxController joy, Wrist wrist) {
-    this.joy = joy;
-    this.wrist = wrist;
-
-    addRequirements(wrist);
+  
+  public FunnelWithJoystick(XboxController joy, Funnel funnel) {
     // Use addRequirements() here to declare subsystem dependencies.
+    this.joy = joy;
+    this.funnel = funnel;
+
+    addRequirements(funnel);
   }
 
   // Called when the command is initially scheduled.
@@ -43,16 +36,16 @@ public class WristWithJoystick extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    currentPosition = wrist.getThroughBore().get();
+    currentPosition = funnel.getThroughBore().get();
     speed = MathUtil.applyDeadband(0.15, joy.getRightY());
 
     goingDown = (speed < 0);
 
-    if((goingDown && currentPosition <= LOW_WRIST_POS) || (!goingDown && currentPosition >= HIGH_WRIST_POS))
-      wrist.move(0);
+    if((goingDown && currentPosition <= LOW_FUNNEL_POSITION) || (!goingDown && currentPosition >= HIGH_FUNNEL_POSITION))
+      funnel.move(0);
     else 
       //Divided by four to reduce speed
-      wrist.move(speed/4);
+      funnel.move(speed/4);
   }
 
   // Called once the command ends or is interrupted.
