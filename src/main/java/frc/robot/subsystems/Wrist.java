@@ -53,15 +53,17 @@ public class Wrist extends SubsystemBase {
     pidController = new PIDController(WRIST_PID_VALUES[0], WRIST_PID_VALUES[1], WRIST_PID_VALUES[2]);
     goingDown = false;
 
-    //Wrist idle mode & smart current limit
-    wristConfig.smartCurrentLimit(30).idleMode(IdleMode.kBrake);
-
     //Encoder instantiation
     throughBore = new DutyCycleEncoder(0);
     
     currentPosition = throughBore.get();
+    
+    //Wrist idle mode & smart current limit
+    wristConfig
+      .idleMode(IdleMode.kBrake)
+      .smartCurrentLimit(30).idleMode(IdleMode.kBrake);
 
-  
+    wrist.configure(wristConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   /*
@@ -76,12 +78,11 @@ public class Wrist extends SubsystemBase {
    * Moves wrist to a certain position
    */
   public void wristToPosition(double position){
+    pidController.setTolerance(0.1);
     speed = pidController.calculate(currentPosition, position);
     speed = MathUtil.clamp(speed, 1, -1);
 
-    goingDown = currentPosition < position;
-
-    pidController.setTolerance(0.1);
+    goingDown = speed < 0;
 
     //These are being used as soft stops so when we're tuning the PID values the wrist won't slam into the mechanical stops
     if((goingDown && currentPosition <= LOW_WRIST_POS) || (!goingDown && currentPosition >= HIGH_WRIST_POS))

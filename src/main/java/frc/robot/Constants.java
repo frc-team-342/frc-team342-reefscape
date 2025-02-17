@@ -21,7 +21,6 @@ public final class Constants {
     //public static final int INTAKE_SENSOR = 1;
   
     public static final int WRIST_ID = 5;
-  
     public static final int MAG_ENCODER = 7;
   
     public static final double WRIST_SPEED = 0.7;
@@ -65,5 +64,14 @@ public final class Constants {
     public static final int L3_HEIGHT = 0;
     public static final int L4_HEIGHT = 0;
     public static final int PROCESSOR_HEIGHT = 0;
+  }
+
+  public static class FunnelConstants{
+    public static final int FUNNEL_ID = 1;
+
+    public static final double[] FUNNEL_PID_VALUES = {0, 0, 0};
+
+    public static final double HIGH_FUNNEL_POSITION = 0;
+    public static final double LOW_FUNNEL_POSITION = 0;
   }
 }
