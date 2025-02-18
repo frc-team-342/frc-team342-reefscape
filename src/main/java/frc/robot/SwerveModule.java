@@ -20,10 +20,13 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.SparkAnalogSensor;
 
+import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Constants.DriveConstants;
@@ -43,7 +46,9 @@ public class SwerveModule {
     private RelativeEncoder driveEnconder;
     private RelativeEncoder rotateEncoder;
 
-    private AnalogInput absoluteEncoder;
+    private AnalogInput analogInput;
+    private AnalogEncoder analogEncoder;
+
 
     //private PIDController rotatePID;
 
@@ -113,8 +118,8 @@ public class SwerveModule {
         driveMotor.configure(driveConfig, null, PersistMode.kPersistParameters);
         rotateMotor.configure(driveConfig, null, PersistMode.kPersistParameters);
 
-        /* Gives the absoulete Encoder the Correct RIO port for each module */
-        absoluteEncoder = new AnalogInput(magEncoderPort);
+        analogInput = new AnalogInput(magEncoderPort);
+        analogEncoder = new AnalogEncoder(analogInput);
 
         this.encoderOffset = encoderOffset;
         this.label = label;
@@ -145,18 +150,29 @@ public class SwerveModule {
 
     /* Absoulete encoder angle in radians with offset removed SAME MIGHT TRY AND REWROKK  */
     public double getAbsouleteEncoderPosition() {
-        double angle = absoluteEncoder.getVoltage() / RobotController.getCurrent5V();
+        double angle = analogInput.getVoltage() / RobotController.getVoltage5V();
+        encoderOffset = analogEncoder.get();
+
         angle *= 2 * Math.PI;
-        angle -= encoderOffset;
+        angle += encoderOffset;
         angle %= 2 * Math.PI;
 
         return angle;
-        
+    }
+
+    public double getOffset() {
+        return analogEncoder.get();
+    }
+
+    public double getRawOffsets(){
+        double angle = analogInput.getVoltage() / RobotController.getVoltage5V();
+        angle *= 2 * Math.PI;
+        return angle;
     }
 
     public void resetEncoder() {
         driveEnconder.setPosition(0);
-        rotateEncoder.setPosition(getAbsouleteEncoderPosition());
+        rotateEncoder.setPosition(getOffset());
     }
 
     public void stop() {
@@ -164,15 +180,17 @@ public class SwerveModule {
        rotateMotor.set(0);
     }
 
-    public void printLabel() {
-        System.out.println(label);
+    public String printLabel() {
+        return label;
     }
-
 
     public void setState(SwerveModuleState state){
 
         driveController.setReference(state.speedMetersPerSecond, ControlType.kVelocity);
-        rotateController.setReference(state.angle.getDegrees(), ControlType.kPosition);
+        rotateController.setReference(state.angle.getRadians(), ControlType.kPosition);
+
+        System.out.println("Drive PID refrence : " + state.speedMetersPerSecond);
+        System.out.println("Rotate PID refrence : " + state.angle.getRadians());
 
     }
 

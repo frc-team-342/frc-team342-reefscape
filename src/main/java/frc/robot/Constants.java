@@ -21,7 +21,7 @@ public final class Constants {
 public static class DriveConstants {
 
   public static final double DRIVE_GEAR_RATIO = 1 / 6.75;
-  public static final double ROTATE_GEAR_RATIO = 1 / 12.75;
+  public static final double ROTATE_GEAR_RATIO = 1 / 12.8;
 
   public static final double WHEEL_DIAMETER = Units.inchesToMeters(4);
   public static final double WHEEL_CIRCUMFERENCE = 2 * Math.PI;
@@ -48,21 +48,21 @@ public static class DriveConstants {
 
 
   // Drive PID Values 
-  public static final double DRIVE_P_VALUE = 0.13;
-  public static final double DRIVE_I_VALUE = 0.001;
-  public static final double DRIVE_D_VALUE = 0.001;
+  public static final double DRIVE_P_VALUE = 0.2;
+  public static final double DRIVE_I_VALUE = 0;
+  public static final double DRIVE_D_VALUE = 0.001; 
   public static  double DRIVE_FF_VALUE;
 
   // Rotate PID Values
-  public static final double ROTATE_P_VALUE = 0.12;
-  public static final double ROTATE_I_VALUE = 0.001;
+  public static final double ROTATE_P_VALUE = 0.01;
+  public static final double ROTATE_I_VALUE = 0;
   public static final double ROTATE_D_VALUE = 0.001;
   public static  double ROTATE_FF_VALUE;
 
   // Offsets
-  public static final double FRONT_LEFT_OFFSET = 3.22;
-  public static final double FRONT_RIGHT_OFFSET= 3.46;
-  public static final double BACK_LEFT_OFFSET = 5.77;
+  public static final double FRONT_LEFT_OFFSET = 0.09;
+  public static final double FRONT_RIGHT_OFFSET= 3.47;
+  public static final double BACK_LEFT_OFFSET = 2.62;
   public static final double BACK_RIGHT_OFFSET = 3.93;
 
   // Factors
@@ -73,8 +73,10 @@ public static class DriveConstants {
   public static double ROTATE_VELOCITY_CONVERSION = ROTATE_POSITION_CONVERSION / 60;
 
   // Speeds
-  public static double MAX_DRIVE_SPEED;
-  public static double SLOW_DRIVE_SPEED;
+  public static double MAX_DRIVE_SPEED = Units.feetToMeters(15.1);
+  public static double SLOW_DRIVE_SPEED = Units.feetToMeters(5);
+
+  public static double MAX_ROTATE_SPEED = 4 * Math.PI;
 
 }
 

@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.fasterxml.jackson.core.filter.FilteringGeneratorDelegate;
 import com.studica.frc.AHRS;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -19,6 +20,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.sendable.SendableBuilder;
 
 public class SwerveDrive extends SubsystemBase {
 
@@ -78,9 +80,9 @@ public class SwerveDrive extends SubsystemBase {
       /* Initalizes Kinematics */
       kinematics = new SwerveDriveKinematics(
 
-        /*Front Left */ new Translation2d(Units.inchesToMeters(-14.5), Units.inchesToMeters(14.5)),
-        /*Front Right */ new Translation2d(Units.inchesToMeters(14.5), Units.inchesToMeters(14.5)),
-        /*Back Left */ new Translation2d(Units.inchesToMeters(14.5), Units.inchesToMeters(-14.5)),
+        /*Front Left */ new Translation2d(Units.inchesToMeters(14.5), Units.inchesToMeters(14.5)),
+        /*Front Right */ new Translation2d(Units.inchesToMeters(14.5), Units.inchesToMeters(-14.5)),
+        /*Back Left */ new Translation2d(Units.inchesToMeters(-14.5), Units.inchesToMeters(14.5)),
         /*Back Right */ new Translation2d(Units.inchesToMeters(-14.5), Units.inchesToMeters(-14.5))
 
       );
@@ -108,9 +110,9 @@ public class SwerveDrive extends SubsystemBase {
       /* This drive method takes the values from the chassisspeeds and 
       applys in to each indivual Module using the "SetState" Method created in SwereMoudle */
 
-      public void drive(ChassisSpeeds chassisSpeeds){
+      public void drive(ChassisSpeeds chassisSpeeds) {
 
-        SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(getChassisSpeeds());
+        SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(chassisSpeeds);
 
         frontLeftModule.setState(swerveModuleStates[0]);
         frontRightModule.setState(swerveModuleStates[1]);
@@ -121,7 +123,7 @@ public class SwerveDrive extends SubsystemBase {
 
       public void testDrive(){
 
-        ChassisSpeeds testSpeeds = new ChassisSpeeds(Units.inchesToMeters(14), Units.inchesToMeters(4), Units.degreesToRadians(30));
+        ChassisSpeeds testSpeeds = new ChassisSpeeds(Units.inchesToMeters(14), Units.inchesToMeters(0), Units.degreesToRadians(0));
 
         SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(testSpeeds);
 
@@ -151,6 +153,50 @@ public class SwerveDrive extends SubsystemBase {
         backLeftModule.stop();
         backRightModule.stop();
     }
+
+    public void resetEncoder() {
+
+      frontLeftModule.resetEncoder();
+      frontRightModule.resetEncoder();
+      backLeftModule.resetEncoder();
+      backRightModule.resetEncoder();
+
+    }
+    
+
+    public void putFrontLeftValues(SendableBuilder sendableBuilder){
+      sendableBuilder.addDoubleProperty(frontLeftModule.printLabel() + " Offset", ()-> frontLeftModule.getOffset(), null);
+      sendableBuilder.addDoubleProperty(frontLeftModule.printLabel() + " Rotate Encoder(Radians): " , ()-> frontLeftModule.getRotatePosition(), null);
+    }
+
+    public void putFrontRightValues(SendableBuilder sendableBuilder){
+      sendableBuilder.addDoubleProperty(frontRightModule.printLabel() + " Offset", ()-> frontRightModule.getOffset(), null);
+      sendableBuilder.addDoubleProperty(frontRightModule.printLabel() + " Rotate Encoder(Radians): " , ()-> frontRightModule.getRotatePosition(), null);
+    }
+
+    public void putBackLeftModule(SendableBuilder sendableBuilder){
+      sendableBuilder.addDoubleProperty(backLeftModule.printLabel() + " Offset", ()-> backLeftModule.getOffset(), null);
+      sendableBuilder.addDoubleProperty(backLeftModule.printLabel() + " Rotate Encoder(Radians): " , ()-> backLeftModule.getRotatePosition(), null);
+
+    }
+
+    public void putBackRightModule(SendableBuilder sendableBuilder){
+      sendableBuilder.addDoubleProperty(backRightModule.printLabel() + " Offset", ()-> backRightModule.getOffset(), null);
+      sendableBuilder.addDoubleProperty(backLeftModule.printLabel() + " Rotate Encoder(Radians): " , ()-> backRightModule.getRotatePosition(), null);
+    }
+
+
+
+
+  @Override 
+  public void initSendable(SendableBuilder sendableBuilder){
+    putFrontLeftValues(sendableBuilder);
+    putFrontRightValues(sendableBuilder);
+    putBackLeftModule(sendableBuilder);
+    putBackRightModule(sendableBuilder);
+
+  }
+
 
       
   @Override

@@ -9,10 +9,13 @@ import java.util.function.DoubleSupplier;
 import com.studica.frc.AHRS;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.*;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.SwerveDrive;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -24,12 +27,20 @@ public class DriveWithJoystick extends Command {
   private ChassisSpeeds chassisSpeeds;
   private AHRS gyro;
 
+  private SlewRateLimiter xLimiter;
+  private SlewRateLimiter yLimiter;
+  private SlewRateLimiter rotateLimiter;
 
-  public DriveWithJoystick(SwerveDrive swere, XboxController joyStick) {
 
 
-    this.swerve = swere;
+  public DriveWithJoystick(SwerveDrive swerve, XboxController joyStick) {
+
+    this.swerve = swerve;
     this.joyStick = joyStick;
+
+    xLimiter = new SlewRateLimiter(3);
+    yLimiter = new SlewRateLimiter(3);
+    rotateLimiter = new SlewRateLimiter(3);
 
     addRequirements(swerve);
 
@@ -51,15 +62,19 @@ public class DriveWithJoystick extends Command {
    ySpeed = MathUtil.applyDeadband(ySpeed, 0.15);
    rotateSpeed = MathUtil.applyDeadband(rotateSpeed, 0.15);
 
-   chassisSpeeds = swerve.getChassisSpeeds();
-   swerve.drive(chassisSpeeds);
+   xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.MAX_DRIVE_SPEED;
+   ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.MAX_DRIVE_SPEED;
+   rotateSpeed = rotateLimiter.calculate(rotateSpeed) * DriveConstants.MAX_ROTATE_SPEED;
 
+   chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rotateSpeed);
+   System.out.println(rotateSpeed);
+   swerve.drive(chassisSpeeds);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
+    swerve.stopModules();
   }
 
   // Returns true when the command should end.
