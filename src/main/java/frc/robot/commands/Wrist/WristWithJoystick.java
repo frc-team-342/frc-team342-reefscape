@@ -5,14 +5,12 @@
 package frc.robot.commands.Wrist;
 
 import frc.robot.subsystems.Wrist;
-import frc.robot.Constants.WristConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import static frc.robot.Constants.WristConstants.HIGH_WRIST_POS;
 import static frc.robot.Constants.WristConstants.LOW_WRIST_POS;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.XboxController;
 
 

@@ -21,10 +21,7 @@ import frc.robot.subsystems.*;
 
 import static frc.robot.Constants.FunnelConstants.HIGH_FUNNEL_POSITION;
 import static frc.robot.Constants.FunnelConstants.LOW_FUNNEL_POSITION;
-import static frc.robot.Constants.WristConstants.ALGAE_POSITION;
-import static frc.robot.Constants.WristConstants.L1_POSITION;
-import static frc.robot.Constants.WristConstants.L2_POSITION;
-import static frc.robot.Constants.WristConstants.L4_POSITION;
+import static frc.robot.Constants.WristConstants.*;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -38,7 +35,7 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.Constants.WristConstants.*;
+import static frc.robot.Constants.WristConstants.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -109,11 +106,11 @@ public class RobotContainer {
     wristToAlgae = new WristToPosition(wrist, ALGAE_POSITION);
 
     //Creates commands telling the elevator to go to different coral branches
-    moveElevatorL1 = new MoveElevatorToPosition(elevator, ElevatorConstants.L1_HEIGHT);
-    moveElevatorL2 = new MoveElevatorToPosition(elevator, ElevatorConstants.L2_HEIGHT);
-    moveElevatorL3 = new MoveElevatorToPosition(elevator, ElevatorConstants.L3_HEIGHT);
-    moveElevatorL4 = new MoveElevatorToPosition(elevator, ElevatorConstants.L4_HEIGHT);
-    moveElevatorProcessor = new MoveElevatorToPosition(elevator, ElevatorConstants.PROCESSOR_HEIGHT);
+    moveElevatorL1 = new MoveElevatorToPosition(elevator, wrist, ElevatorConstants.L1_HEIGHT);
+    moveElevatorL2 = new MoveElevatorToPosition(elevator, wrist, ElevatorConstants.L2_HEIGHT);
+    moveElevatorL3 = new MoveElevatorToPosition(elevator, wrist, ElevatorConstants.L3_HEIGHT);
+    moveElevatorL4 = new MoveElevatorToPosition(elevator, wrist, ElevatorConstants.L4_HEIGHT);
+    moveElevatorProcessor = new MoveElevatorToPosition(elevator, wrist, ElevatorConstants.PROCESSOR_HEIGHT);
 
     funnelToLow = new FunnelToPosition(funnel, LOW_FUNNEL_POSITION);
     funnelToHigh = new FunnelToPosition(funnel, HIGH_FUNNEL_POSITION);
@@ -126,7 +123,7 @@ public class RobotContainer {
     goToProcessor = new ParallelCommandGroup(wristToAlgae, moveElevatorProcessor);
 
     wristWithJoy = new WristWithJoystick(operator, wrist);
-    moveElevatorWithJoystick = new MoveElevatorWithJoystick(elevator, operator);
+    moveElevatorWithJoystick = new MoveElevatorWithJoystick(elevator, wrist, operator);
 
     //Creating new buttons for L1, L2/L3, L4, and algae
     l1Button = new POVButton(operator, 180);

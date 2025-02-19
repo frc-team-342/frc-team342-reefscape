@@ -6,7 +6,7 @@ package frc.robot.commands.Elevator;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Elevator;
-import frc.robot.Constants.ElevatorConstants;
+import frc.robot.subsystems.Wrist;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 
@@ -14,16 +14,18 @@ import edu.wpi.first.wpilibj.XboxController;
 public class MoveElevatorWithJoystick extends Command {
   /** Creates a new MoveElevatorWithJoystick. */
   private Elevator elevator;
+  private Wrist wrist;
 
   private XboxController operator;
 
-  public MoveElevatorWithJoystick(Elevator elevator, XboxController operator) {
+  public MoveElevatorWithJoystick(Elevator elevator, Wrist wrist, XboxController operator) {
 
     this.elevator = elevator;
+    this.wrist = wrist;
     this.operator = operator;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(elevator);
+    addRequirements(elevator, wrist);
 
   }
 
@@ -40,7 +42,11 @@ public class MoveElevatorWithJoystick extends Command {
     //Change the clamp values after testing
     MathUtil.clamp(speed, -1, 1);
 
-    elevator.moveElevator(speed);
+    if(wrist.isSafe())
+      elevator.moveElevator(speed);
+
+    else
+      elevator.stop();
 
   }
 

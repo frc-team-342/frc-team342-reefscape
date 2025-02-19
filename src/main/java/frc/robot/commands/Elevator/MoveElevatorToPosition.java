@@ -6,10 +6,10 @@ package frc.robot.commands.Elevator;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Wrist;
 import frc.robot.Constants.ElevatorConstants;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.XboxController;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class MoveElevatorToPosition extends Command {
@@ -17,14 +17,16 @@ public class MoveElevatorToPosition extends Command {
   private PIDController elevatorPID;
 
   private Elevator elevator;
+  private Wrist wrist;
 
   public boolean goingDown;
 
   private double nextPosition;
   /** Creates a new MoveElevatorToPosition. */
-  public MoveElevatorToPosition(Elevator elevator, double nextPosition) {
+  public MoveElevatorToPosition(Elevator elevator, Wrist wrist, double nextPosition) {
 
     this.elevator = elevator;
+    this.wrist = wrist;
     this.nextPosition = nextPosition;
 
     //Placeholder values, change after testing
@@ -36,7 +38,7 @@ public class MoveElevatorToPosition extends Command {
     goingDown = false;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(elevator);
+    addRequirements(elevator, wrist);
 
   }
 
@@ -56,8 +58,11 @@ public class MoveElevatorToPosition extends Command {
     MathUtil.clamp(speed, -1, 1);
 
     goingDown = currentPosition > nextPosition;
+    if(wrist.isSafe())
+      elevator.moveElevator(speed);
 
-    elevator.moveElevator(speed);
+    else
+      elevator.stop();
 
     //Prevents the elevator from trying to move down while already at the min height
     if(goingDown && currentPosition < ElevatorConstants.BOTTOM_POSITION) {

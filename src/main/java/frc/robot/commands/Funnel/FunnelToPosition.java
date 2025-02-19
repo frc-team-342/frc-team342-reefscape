@@ -6,7 +6,6 @@ package frc.robot.commands.Funnel;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Funnel;
-import edu.wpi.first.math.controller.PIDController;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class FunnelToPosition extends Command {

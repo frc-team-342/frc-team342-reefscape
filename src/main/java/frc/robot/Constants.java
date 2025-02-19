@@ -23,6 +23,8 @@ public final class Constants {
     public static final int WRIST_ID = 5;
     public static final int MAG_ENCODER = 7;
   
+    public static final double WRIST_GEAR_RATIO = 1/2.0;
+    public static final double WRIST_POSITION_CONVERSION = (WRIST_GEAR_RATIO) * (2 * Math.PI);
     public static final double WRIST_SPEED = 0.7;
 
     //Wrist PID values; they're a list for sake of simplicity
@@ -38,6 +40,9 @@ public final class Constants {
     public static final double L2_POSITION = 0.32;
     public static final double L4_POSITION = 0.26;
     public static final double ALGAE_POSITION = 0.46;
+
+    public static final double WRIST_SAFE_ERROR = Math.toRadians(5);
+    
   
     public static final double MAX_DISTANCE = 83;
     
