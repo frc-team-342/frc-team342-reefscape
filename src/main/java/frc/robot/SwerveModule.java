@@ -4,12 +4,13 @@
 
 package frc.robot;
 
+import org.opencv.core.Mat;
+
 import com.revrobotics.*;
 import com.revrobotics.spark.*;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.config.*;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.servohub.ServoHub.ResetMode;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -17,6 +18,7 @@ import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.SparkAnalogSensor;
 
@@ -48,7 +50,6 @@ public class SwerveModule {
 
     private AnalogInput analogInput;
     private AnalogEncoder analogEncoder;
-
 
     //private PIDController rotatePID;
 
@@ -84,8 +85,8 @@ public class SwerveModule {
         driveConfig.encoder.velocityConversionFactor(DriveConstants.DRIVE_VELOCITY_CONVERSION); //VELOCITY
 
         /* Set the Rotate conversion (Posistion and Velocity) factors */
-        driveConfig.encoder.positionConversionFactor(DriveConstants.DRIVE_POSITION_CONVERSION); //POSITION
-        driveConfig.encoder.velocityConversionFactor(DriveConstants.DRIVE_VELOCITY_CONVERSION); //VELOCITY
+        rotateConfig.encoder.positionConversionFactor(DriveConstants.ROTATE_POSITION_CONVERSION); //POSITION
+        rotateConfig.encoder.velocityConversionFactor(DriveConstants.ROTATE_VELOCITY_CONVERSION); //VELOCITY
 
         /** Get the PIDController from the respective motors */
         driveController = driveMotor.getClosedLoopController();
@@ -103,8 +104,8 @@ public class SwerveModule {
 
         /* Rotate PID wrapping */
         rotateConfig.closedLoop.positionWrappingEnabled(true);
-        rotateConfig.closedLoop.positionWrappingMinInput(0);
-        rotateConfig.closedLoop.positionWrappingMinInput(90);
+        rotateConfig.closedLoop.positionWrappingMinInput(-Math.PI);
+        rotateConfig.closedLoop.positionWrappingMaxInput(Math.PI);
 
          /* Rotate PID values */
         rotateConfig.closedLoop.p(DriveConstants.ROTATE_P_VALUE);
@@ -113,19 +114,18 @@ public class SwerveModule {
         rotateConfig.closedLoop.velocityFF(DriveConstants.ROTATE_FF_VALUE);
 
 
-     /* Configures drive and rotate motors with there SparkMaxConfig NOT FINISHED*/
+     /* Configures drive and rotate motors with there SparkMaxConfig */
 
-        driveMotor.configure(driveConfig, null, PersistMode.kPersistParameters);
-        rotateMotor.configure(driveConfig, null, PersistMode.kPersistParameters);
-
-        analogInput = new AnalogInput(magEncoderPort);
-        analogEncoder = new AnalogEncoder(analogInput);
+        driveMotor.configure(driveConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+        rotateMotor.configure(driveConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
         this.encoderOffset = encoderOffset;
         this.label = label;
 
-        resetEncoder();
+        analogInput = new AnalogInput(magEncoderPort);
+        analogEncoder = new AnalogEncoder(analogInput, 2 * Math.PI, encoderOffset);
 
+        resetEncoder();
     }
 
     /* Returns the distance robot has travlled in meters */
@@ -138,7 +138,7 @@ public class SwerveModule {
         return rotateEncoder.getPosition();
     }
 
-    /* Returns the Angle of the wheels in Degrees*/
+    /* Returns the Angle of the wheels in Degrees as a rotation2d */
     public Rotation2d getAngle() {
         return Rotation2d.fromDegrees(rotateEncoder.getPosition());
     }
@@ -151,7 +151,6 @@ public class SwerveModule {
     /* Absoulete encoder angle in radians with offset removed SAME MIGHT TRY AND REWROKK  */
     public double getAbsouleteEncoderPosition() {
         double angle = analogInput.getVoltage() / RobotController.getVoltage5V();
-        encoderOffset = analogEncoder.get();
 
         angle *= 2 * Math.PI;
         angle += encoderOffset;
@@ -161,7 +160,12 @@ public class SwerveModule {
     }
 
     public double getOffset() {
-        return analogEncoder.get();
+        double angle = analogEncoder.get();
+
+        if (angle > Math.PI) {
+            angle = angle - 2 * Math.PI;
+        }
+         return angle;
     }
 
     public double getRawOffsets(){
@@ -184,6 +188,7 @@ public class SwerveModule {
         return label;
     }
 
+    
     public void setState(SwerveModuleState state){
 
         driveController.setReference(state.speedMetersPerSecond, ControlType.kVelocity);

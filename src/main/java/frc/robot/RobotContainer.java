@@ -46,7 +46,7 @@ public class RobotContainer {
     // Configure the trigger bindings
 
     swerve = new SwerveDrive();
-    swerve.resetEncoder();
+    swerve.resetAllEncoders();
     
     driver = new XboxController(0);
 
