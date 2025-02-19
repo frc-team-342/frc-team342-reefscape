@@ -38,7 +38,7 @@ public class MoveElevatorToPosition extends Command {
     goingDown = false;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(elevator, wrist);
+    addRequirements(elevator);
 
   }
 

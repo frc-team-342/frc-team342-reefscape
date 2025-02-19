@@ -15,6 +15,7 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.RelativeEncoder;
 
 
 
@@ -23,6 +24,7 @@ public class Funnel extends SubsystemBase {
   private final SparkMaxConfig funnelConfig;
   private final PIDController pidController;
   private final DutyCycleEncoder throughBore;
+  private final RelativeEncoder funnelEncoder;
 
   private boolean goingDown;
   private double speed;
@@ -32,14 +34,21 @@ public class Funnel extends SubsystemBase {
   public Funnel() {
     funnel = new SparkMax(FUNNEL_ID, MotorType.kBrushless);
     funnelConfig = new SparkMaxConfig();
+
     pidController = new PIDController(FUNNEL_PID_VALUES[0], FUNNEL_PID_VALUES[1], FUNNEL_PID_VALUES[2]);
-    throughBore = new DutyCycleEncoder(2);
+    throughBore = new DutyCycleEncoder(2, 2 * Math.PI, 0);
+    funnelEncoder = funnel.getEncoder(); 
 
     goingDown = false;
 
     funnelConfig
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(30);
+
+    funnelConfig.encoder
+      .positionConversionFactor(FUNNEL_POSITION_CONVERSION);
+
+    funnelEncoder.setPosition(throughBore.get());
 
     funnel.configure(funnelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     

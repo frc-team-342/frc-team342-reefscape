@@ -25,7 +25,7 @@ public class MoveElevatorWithJoystick extends Command {
     this.operator = operator;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(elevator, wrist);
+    addRequirements(elevator);
 
   }
 

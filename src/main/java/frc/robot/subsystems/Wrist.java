@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -13,21 +12,13 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 
 import com.revrobotics.spark.*;
-import com.revrobotics.config.*;
 
 import static frc.robot.Constants.WristConstants.*;
 
-import java.io.ObjectInputFilter.Config;
-
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.config.ClosedLoopConfig;
-import com.revrobotics.spark.config.SmartMotionConfig;
-import com.revrobotics.spark.config.ClosedLoopConfigAccessor;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import com.revrobotics.RelativeEncoder;
 
 
@@ -91,9 +82,9 @@ public class Wrist extends SubsystemBase {
 
     //These are being used as soft stops so when we're tuning the PID values the wrist won't slam into the mechanical stops
     if((goingDown && currentPosition <= LOW_WRIST_POS) || (!goingDown && currentPosition >= HIGH_WRIST_POS))
-    move(0);
+      move(0);
     else
-    move(speed);
+      move(speed);
 
   }
 

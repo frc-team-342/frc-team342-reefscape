@@ -36,10 +36,12 @@ public final class Constants {
 
     //Zeroes below are placeholders for the time being
     //Because L2 and L3 have the same angles, only L2 will be used
-    public static final double L1_POSITION = .4;
-    public static final double L2_POSITION = 0.32;
-    public static final double L4_POSITION = 0.26;
-    public static final double ALGAE_POSITION = 0.46;
+    //All positions are in radians
+    public static final double INTAKE_POSITION = 0.0;
+    public static final double L1_POSITION = 0.0;
+    public static final double L2_POSITION = 0.0;
+    public static final double L4_POSITION = 0.0;
+    public static final double ALGAE_POSITION = 0.0;
 
     public static final double WRIST_SAFE_ERROR = Math.toRadians(5);
     
@@ -73,6 +75,10 @@ public final class Constants {
 
   public static class FunnelConstants{
     public static final int FUNNEL_ID = 1;
+
+    public static final double FUNNEL_RATIO = 1/2.0;
+
+    public static final double FUNNEL_POSITION_CONVERSION = (FUNNEL_RATIO) * (2 * Math.PI);
 
     public static final double[] FUNNEL_PID_VALUES = {0, 0, 0};
 
