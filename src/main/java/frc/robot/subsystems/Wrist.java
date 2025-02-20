@@ -113,6 +113,7 @@ public class Wrist extends SubsystemBase {
   @Override
   public void initSendable(SendableBuilder builder){
       builder.setSmartDashboardType("Wrist");
+      builder.addBooleanProperty("Is Safe", () -> isSafe(), null);
       if(true){
         builder.addDoubleProperty("Error", () -> throughBore.get() - wristEncoder.getPosition(), null);
         builder.addDoubleProperty("ThroughBore", () -> throughBore.get(), null);
