@@ -44,7 +44,7 @@ public class SwerveDrive extends SubsystemBase {
         DriveConstants.FRONT_LEFT_DRIVE_ID, 
         DriveConstants.FRONT_LEFT_ROTATE_ID, 
         DriveConstants.FL_ENCODER_PORT, 
-        false, false, 
+        false, true, 
         DriveConstants.FRONT_LEFT_OFFSET, 
         "FL"
         );
@@ -62,7 +62,7 @@ public class SwerveDrive extends SubsystemBase {
         DriveConstants.BACK_LEFT_DRIVE_ID, 
         DriveConstants.BACK_LEFT_ROTATE_ID, 
         DriveConstants.BL_ENCODER_PORT, 
-        false, false, 
+        false, true, 
         DriveConstants.BACK_LEFT_OFFSET, 
         "BL"
         );
@@ -131,6 +131,7 @@ public class SwerveDrive extends SubsystemBase {
         frontRightModule.setState(swerveModuleStates[1]);
         backLeftModule.setState(swerveModuleStates[2]);
         backRightModule.setState(swerveModuleStates[3]);
+
       }
 
 
@@ -139,10 +140,10 @@ public class SwerveDrive extends SubsystemBase {
       public SwerveModulePosition[] getCurrentSwerveModulePositions(){
         return new SwerveModulePosition[]{
 
-            new SwerveModulePosition(frontLeftModule.getDistance(), frontLeftModule.getAngle()), // Front left
-            new SwerveModulePosition(frontRightModule.getDistance(), frontRightModule.getAngle()), // Front Right
-            new SwerveModulePosition(backLeftModule.getDistance(), backLeftModule.getAngle()), // Back Left
-            new SwerveModulePosition(backRightModule.getDistance(), backRightModule.getAngle()) // Back Right
+            new SwerveModulePosition(frontLeftModule.getDistance(), new Rotation2d(frontLeftModule.getRotateEncoderPosition())), // Front left
+            new SwerveModulePosition(frontRightModule.getDistance(), new Rotation2d(frontRightModule.getRotateEncoderPosition())), // Front Right
+            new SwerveModulePosition(backLeftModule.getDistance(), new Rotation2d(backLeftModule.getRotateEncoderPosition())), // Back Left
+            new SwerveModulePosition(backRightModule.getDistance(), new Rotation2d(backRightModule.getRotateEncoderPosition())) // Back Right
 
         };
       } 
@@ -169,8 +170,8 @@ public class SwerveDrive extends SubsystemBase {
     public void putFrontLeftValues(SendableBuilder sendableBuilder){
       sendableBuilder.addDoubleProperty(frontLeftModule.printLabel() + " Offset", ()-> frontLeftModule.getRawOffsets(), null);
       sendableBuilder.addDoubleProperty(frontLeftModule.printLabel() + " Rotate Encoder(Radians): " , ()-> frontLeftModule.getRotatePosition(), null);
-      sendableBuilder.addDoubleProperty(frontLeftModule.printLabel() + " Absoulete Position " , ()-> frontLeftModule.getAbsouleteEncoderPosition(), null);
-      sendableBuilder.addDoubleProperty(frontLeftModule.printLabel() + " Analog Offest " , ()-> frontLeftModule.getOffset(), null);
+      sendableBuilder.addDoubleProperty(frontLeftModule.printLabel() + " Absoulete Position " , ()-> frontLeftModule.getAnalogEnoderValue(), null);
+      //sendableBuilder.addDoubleProperty(frontLeftModule.printLabel() + " Analog Offest " , ()-> frontLeftModule.getOffset(), null);
 
 
 
@@ -179,23 +180,23 @@ public class SwerveDrive extends SubsystemBase {
     public void putFrontRightValues(SendableBuilder sendableBuilder){
       sendableBuilder.addDoubleProperty(frontRightModule.printLabel() + " Offset", ()-> frontRightModule.getRawOffsets(), null);
       sendableBuilder.addDoubleProperty(frontRightModule.printLabel() + " Rotate Encoder(Radians): " , ()-> frontRightModule.getRotatePosition(), null);
-      sendableBuilder.addDoubleProperty(frontRightModule.printLabel() + " Absoulete Position " , ()-> frontRightModule.getAbsouleteEncoderPosition(), null);
-      sendableBuilder.addDoubleProperty(frontRightModule.printLabel() + " Analog Offest " , ()-> frontRightModule.getOffset(), null);
+      sendableBuilder.addDoubleProperty(frontRightModule.printLabel() + " Absoulete Position " , ()-> frontRightModule.getAnalogEnoderValue(), null);
+      //sendableBuilder.addDoubleProperty(frontRightModule.printLabel() + " Analog Offest " , ()-> frontRightModule.getOffset(), null);
     }
 
     public void putBackLeftModule(SendableBuilder sendableBuilder){
       sendableBuilder.addDoubleProperty(backLeftModule.printLabel() + " Offset", ()-> backLeftModule.getRawOffsets(), null);
       sendableBuilder.addDoubleProperty(backLeftModule.printLabel() + " Rotate Encoder(Radians): " , ()-> backLeftModule.getRotatePosition(), null);
-      sendableBuilder.addDoubleProperty(backLeftModule.printLabel() + " Absoulete Position " , ()-> backLeftModule.getAbsouleteEncoderPosition(), null);
-      sendableBuilder.addDoubleProperty(backLeftModule.printLabel() + " Analog Offest " , ()-> backLeftModule.getOffset(), null);
+      sendableBuilder.addDoubleProperty(backLeftModule.printLabel() + " Absoulete Position " , ()-> backLeftModule.getAnalogEnoderValue(), null);
+      //sendableBuilder.addDoubleProperty(backLeftModule.printLabel() + " Analog Offest " , ()-> backLeftModule.getOffset(), null);
 
     }
 
     public void putBackRightModule(SendableBuilder sendableBuilder){
       sendableBuilder.addDoubleProperty(backRightModule.printLabel() + " Offset", ()-> backRightModule.getRawOffsets(), null);
       sendableBuilder.addDoubleProperty(backRightModule.printLabel() + " Rotate Encoder(Radians): " , ()-> backRightModule.getRotatePosition(), null);
-      sendableBuilder.addDoubleProperty(backRightModule.printLabel() + " Absoulete Position " , ()-> backRightModule.getAbsouleteEncoderPosition(), null);
-      sendableBuilder.addDoubleProperty(backRightModule.printLabel() + " Analog Offest " , ()-> backRightModule.getOffset(), null);
+      sendableBuilder.addDoubleProperty(backRightModule.printLabel() + " Absoulete Position " , ()-> backRightModule.getAnalogEnoderValue(), null);
+      //sendableBuilder.addDoubleProperty(backRightModule.printLabel() + " Analog Offest " , ()-> backRightModule.getOffset(), null);
     }
 
 

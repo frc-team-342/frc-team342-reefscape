@@ -54,7 +54,7 @@ public static class DriveConstants {
   public static  double DRIVE_FF_VALUE;
 
   // Rotate PID Values
-  public static final double ROTATE_P_VALUE = 0.01;
+  public static final double ROTATE_P_VALUE = 0.006;
   public static final double ROTATE_I_VALUE = 0;
   public static final double ROTATE_D_VALUE = 0.001;
   public static  double ROTATE_FF_VALUE;

@@ -125,7 +125,7 @@ public class SwerveModule {
         analogInput = new AnalogInput(magEncoderPort);
         analogEncoder = new AnalogEncoder(analogInput, 2 * Math.PI, encoderOffset);
 
-        resetEncoder();
+        //resetEncoder();
     }
 
     /* Returns the distance robot has travlled in meters */
@@ -139,8 +139,18 @@ public class SwerveModule {
     }
 
     /* Returns the Angle of the wheels in Degrees as a rotation2d */
-    public Rotation2d getAngle() {
-        return Rotation2d.fromDegrees(rotateEncoder.getPosition());
+
+    public double getRotateEncoderPosition(){
+        
+     double angle = rotateEncoder.getPosition();
+     angle %= 2 * Math.PI;
+
+        if (angle > Math.PI) {
+            angle = angle - 2.0 * Math.PI;
+        }
+
+    return angle;
+
     }
 
     /* Returns the Drive Encoder velocity meters/second */
@@ -148,7 +158,8 @@ public class SwerveModule {
         return driveEnconder.getVelocity();
     }
 
-    /* Absoulete encoder angle in radians with offset removed SAME MIGHT TRY AND REWROKK  */
+    /* Absoulete encoder angle in radians with offset removed SAME MIGHT TRY AND REWROKK  
+
     public double getAbsouleteEncoderPosition() {
         double angle = analogInput.getVoltage() / RobotController.getVoltage5V();
 
@@ -158,25 +169,28 @@ public class SwerveModule {
 
         return angle;
     }
+*/
 
-    public double getOffset() {
+    public double getAnalogEnoderValue() {
+
         double angle = analogEncoder.get();
-
         if (angle > Math.PI) {
             angle = angle - 2 * Math.PI;
         }
          return angle;
+
     }
 
     public double getRawOffsets(){
         double angle = analogInput.getVoltage() / RobotController.getVoltage5V();
         angle *= 2 * Math.PI;
         return angle;
+
     }
 
     public void resetEncoder() {
         driveEnconder.setPosition(0);
-        rotateEncoder.setPosition(getOffset());
+        rotateEncoder.setPosition(getAnalogEnoderValue());
     }
 
     public void stop() {
@@ -190,6 +204,8 @@ public class SwerveModule {
 
     
     public void setState(SwerveModuleState state){
+
+        state.optimize(new Rotation2d(getRotateEncoderPosition()));
 
         driveController.setReference(state.speedMetersPerSecond, ControlType.kVelocity);
         rotateController.setReference(state.angle.getRadians(), ControlType.kPosition);
