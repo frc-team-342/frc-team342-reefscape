@@ -24,6 +24,7 @@ public final class Constants {
     public static final int THROUGHBORE_PORT = 2;
   
     public static final double WRIST_GEAR_RATIO = 1/2.0;
+    public static final double WRIST_SPEED_LIMITER = 4.0;
     public static final double WRIST_POSITION_CONVERSION = (WRIST_GEAR_RATIO) * (2 * Math.PI);
     public static final int WRIST_CURRENT_LIMIT = 30;
     public static final double WRIST_ZERO = 0;

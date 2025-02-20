@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 import static frc.robot.Constants.WristConstants.HIGH_WRIST_POS;
 import static frc.robot.Constants.WristConstants.LOW_WRIST_POS;
+import static frc.robot.Constants.WristConstants.WRIST_SPEED_LIMITER;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
@@ -50,7 +51,7 @@ public class WristWithJoystick extends Command {
       wrist.move(0);
     else 
       //Divided by four to reduce speed
-      wrist.move(speed/4);
+      wrist.move(speed/WRIST_SPEED_LIMITER);
   }
 
   // Called once the command ends or is interrupted.
