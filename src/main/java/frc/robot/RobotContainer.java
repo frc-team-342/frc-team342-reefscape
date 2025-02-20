@@ -8,19 +8,12 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.commands.Elevator.MoveElevatorToPosition;
-import frc.robot.commands.Elevator.MoveElevatorWithJoystick;
-import frc.robot.commands.Funnel.FunnelToPosition;
 import frc.robot.commands.Wrist.WristToPosition;
 import frc.robot.commands.Wrist.WristWithJoystick;
-import frc.robot.subsystems.Elevator;
 
 import frc.robot.subsystems.*;
 
-import static frc.robot.Constants.FunnelConstants.HIGH_FUNNEL_POSITION;
-import static frc.robot.Constants.FunnelConstants.LOW_FUNNEL_POSITION;
 import static frc.robot.Constants.WristConstants.*;
-import static frc.robot.Constants.ElevatorConstants.*;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -40,17 +33,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   private final XboxController operator;
 
-  private final Elevator elevator;
   private final Wrist wrist;
-  private final Funnel funnel;
-
-  private final MoveElevatorToPosition moveElevatorIntake;
-  private final MoveElevatorToPosition moveElevatorProcessor;
-  private final MoveElevatorToPosition moveElevatorL1;
-  private final MoveElevatorToPosition moveElevatorL2;
-  private final MoveElevatorToPosition moveElevatorL3;
-  private final MoveElevatorToPosition moveElevatorL4;
-  private final MoveElevatorWithJoystick moveElevatorWithJoystick;
   
   //Because the angles are the same for both L2 & L3, there will only be an L2 command that will be used for both
   private final WristToPosition wristToIntake;
@@ -58,9 +41,6 @@ public class RobotContainer {
   private final WristToPosition wristToL2;
   private final WristToPosition wristToL4;
   private final WristToPosition wristToAlgae;
-
-  private final FunnelToPosition funnelToLow;
-  private final FunnelToPosition funnelToHigh;
 
   private final SequentialCommandGroup goToIntake;
   private final SequentialCommandGroup goToL1;
@@ -92,8 +72,6 @@ public class RobotContainer {
     // Replace with CommandPS4Controller or CommandJoystick if needed
     m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
     wrist = new Wrist();
-    elevator = new Elevator();
-    funnel = new Funnel();
 
     SmartDashboard.putData(wrist);
 
@@ -106,27 +84,15 @@ public class RobotContainer {
     wristToL4 = new WristToPosition(wrist, L4_POSITION);
     wristToAlgae = new WristToPosition(wrist, ALGAE_POSITION);
 
-    //Creates commands telling the elevator to go to different coral branches
-    moveElevatorIntake = new MoveElevatorToPosition(elevator, wrist, BOTTOM_POSITION);
-    moveElevatorL1 = new MoveElevatorToPosition(elevator, wrist, L1_HEIGHT);
-    moveElevatorL2 = new MoveElevatorToPosition(elevator, wrist, L2_HEIGHT);
-    moveElevatorL3 = new MoveElevatorToPosition(elevator, wrist, L3_HEIGHT);
-    moveElevatorL4 = new MoveElevatorToPosition(elevator, wrist, L4_HEIGHT);
-    moveElevatorProcessor = new MoveElevatorToPosition(elevator, wrist, PROCESSOR_HEIGHT);
-
-    funnelToLow = new FunnelToPosition(funnel, LOW_FUNNEL_POSITION);
-    funnelToHigh = new FunnelToPosition(funnel, HIGH_FUNNEL_POSITION);
-
     //Runs the elevator and wrist commands at the same time for simplicity
-    goToIntake = new SequentialCommandGroup(moveElevatorIntake, wristToIntake);
-    goToL1 = new SequentialCommandGroup(moveElevatorL1, wristToL1);
-    goToL2 = new SequentialCommandGroup(moveElevatorL2, wristToL2);
-    goToL3 = new SequentialCommandGroup(moveElevatorL3, wristToL2);
-    goToL4 = new SequentialCommandGroup(moveElevatorL4, wristToL4);
-    goToProcessor = new SequentialCommandGroup(moveElevatorProcessor, wristToAlgae);
+    goToIntake = new SequentialCommandGroup(wristToIntake);
+    goToL1 = new SequentialCommandGroup(wristToL1);
+    goToL2 = new SequentialCommandGroup(wristToL2);
+    goToL3 = new SequentialCommandGroup(wristToL2);
+    goToL4 = new SequentialCommandGroup(wristToL4);
+    goToProcessor = new SequentialCommandGroup(wristToAlgae);
 
     wristWithJoy = new WristWithJoystick(operator, wrist);
-    moveElevatorWithJoystick = new MoveElevatorWithJoystick(elevator, wrist, operator);
 
     //Creating new buttons for L1, L2/L3, L4, and algae
     l1Button = new POVButton(operator, 180);
@@ -140,7 +106,6 @@ public class RobotContainer {
     highFunnelButton = new JoystickButton(operator, XboxController.Button.kRightBumper.value);
 
     wrist.setDefaultCommand(wristToL2);
-    elevator.setDefaultCommand(moveElevatorWithJoystick);
 
     // Configure the trigger bindings
     configureBindings();
@@ -163,9 +128,6 @@ private void configureBindings() {
   l4Button.onTrue(goToL4); // top button on d-pad
   processorButton.onTrue(goToProcessor); // the A button
   intakePositionButton.onTrue(goToIntake); // the B button
-
-  lowFunnelButton.onTrue(funnelToLow); // the left bumper
-  highFunnelButton.onTrue(funnelToHigh); // the right bumper
 
   // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
   new Trigger(m_exampleSubsystem::exampleCondition)
