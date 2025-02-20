@@ -73,11 +73,12 @@ public class Wrist extends SubsystemBase {
 
   /*
    * Moves wrist to a certain position
+   * @param speed is between -1 and 1
    */
   public void wristToPosition(double position){
     pidController.setTolerance(WRIST_ERROR);
     speed = pidController.calculate(currentPosition, position);
-    speed = MathUtil.clamp(speed, 1, -1);
+    speed = MathUtil.clamp(speed, -1, 1);
 
     goingDown = speed < 0;
 
@@ -106,8 +107,6 @@ public class Wrist extends SubsystemBase {
 
   @Override
   public void periodic() {
-    //Planning on using this to debug PID tuning and to see what the robot is thinking
-    SmartDashboard.putNumber("Throughbore:", throughBore.get());
   }
 
   @Override
