@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.util.sendable.SendableBuilder;
 
 import com.revrobotics.spark.*;
 
@@ -44,7 +45,7 @@ public class Wrist extends SubsystemBase {
     goingDown = false;
 
     //Encoder instantiation
-    throughBore = new DutyCycleEncoder(1, (2 * Math.PI), 0);
+    throughBore = new DutyCycleEncoder(THROUGHBORE_PORT, (2 * Math.PI), WRIST_ZERO);
     wristEncoder = wrist.getEncoder();
     
     currentPosition = throughBore.get();
@@ -57,7 +58,7 @@ public class Wrist extends SubsystemBase {
     //Wrist idle mode & smart current limit
     wristConfig
       .idleMode(IdleMode.kBrake)
-      .smartCurrentLimit(30);
+      .smartCurrentLimit(WRIST_CURRENT_LIMIT);
 
     wrist.configure(wristConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
@@ -74,7 +75,7 @@ public class Wrist extends SubsystemBase {
    * Moves wrist to a certain position
    */
   public void wristToPosition(double position){
-    pidController.setTolerance(0.1);
+    pidController.setTolerance(WRIST_ERROR);
     speed = pidController.calculate(currentPosition, position);
     speed = MathUtil.clamp(speed, 1, -1);
 
@@ -106,7 +107,17 @@ public class Wrist extends SubsystemBase {
   @Override
   public void periodic() {
     //Planning on using this to debug PID tuning and to see what the robot is thinking
-    SmartDashboard.putNumber("Wrist Position", currentPosition);
     SmartDashboard.putNumber("Throughbore:", throughBore.get());
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder){
+      builder.setSmartDashboardType("Wrist");
+      if(true){
+        builder.addDoubleProperty("Error", () -> throughBore.get() - wristEncoder.getPosition(), null);
+        builder.addDoubleProperty("ThroughBore", () -> throughBore.get(), null);
+        builder.addDoubleProperty("Encoder", () -> wristEncoder.getPosition(), null);
+        builder.addDoubleProperty("Speed", () -> speed, null);
+      }
   }
 }

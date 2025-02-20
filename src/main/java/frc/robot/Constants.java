@@ -21,14 +21,16 @@ public final class Constants {
     //public static final int INTAKE_SENSOR = 1;
   
     public static final int WRIST_ID = 5;
-    public static final int MAG_ENCODER = 7;
+    public static final int THROUGHBORE_PORT = 2;
   
     public static final double WRIST_GEAR_RATIO = 1/2.0;
     public static final double WRIST_POSITION_CONVERSION = (WRIST_GEAR_RATIO) * (2 * Math.PI);
-    public static final double WRIST_SPEED = 0.7;
+    public static final int WRIST_CURRENT_LIMIT = 30;
+    public static final double WRIST_ZERO = 0;
 
     //Wrist PID values; they're a list for sake of simplicity
     public static final double[] WRIST_PID_VALUES = {1, 0, 0.01};
+    public static final double WRIST_ERROR = 0.1;
   
     //Wrist position Values (absolute enocder values I think)
     public static final double LOW_WRIST_POS = 0.2751;
@@ -44,7 +46,6 @@ public final class Constants {
     public static final double ALGAE_POSITION = 0.0;
 
     public static final double WRIST_SAFE_ERROR = Math.toRadians(5);
-    
   
     public static final double MAX_DISTANCE = 83;
     

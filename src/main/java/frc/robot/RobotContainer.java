@@ -23,6 +23,7 @@ import static frc.robot.Constants.WristConstants.*;
 import static frc.robot.Constants.ElevatorConstants.*;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -93,6 +94,8 @@ public class RobotContainer {
     wrist = new Wrist();
     elevator = new Elevator();
     funnel = new Funnel();
+
+    SmartDashboard.putData(wrist);
 
     operator = new XboxController(1);
 
