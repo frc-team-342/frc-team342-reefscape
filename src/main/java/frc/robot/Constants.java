@@ -48,22 +48,22 @@ public static class DriveConstants {
 
 
   // Drive PID Values 
-  public static final double DRIVE_P_VALUE = 0.2;
-  public static final double DRIVE_I_VALUE = 0;
-  public static final double DRIVE_D_VALUE = 0.001; 
-  public static  double DRIVE_FF_VALUE;
+  public static final double DRIVE_P_VALUE = 0.1;
+  public static final double DRIVE_I_VALUE = 0.0;
+  public static final double DRIVE_D_VALUE = 0.7; 
+  public static final double DRIVE_FF_VALUE = 0.9;
 
   // Rotate PID Values
-  public static final double ROTATE_P_VALUE = 0.006;
+  public static final double ROTATE_P_VALUE = 0.25;
   public static final double ROTATE_I_VALUE = 0;
-  public static final double ROTATE_D_VALUE = 0.001;
+  public static final double ROTATE_D_VALUE = 0.3;
   public static  double ROTATE_FF_VALUE;
 
   // Offsets
-  public static final double FRONT_LEFT_OFFSET = 0.09;
-  public static final double FRONT_RIGHT_OFFSET= 3.47;
-  public static final double BACK_LEFT_OFFSET = 2.62;
-  public static final double BACK_RIGHT_OFFSET = 3.93;
+  public static final double FRONT_LEFT_OFFSET = 3.23;
+  public static final double FRONT_RIGHT_OFFSET= 0.31;
+  public static final double BACK_LEFT_OFFSET = 5.78;
+  public static final double BACK_RIGHT_OFFSET = 0.77;
 
   // Factors
   public static double DRIVE_POSITION_CONVERSION = DRIVE_GEAR_RATIO * Math.PI *  WHEEL_DIAMETER;
