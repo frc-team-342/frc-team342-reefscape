@@ -46,7 +46,7 @@ public class RobotContainer {
     // Configure the trigger bindings
 
     swerve = new SwerveDrive();
-    swerve.resetAllEncoders();
+    //swerve.resetAllEncoders();
     
     driver = new XboxController(0);
 
@@ -57,7 +57,7 @@ public class RobotContainer {
     testDriveCommand = Commands.runOnce(() -> {swerve.testDrive();}, swerve);
     stopModules = Commands.runOnce(() -> {swerve.stopModules();}, swerve);
 
-    //swerve.setDefaultCommand(driveWithJoystick);
+    swerve.setDefaultCommand(driveWithJoystick);
 
     SmartDashboard.putData(swerve);
 

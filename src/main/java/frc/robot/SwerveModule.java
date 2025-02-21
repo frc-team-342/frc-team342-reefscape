@@ -125,7 +125,7 @@ public class SwerveModule {
         analogInput = new AnalogInput(magEncoderPort);
         analogEncoder = new AnalogEncoder(analogInput, 2 * Math.PI, encoderOffset);
 
-        //resetEncoder();
+        syncEncoders();
     }
 
     /* Returns the distance robot has travlled in meters */
@@ -133,13 +133,24 @@ public class SwerveModule {
             return driveEnconder.getPosition();
     }
 
+    /* Returns the Drive Encoder velocity meters/second */
+    public double getDriveVelocity() {
+        return driveEnconder.getVelocity();
+    }
+
+    /* Returns the Analog Encoder range value as a rotation 2D */
+    public Rotation2d getAnlogRotation2d() {
+
+        return new Rotation2d(analogEncoder.get());
+
+    }
+
     /* Returns the Angle of the wheels in Radians */
     public double getRotatePosition() {
         return rotateEncoder.getPosition();
     }
 
-    /* Returns the Angle of the wheels in Degrees as a rotation2d */
-
+    /* Returns the Angle of the wheels in Radians */
     public double getRotateEncoderPosition(){
         
      double angle = rotateEncoder.getPosition();
@@ -153,24 +164,12 @@ public class SwerveModule {
 
     }
 
-    /* Returns the Drive Encoder velocity meters/second */
-    public double getDriveVelocity() {
-        return driveEnconder.getVelocity();
+    /* Sets the Rotation Encoder to the value of the analog offsets */
+    public void syncEncoders(){
+        rotateEncoder.setPosition(getAnalogEnoderValue());
     }
 
-    /* Absoulete encoder angle in radians with offset removed SAME MIGHT TRY AND REWROKK  
-
-    public double getAbsouleteEncoderPosition() {
-        double angle = analogInput.getVoltage() / RobotController.getVoltage5V();
-
-        angle *= 2 * Math.PI;
-        angle += encoderOffset;
-        angle %= 2 * Math.PI;
-
-        return angle;
-    }
-*/
-
+    /* Uses the analog encoder to return the an angle within range */
     public double getAnalogEnoderValue() {
 
         double angle = analogEncoder.get();
@@ -181,6 +180,7 @@ public class SwerveModule {
 
     }
 
+    /* Uses volatge to get Raw Offsets */
     public double getRawOffsets(){
         double angle = analogInput.getVoltage() / RobotController.getVoltage5V();
         angle *= 2 * Math.PI;
@@ -188,30 +188,27 @@ public class SwerveModule {
 
     }
 
-    public void resetEncoder() {
-        driveEnconder.setPosition(0);
-        rotateEncoder.setPosition(getAnalogEnoderValue());
-    }
-
+    /* Sets both motors too 0 */
     public void stop() {
        driveMotor.set(0);
        rotateMotor.set(0);
     }
 
+    /* Returns the Label of specified module */
     public String printLabel() {
         return label;
     }
-
     
+    /* Sets the refrence of drive and rotate motor */
     public void setState(SwerveModuleState state){
 
-        state.optimize(new Rotation2d(getRotateEncoderPosition()));
-
+        //state.optimize(new Rotation2d(getRotateEncoderPosition()));
         driveController.setReference(state.speedMetersPerSecond, ControlType.kVelocity);
         rotateController.setReference(state.angle.getRadians(), ControlType.kPosition);
 
-        System.out.println("Drive PID refrence : " + state.speedMetersPerSecond);
-        System.out.println("Rotate PID refrence : " + state.angle.getRadians());
+        //System.out.println("Drive PID refrence : " + state.speedMetersPerSecond);
+        //System.out.println("Rotate PID refrence : " + state.angle.getRadians());
+        //System.out.print(state.angle);
 
     }
 
