@@ -48,14 +48,16 @@ public class SwerveModule {
     private RelativeEncoder driveEnconder;
     private RelativeEncoder rotateEncoder;
 
+    private SparkClosedLoopController driveController;
+    private SparkClosedLoopController rotateController;
+    
     private AnalogInput analogInput;
     private AnalogEncoder analogEncoder;
 
     //private PIDController rotatePID;
 
-    private SparkClosedLoopController driveController;
-    private SparkClosedLoopController rotateController;
-
+    private SwerveModuleState swerveModuleState;
+    
     private double encoderOffset;
 
     private String label;
@@ -72,8 +74,14 @@ public class SwerveModule {
             /** not sure weather its supposed to be brake or coast lol so come back to this lol 
              * And make sure to update the numver withing the stalllimit lol*/  
 
-        driveConfig.smartCurrentLimit(60).idleMode(IdleMode.kCoast).inverted(invertDrive);
-        rotateConfig.smartCurrentLimit(60).idleMode(IdleMode.kCoast).inverted(invertRotate);
+        driveConfig
+            .smartCurrentLimit(60)
+            .idleMode(IdleMode.kCoast)
+            .inverted(invertDrive);
+        rotateConfig
+            .smartCurrentLimit(60)
+            .idleMode(IdleMode.kCoast)
+            .inverted(invertRotate);
 
 
         /** Get the encoders from the respective motors */
@@ -93,8 +101,8 @@ public class SwerveModule {
         rotateController = rotateMotor.getClosedLoopController();
 
         /* Sets the feedback sensor for each motor */
-        driveConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
-        rotateConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+        // driveConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+        // rotateConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
 
         /* Drive PID values */
         driveConfig.closedLoop.p(DriveConstants.DRIVE_P_VALUE);
@@ -116,14 +124,16 @@ public class SwerveModule {
 
      /* Configures drive and rotate motors with there SparkMaxConfig */
 
-        driveMotor.configure(driveConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-        rotateMotor.configure(driveConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+       // driveMotor.configure(driveConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+        rotateMotor.configure(rotateConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
         this.encoderOffset = encoderOffset;
         this.label = label;
 
         analogInput = new AnalogInput(magEncoderPort);
         analogEncoder = new AnalogEncoder(analogInput, 2 * Math.PI, encoderOffset);
+
+        swerveModuleState = new SwerveModuleState();
 
         syncEncoders();
     }
@@ -167,6 +177,7 @@ public class SwerveModule {
     /* Sets the Rotation Encoder to the value of the analog offsets */
     public void syncEncoders(){
         rotateEncoder.setPosition(getAnalogEnoderValue());
+        System.out.println("This should not be running your code is broken and sucks");
     }
 
     /* Uses the analog encoder to return the an angle within range */
@@ -182,6 +193,7 @@ public class SwerveModule {
 
     /* Uses volatge to get Raw Offsets */
     public double getRawOffsets(){
+        
         double angle = analogInput.getVoltage() / RobotController.getVoltage5V();
         angle *= 2 * Math.PI;
         return angle;
@@ -203,11 +215,12 @@ public class SwerveModule {
     public void setState(SwerveModuleState state){
 
         //state.optimize(new Rotation2d(getRotateEncoderPosition()));
+
         driveController.setReference(state.speedMetersPerSecond, ControlType.kVelocity);
         rotateController.setReference(state.angle.getRadians(), ControlType.kPosition);
 
-        //System.out.println("Drive PID refrence : " + state.speedMetersPerSecond);
-        //System.out.println("Rotate PID refrence : " + state.angle.getRadians());
+        System.out.println("Drive PID refrence : " + state.speedMetersPerSecond);
+        System.out.println("Rotate PID refrence : " + state.angle.getRadians());
         //System.out.print(state.angle);
 
     }

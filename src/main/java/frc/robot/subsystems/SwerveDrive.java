@@ -25,11 +25,12 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 public class SwerveDrive extends SubsystemBase {
 
   private SwerveDriveKinematics kinematics;
-  private SwerveDriveOdometry odometry;
+  //private SwerveDriveOdometry odometry;
   private AHRS NavX;
 
   private ChassisSpeeds ChassisSpeeds;
   
+
   private SwerveModule frontLeftModule;
   private SwerveModule frontRightModule;
   private SwerveModule backLeftModule;
@@ -73,6 +74,7 @@ public class SwerveDrive extends SubsystemBase {
         false, false, 
         DriveConstants.BACK_RIGHT_OFFSET, 
         "BR"
+        
         );
 
 
@@ -89,7 +91,7 @@ public class SwerveDrive extends SubsystemBase {
       /* Initalize NavX (Gyro) */
       NavX = new AHRS(AHRS.NavXComType.kMXP_SPI);
 
-      /* Initalizes Odometry */
+      /* Initalizes Odometry 
       odometry = new SwerveDriveOdometry(
 
         kinematics, // Swerve Drive Kinematics  
@@ -97,7 +99,7 @@ public class SwerveDrive extends SubsystemBase {
         new SwerveModulePosition[] {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()}, 
         // Module Order : Front-Left, Front-Right, Back-Left, Back-Right
         new Pose2d(0,0, new Rotation2d()));   
-
+*/
   }
 
   public ChassisSpeeds getChassisSpeeds() {
@@ -111,15 +113,17 @@ public class SwerveDrive extends SubsystemBase {
 
       public void drive(ChassisSpeeds chassisSpeeds) {
 
-       swerveModuleStates = new SwerveModuleState[0];
-       swerveModuleStates = kinematics.toWheelSpeeds(chassisSpeeds);
+
+      SwerveModuleState[] swerveModuleStates = new SwerveModuleState[4];
+
+       swerveModuleStates = kinematics.toSwerveModuleStates(chassisSpeeds);
 
         frontLeftModule.setState(swerveModuleStates[0]);
         frontRightModule.setState(swerveModuleStates[1]);
         backLeftModule.setState(swerveModuleStates[2]);
         backRightModule.setState(swerveModuleStates[3]);
-//TODO
       }
+  
 
       public void testDrive(){
 
@@ -222,7 +226,7 @@ public class SwerveDrive extends SubsystemBase {
     // This method will be called once per scheduler run
 
     //Updates the odometry every run
-    odometry.update(NavX.getRotation2d(), getCurrentSwerveModulePositions());
+    //odometry.update(NavX.getRotation2d(), getCurrentSwerveModulePositions());
 
   }
 }

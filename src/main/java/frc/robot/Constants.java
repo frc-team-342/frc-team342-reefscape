@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import org.opencv.core.Mat;
+
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -20,12 +22,11 @@ public final class Constants {
   
 public static class DriveConstants {
 
-  public static final double DRIVE_GEAR_RATIO = 1 / 6.75;
-  public static final double ROTATE_GEAR_RATIO = 1 / 12.8;
+  public static final double DRIVE_GEAR_RATIO = 6.75;
+  public static final double ROTATE_GEAR_RATIO = 12.8;
 
   public static final double WHEEL_DIAMETER = Units.inchesToMeters(4);
   public static final double WHEEL_CIRCUMFERENCE = 2 * Math.PI;
-
 
   // Drive Motor IDs
   public static final int FRONT_LEFT_DRIVE_ID = 1 ;
@@ -48,29 +49,29 @@ public static class DriveConstants {
 
 
   // Drive PID Values 
-  public static final double DRIVE_P_VALUE = 0.1;
+  public static final double DRIVE_P_VALUE = 0.1 ;
   public static final double DRIVE_I_VALUE = 0.0;
-  public static final double DRIVE_D_VALUE = 0.7; 
+  public static final double DRIVE_D_VALUE = 0.7;
   public static final double DRIVE_FF_VALUE = 0.9;
-
+  
   // Rotate PID Values
   public static final double ROTATE_P_VALUE = 0.25;
-  public static final double ROTATE_I_VALUE = 0;
-  public static final double ROTATE_D_VALUE = 0.3;
-  public static  double ROTATE_FF_VALUE;
+  public static final double ROTATE_I_VALUE = 0.0;
+  public static final double ROTATE_D_VALUE = 0.3; 
+  public static double ROTATE_FF_VALUE;
 
   // Offsets
   public static final double FRONT_LEFT_OFFSET = 3.23;
-  public static final double FRONT_RIGHT_OFFSET= 0.31;
+  public static final double FRONT_RIGHT_OFFSET= 3.47;
   public static final double BACK_LEFT_OFFSET = 5.78;
-  public static final double BACK_RIGHT_OFFSET = 0.77;
+  public static final double BACK_RIGHT_OFFSET = 3.94;
 
   // Factors
-  public static double DRIVE_POSITION_CONVERSION = DRIVE_GEAR_RATIO * Math.PI *  WHEEL_DIAMETER;
-  public static double DRIVE_VELOCITY_CONVERSION = DRIVE_POSITION_CONVERSION / 60;
+  public static final double DRIVE_POSITION_CONVERSION = ((Math.PI * 2 * WHEEL_DIAMETER) / DRIVE_GEAR_RATIO);
+  public static final double DRIVE_VELOCITY_CONVERSION = DRIVE_POSITION_CONVERSION * 60;
 
-  public static double ROTATE_POSITION_CONVERSION = ROTATE_GEAR_RATIO * Math.PI * 2;
-  public static double ROTATE_VELOCITY_CONVERSION = ROTATE_POSITION_CONVERSION / 60;
+  public static final double ROTATE_POSITION_CONVERSION = (Math.PI * 2) / ROTATE_GEAR_RATIO;
+  public static final double ROTATE_VELOCITY_CONVERSION = ROTATE_POSITION_CONVERSION * 60;
 
   // Speeds
   public static double MAX_DRIVE_SPEED = Units.feetToMeters(15.1);
