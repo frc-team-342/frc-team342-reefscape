@@ -25,18 +25,21 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 public class SwerveDrive extends SubsystemBase {
 
   private SwerveDriveKinematics kinematics;
-  //private SwerveDriveOdometry odometry;
+  private SwerveDriveOdometry odometry;
   private AHRS NavX;
 
   private ChassisSpeeds ChassisSpeeds;
   
-
+  private boolean fieldOriented; 
+  
   private SwerveModule frontLeftModule;
   private SwerveModule frontRightModule;
   private SwerveModule backLeftModule;
   private SwerveModule backRightModule; 
 
   SwerveModuleState[] swerveModuleStates;
+  SwerveModulePosition[] swerveModulePositions;
+
   /** Creates a new SwerveDrive. */
   public SwerveDrive() {
 
@@ -74,9 +77,7 @@ public class SwerveDrive extends SubsystemBase {
         false, false, 
         DriveConstants.BACK_RIGHT_OFFSET, 
         "BR"
-        
         );
-
 
       /* Initalizes Kinematics */
       kinematics = new SwerveDriveKinematics(
@@ -91,45 +92,51 @@ public class SwerveDrive extends SubsystemBase {
       /* Initalize NavX (Gyro) */
       NavX = new AHRS(AHRS.NavXComType.kMXP_SPI);
 
-      /* Initalizes Odometry 
-      odometry = new SwerveDriveOdometry(
+      /* Initalizes Odometry */
+      odometry = new SwerveDriveOdometry( 
 
-        kinematics, // Swerve Drive Kinematics  
-        NavX.getRotation2d(), // Returns Gyro reading as a Rotation 2d
-        new SwerveModulePosition[] {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()}, 
-        // Module Order : Front-Left, Front-Right, Back-Left, Back-Right
-        new Pose2d(0,0, new Rotation2d()));   
-*/
-  }
+        kinematics, 
+        new Rotation2d(NavX.getAngle()),
+        getCurrentSwerveModulePositions());
 
-  public ChassisSpeeds getChassisSpeeds() {
-
-    return new ChassisSpeeds(ChassisSpeeds.vxMetersPerSecond, ChassisSpeeds.vyMetersPerSecond, ChassisSpeeds.omegaRadiansPerSecond);
+        fieldOriented = false;
 
   }
+
+    public void toggleFieldOriented (){
+      
+      fieldOriented = !fieldOriented;
+
+    }
 
       /* This drive method takes the values from the chassisspeeds and 
       applys in to each indivual Module using the "SetState" Method created in SwereMoudle */
-
+  
       public void drive(ChassisSpeeds chassisSpeeds) {
 
+        if (fieldOriented) {
+          
+          chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, NavX.getRotation2d());
 
-      SwerveModuleState[] swerveModuleStates = new SwerveModuleState[4];
+        }
 
-       swerveModuleStates = kinematics.toSwerveModuleStates(chassisSpeeds);
+        SwerveModuleState swerveModuleStates[] = kinematics.toWheelSpeeds(chassisSpeeds);
 
         frontLeftModule.setState(swerveModuleStates[0]);
         frontRightModule.setState(swerveModuleStates[1]);
         backLeftModule.setState(swerveModuleStates[2]);
         backRightModule.setState(swerveModuleStates[3]);
+
+
       }
-  
+
+      /* This drive method simply spins wheels  */
 
       public void testDrive(){
 
-        ChassisSpeeds testSpeeds = new ChassisSpeeds(Units.inchesToMeters(14), Units.inchesToMeters(0), Units.degreesToRadians(0));
+        ChassisSpeeds testSpeeds = new ChassisSpeeds(Units.inchesToMeters(1), Units.inchesToMeters(0), Units.degreesToRadians(0));
 
-        SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(testSpeeds);
+        SwerveModuleState[] swerveModuleStates = kinematics.toWheelSpeeds(testSpeeds);
 
         frontLeftModule.setState(swerveModuleStates[0]);
         frontRightModule.setState(swerveModuleStates[1]);
@@ -152,7 +159,6 @@ public class SwerveDrive extends SubsystemBase {
       } 
 
       /* Method that stops all modules */
-
       public void stopModules() {
         frontLeftModule.stop();
         frontRightModule.stop();
@@ -160,15 +166,6 @@ public class SwerveDrive extends SubsystemBase {
         backRightModule.stop();
     }
 
-    public void resetAllEncoders() {
-
-      frontLeftModule.syncEncoders();
-      frontRightModule.syncEncoders();
-      backLeftModule.syncEncoders();
-      backRightModule.syncEncoders();
-
-    }
-    
 
     public void putFrontLeftValues(SendableBuilder sendableBuilder){
       sendableBuilder.addDoubleProperty(frontLeftModule.printLabel() + " Offset", ()-> frontLeftModule.getRawOffsets(), null);
@@ -176,8 +173,6 @@ public class SwerveDrive extends SubsystemBase {
       sendableBuilder.addDoubleProperty(frontLeftModule.printLabel() + " Absoulete Position " , ()-> frontLeftModule.getAnalogEnoderValue(), null);
       if(swerveModuleStates != null)
         sendableBuilder.addDoubleProperty(frontLeftModule.printLabel() + " Analog Offest " , ()-> swerveModuleStates[0].angle.getRadians(), null);
-
-
 
     }
 
@@ -207,8 +202,6 @@ public class SwerveDrive extends SubsystemBase {
     }
 
 
-
-
   @Override 
   public void initSendable(SendableBuilder sendableBuilder){
     putFrontLeftValues(sendableBuilder);
@@ -216,17 +209,16 @@ public class SwerveDrive extends SubsystemBase {
     putBackLeftModule(sendableBuilder);
     putBackRightModule(sendableBuilder);
 
+    sendableBuilder.addBooleanProperty("Field Orienated", ()-> fieldOriented, null);
 
   }
-
-
       
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
 
     //Updates the odometry every run
-    //odometry.update(NavX.getRotation2d(), getCurrentSwerveModulePositions());
+    odometry.update(NavX.getRotation2d(), getCurrentSwerveModulePositions());
 
   }
 }

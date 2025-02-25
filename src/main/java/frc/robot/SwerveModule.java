@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.Kinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -122,14 +123,15 @@ public class SwerveModule {
         rotateConfig.closedLoop.velocityFF(DriveConstants.ROTATE_FF_VALUE);
 
 
-     /* Configures drive and rotate motors with there SparkMaxConfig */
+        /*Configures drive and rotate motors with there SparkMaxConfig */
 
-       // driveMotor.configure(driveConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+        driveMotor.configure(driveConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
         rotateMotor.configure(rotateConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
         this.encoderOffset = encoderOffset;
         this.label = label;
 
+        /* Initializes the Analog Input and Analog Encoder. Analog Encoder acts as the absoulete encoder  */
         analogInput = new AnalogInput(magEncoderPort);
         analogEncoder = new AnalogEncoder(analogInput, 2 * Math.PI, encoderOffset);
 
@@ -177,7 +179,6 @@ public class SwerveModule {
     /* Sets the Rotation Encoder to the value of the analog offsets */
     public void syncEncoders(){
         rotateEncoder.setPosition(getAnalogEnoderValue());
-        System.out.println("This should not be running your code is broken and sucks");
     }
 
     /* Uses the analog encoder to return the an angle within range */
@@ -211,18 +212,25 @@ public class SwerveModule {
         return label;
     }
     
+    public SwerveModuleState getState() {
+
+        return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getRotatePosition()));
+
+    }
+ 
     /* Sets the refrence of drive and rotate motor */
     public void setState(SwerveModuleState state){
 
-        //state.optimize(new Rotation2d(getRotateEncoderPosition()));
+        state.optimize(new Rotation2d(getRotateEncoderPosition()));
 
         driveController.setReference(state.speedMetersPerSecond, ControlType.kVelocity);
         rotateController.setReference(state.angle.getRadians(), ControlType.kPosition);
 
-        System.out.println("Drive PID refrence : " + state.speedMetersPerSecond);
-        System.out.println("Rotate PID refrence : " + state.angle.getRadians());
+        //System.out.println("Drive PID refrence : " + state.speedMetersPerSecond);
+        //System.out.println("Rotate PID refrence : " + state.angle.getRadians());
         //System.out.print(state.angle);
 
+       
     }
 
     

@@ -26,23 +26,11 @@ public class DriveWithJoystick extends Command {
   private XboxController joyStick;
   private ChassisSpeeds chassisSpeeds;
 
-
-  private SlewRateLimiter xLimiter;
-  private SlewRateLimiter yLimiter;
-  private SlewRateLimiter rotateLimiter;
-
-
-
   public DriveWithJoystick(SwerveDrive swerve, XboxController joyStick) {
 
     this.swerve = swerve;
     this.joyStick = joyStick;
 
-    /* 
-    xLimiter = new SlewRateLimiter(3);
-    yLimiter = new SlewRateLimiter(3);
-    rotateLimiter = new SlewRateLimiter(3);
-*/
     addRequirements(swerve);
 
   }
@@ -55,17 +43,13 @@ public class DriveWithJoystick extends Command {
   @Override
   public void execute() {
 
-   double xSpeed = joyStick.getLeftX();
-   double ySpeed = joyStick.getLeftY();
+   double xSpeed = joyStick.getLeftY();
+   double ySpeed = joyStick.getLeftX();
    double rotateSpeed = joyStick.getRawAxis(4);
 
    xSpeed = MathUtil.applyDeadband(xSpeed, 0.15);
    ySpeed = MathUtil.applyDeadband(ySpeed, 0.15);
    rotateSpeed = MathUtil.applyDeadband(rotateSpeed, 0.15);
-
-   //xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.MAX_DRIVE_SPEED;
-   //ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.MAX_DRIVE_SPEED;
-   //rotateSpeed = rotateLimiter.calculate(rotateSpeed) * DriveConstants.MAX_ROTATE_SPEED;
 
    chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rotateSpeed);
    swerve.drive(chassisSpeeds);

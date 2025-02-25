@@ -35,10 +35,12 @@ public class RobotContainer {
 
   private JoystickButton testDrive;
   private JoystickButton stopDrive;
+  private JoystickButton fieldOrienatedButton;
 
   private DriveWithJoystick driveWithJoystick;
   private Command testDriveCommand;
   private Command stopModules;
+  private Command fieldOrienated;
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -52,10 +54,12 @@ public class RobotContainer {
 
     testDrive = new JoystickButton(driver, XboxController.Button.kA.value);
     stopDrive = new JoystickButton(driver, XboxController.Button.kB.value);
+    fieldOrienatedButton = new JoystickButton(driver, XboxController.Button.kY.value);
     driveWithJoystick = new DriveWithJoystick(swerve, driver);
 
     testDriveCommand = Commands.runOnce(() -> {swerve.testDrive();}, swerve);
     stopModules = Commands.runOnce(() -> {swerve.stopModules();}, swerve);
+    fieldOrienated = Commands.runOnce(() -> {swerve.toggleFieldOriented();}, swerve);
 
     swerve.setDefaultCommand(driveWithJoystick);
 
@@ -79,6 +83,7 @@ public class RobotContainer {
 
         testDrive.whileTrue(testDriveCommand);
         stopDrive.whileTrue(stopModules);
+        fieldOrienatedButton.onChange(fieldOrienated);
 
   }
 
