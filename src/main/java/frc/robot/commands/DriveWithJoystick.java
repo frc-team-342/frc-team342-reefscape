@@ -43,15 +43,20 @@ public class DriveWithJoystick extends Command {
   @Override
   public void execute() {
 
+   /* Gets values from the Left(Drive) and Right(Rotate) Joysticks on the Xbox controller */
    double xSpeed = joyStick.getLeftY();
    double ySpeed = joyStick.getLeftX();
    double rotateSpeed = joyStick.getRawAxis(4);
 
+  /*Applies deadband */
    xSpeed = MathUtil.applyDeadband(xSpeed, 0.15);
    ySpeed = MathUtil.applyDeadband(ySpeed, 0.15);
    rotateSpeed = MathUtil.applyDeadband(rotateSpeed, 0.15);
 
+   /* Puts the x,y, and rotates speeds into a new ChasisSpeeds */
    chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rotateSpeed);
+
+   /* Passes through the Chasisspeeds just created into the Drive Method */
    swerve.drive(chassisSpeeds);
   }
 

@@ -112,7 +112,7 @@ public class SwerveDrive extends SubsystemBase {
 
     }
       /* This drive method takes the values from the chassisspeeds and 
-      applys in to each indivual Module using the "SetState" Method created in SwereMoudle */
+      applys in to each indivual Module using the "SetState" Method created in SwereMoudule */
   
       public void drive(ChassisSpeeds chassisSpeeds) {
 

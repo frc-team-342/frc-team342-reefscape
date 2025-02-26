@@ -33,33 +33,25 @@ public class RobotContainer {
   private SwerveDrive swerve;
   private XboxController driver;
 
-  private JoystickButton testDrive;
-  private JoystickButton stopDrive;
   private JoystickButton fieldOrienatedButton;
 
   private DriveWithJoystick driveWithJoystick;
-  private Command testDriveCommand;
-  private Command stopModules;
-  private Command fieldOrienated;
+  private Command fieldOrienatedCommand;
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
+    
 
     swerve = new SwerveDrive();
-    //swerve.resetAllEncoders();
     
     driver = new XboxController(0);
 
-    testDrive = new JoystickButton(driver, XboxController.Button.kA.value);
-    stopDrive = new JoystickButton(driver, XboxController.Button.kB.value);
     fieldOrienatedButton = new JoystickButton(driver, XboxController.Button.kY.value);
     driveWithJoystick = new DriveWithJoystick(swerve, driver);
 
-    testDriveCommand = Commands.runOnce(() -> {swerve.testDrive();}, swerve);
-    stopModules = Commands.runOnce(() -> {swerve.stopModules();}, swerve);
-    fieldOrienated = Commands.runOnce(() -> {swerve.toggleFieldOriented();}, swerve);
+    fieldOrienatedCommand = Commands.runOnce(() -> {swerve.toggleFieldOriented();}, swerve);
 
     swerve.setDefaultCommand(driveWithJoystick);
 
@@ -81,9 +73,7 @@ public class RobotContainer {
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
-        testDrive.whileTrue(testDriveCommand);
-        stopDrive.whileTrue(stopModules);
-        fieldOrienatedButton.whileTrue(fieldOrienated);
+        fieldOrienatedButton.whileTrue(fieldOrienatedCommand);
 
   }
 
