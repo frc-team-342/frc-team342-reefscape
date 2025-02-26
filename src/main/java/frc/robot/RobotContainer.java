@@ -83,7 +83,7 @@ public class RobotContainer {
 
         testDrive.whileTrue(testDriveCommand);
         stopDrive.whileTrue(stopModules);
-        fieldOrienatedButton.onChange(fieldOrienated);
+        fieldOrienatedButton.whileTrue(fieldOrienated);
 
   }
 

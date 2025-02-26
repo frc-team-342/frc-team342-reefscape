@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import javax.print.attribute.standard.MediaSize.NA;
+
 import com.fasterxml.jackson.core.filter.FilteringGeneratorDelegate;
 import com.studica.frc.AHRS;
 
@@ -21,6 +23,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class SwerveDrive extends SubsystemBase {
 
@@ -28,7 +31,7 @@ public class SwerveDrive extends SubsystemBase {
   private SwerveDriveOdometry odometry;
   private AHRS NavX;
 
-  private ChassisSpeeds ChassisSpeeds;
+  private ChassisSpeeds chassisSpeeds;
   
   private boolean fieldOriented; 
   
@@ -47,7 +50,7 @@ public class SwerveDrive extends SubsystemBase {
         DriveConstants.FRONT_LEFT_DRIVE_ID, 
         DriveConstants.FRONT_LEFT_ROTATE_ID, 
         DriveConstants.FL_ENCODER_PORT, 
-        false, true, 
+        false, false, 
         DriveConstants.FRONT_LEFT_OFFSET, 
         "FL"
         );
@@ -65,7 +68,7 @@ public class SwerveDrive extends SubsystemBase {
         DriveConstants.BACK_LEFT_DRIVE_ID, 
         DriveConstants.BACK_LEFT_ROTATE_ID, 
         DriveConstants.BL_ENCODER_PORT, 
-        false, true, 
+        false, false, 
         DriveConstants.BACK_LEFT_OFFSET, 
         "BL"
         );
@@ -90,7 +93,7 @@ public class SwerveDrive extends SubsystemBase {
       );
 
       /* Initalize NavX (Gyro) */
-      NavX = new AHRS(AHRS.NavXComType.kMXP_SPI);
+      NavX = new AHRS(AHRS.NavXComType.kUSB1);
 
       /* Initalizes Odometry */
       odometry = new SwerveDriveOdometry( 
@@ -108,15 +111,13 @@ public class SwerveDrive extends SubsystemBase {
       fieldOriented = !fieldOriented;
 
     }
-
       /* This drive method takes the values from the chassisspeeds and 
       applys in to each indivual Module using the "SetState" Method created in SwereMoudle */
   
       public void drive(ChassisSpeeds chassisSpeeds) {
 
         if (fieldOriented) {
-          
-          chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, NavX.getRotation2d());
+          chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, new Rotation2d(NavX.getRotation2d().getRadians()));
 
         }
 
@@ -165,7 +166,7 @@ public class SwerveDrive extends SubsystemBase {
         backLeftModule.stop();
         backRightModule.stop();
     }
-
+    
 
     public void putFrontLeftValues(SendableBuilder sendableBuilder){
       sendableBuilder.addDoubleProperty(frontLeftModule.printLabel() + " Offset", ()-> frontLeftModule.getRawOffsets(), null);
@@ -210,6 +211,7 @@ public class SwerveDrive extends SubsystemBase {
     putBackRightModule(sendableBuilder);
 
     sendableBuilder.addBooleanProperty("Field Orienated", ()-> fieldOriented, null);
+    sendableBuilder.addDoubleProperty("Gyro Reading", ()-> NavX.getAngle(), null);
 
   }
       

@@ -29,23 +29,23 @@ public static class DriveConstants {
   public static final double WHEEL_CIRCUMFERENCE = 2 * Math.PI;
 
   // Drive Motor IDs
-  public static final int FRONT_LEFT_DRIVE_ID = 1 ;
+  public static final int FRONT_LEFT_DRIVE_ID = 1;
   public static final int FRONT_RIGHT_DRIVE_ID = 2;
-  public static int BACK_LEFT_DRIVE_ID = 3;
-  public static int BACK_RIGHT_DRIVE_ID = 4;
+  public static final int BACK_LEFT_DRIVE_ID = 4;
+  public static final int BACK_RIGHT_DRIVE_ID = 3;
 
   // Rotate Motor IDs
   public static final int FRONT_LEFT_ROTATE_ID = 5;
   public static final int FRONT_RIGHT_ROTATE_ID = 6;
-  public static final int BACK_LEFT_ROTATE_ID = 7;
-  public static final int BACK_RIGHT_ROTATE_ID = 8;
+  public static final int BACK_LEFT_ROTATE_ID = 8;
+  public static final int BACK_RIGHT_ROTATE_ID = 7;
 
   //Encoder Ports
 
   public static final int FL_ENCODER_PORT = 1;
-  public static final int FR_ENCODER_PORT = 0;
-  public static final int BL_ENCODER_PORT = 3;
-  public static final int BR_ENCODER_PORT = 2;
+  public static final int FR_ENCODER_PORT = 2;
+  public static final int BL_ENCODER_PORT = 0;
+  public static final int BR_ENCODER_PORT = 3;
 
 
   // Drive PID Values 
@@ -61,10 +61,10 @@ public static class DriveConstants {
   public static double ROTATE_FF_VALUE;
 
   // Offsets
-  public static final double FRONT_LEFT_OFFSET = 3.23;
-  public static final double FRONT_RIGHT_OFFSET= 3.47;
-  public static final double BACK_LEFT_OFFSET = 5.78;
-  public static final double BACK_RIGHT_OFFSET = 3.94;
+  public static final double FRONT_LEFT_OFFSET = 0.81;
+  public static final double FRONT_RIGHT_OFFSET= 0.28;
+  public static final double BACK_LEFT_OFFSET = 2.33;
+  public static final double BACK_RIGHT_OFFSET = 5.97;
 
   // Factors
   public static final double DRIVE_POSITION_CONVERSION = ((Math.PI * WHEEL_DIAMETER) / DRIVE_GEAR_RATIO);
