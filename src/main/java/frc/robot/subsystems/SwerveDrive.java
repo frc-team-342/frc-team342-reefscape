@@ -100,7 +100,9 @@ public class SwerveDrive extends SubsystemBase {
 
         kinematics, 
         new Rotation2d(NavX.getAngle()),
-        getCurrentSwerveModulePositions());
+        getCurrentSwerveModulePositions()
+
+        );
 
         fieldOriented = false;
 
@@ -111,16 +113,20 @@ public class SwerveDrive extends SubsystemBase {
       fieldOriented = !fieldOriented;
 
     }
+
       /* This drive method takes the values from the chassisspeeds and 
       applys in to each indivual Module using the "SetState" Method created in SwereMoudule */
   
       public void drive(ChassisSpeeds chassisSpeeds) {
 
+        /* When Field Orientated is True, passes the chassis speed and the Gryo's current angle through "fromFieldRelativeSpeeds",
+         before passing it through the rest of the drive Method */
+
         if (fieldOriented) {
           chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, new Rotation2d(NavX.getRotation2d().getRadians()));
 
         }
-
+    
         SwerveModuleState swerveModuleStates[] = kinematics.toWheelSpeeds(chassisSpeeds);
 
         frontLeftModule.setState(swerveModuleStates[0]);
