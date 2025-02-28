@@ -6,6 +6,9 @@ package frc.robot;
 
 import org.opencv.core.Mat;
 
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -61,10 +64,10 @@ public static class DriveConstants {
   public static double ROTATE_FF_VALUE;
 
   // Offsets
-  public static final double FRONT_LEFT_OFFSET = 0.81;
-  public static final double FRONT_RIGHT_OFFSET= 0.28;
-  public static final double BACK_LEFT_OFFSET = 2.33;
-  public static final double BACK_RIGHT_OFFSET = 5.97;
+  public static final double FRONT_LEFT_OFFSET = 0.85;
+  public static final double FRONT_RIGHT_OFFSET= 0.27;
+  public static final double BACK_LEFT_OFFSET = 2.07;
+  public static final double BACK_RIGHT_OFFSET = 5.94;
 
   // Factors
   public static final double DRIVE_POSITION_CONVERSION = ((Math.PI * WHEEL_DIAMETER) / DRIVE_GEAR_RATIO);
@@ -78,6 +81,11 @@ public static class DriveConstants {
   public static double SLOW_DRIVE_SPEED = Units.feetToMeters(5);
 
   public static double MAX_ROTATE_SPEED = 4 * Math.PI;
+
+  public static final PPHolonomicDriveController PATH_CONFIG_CONTROLLER = new PPHolonomicDriveController
+  
+  (new PIDConstants(0.1,0,0.7),
+   new PIDConstants(0.25,0,0.3));
 
 }
 

@@ -10,8 +10,14 @@ import frc.robot.commands.DriveWithJoystick;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.SwerveDrive;
+
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.SendableCameraWrapper;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -38,12 +44,13 @@ public class RobotContainer {
   private DriveWithJoystick driveWithJoystick;
   private Command fieldOrienatedCommand;
 
+  private SendableChooser<Command> autoChooser;
+
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
     
-
     swerve = new SwerveDrive();
     
     driver = new XboxController(0);
@@ -55,7 +62,12 @@ public class RobotContainer {
 
     swerve.setDefaultCommand(driveWithJoystick);
 
+    autoChooser = new SendableChooser<>();
+
+    autoChooser.addOption("PathPlannerTest", new PathPlannerAuto("New Auto"));
+
     SmartDashboard.putData(swerve);
+    SmartDashboard.putData(autoChooser);
 
     configureBindings();
 
@@ -84,6 +96,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
+    return autoChooser.getSelected();
   }
 }
