@@ -75,6 +75,9 @@ public final class Constants {
     public static final int L4_HEIGHT = 0;
     public static final int PROCESSOR_HEIGHT = 0;
   }
+  public static class ClawConstants {
+    
+  }
  
   /* FINAL NEEDS TO BE ADDED TO ALL OF THESE WHEN ACTAULLY VALUES ARE FOUND */
   
@@ -142,5 +145,4 @@ public static class DriveConstants {
 public static class OperatorConstants {
   public static final int kDriverControllerPort = 0;
 }
-
-}
+} 

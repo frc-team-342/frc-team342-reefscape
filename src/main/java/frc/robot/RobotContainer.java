@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
+
 import frc.robot.commands.Autos;
 import frc.robot.commands.DriveWithJoystick;
 import frc.robot.commands.ExampleCommand;
@@ -13,8 +13,7 @@ import frc.robot.commands.Elevator.MoveElevatorWithJoystick;
 import frc.robot.commands.Wrist.WristToPosition;
 import frc.robot.commands.Wrist.WristWithJoystick;
 import frc.robot.Constants.ElevatorConstants;
-
-
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.*;
 
 import static frc.robot.Constants.WristConstants.*;
@@ -25,12 +24,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.SwerveDrive;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -78,6 +77,13 @@ public class RobotContainer {
   private final POVButton l4Button;
   private final POVButton algaeButton;
 
+  private final Claw claw;
+  private Command onStop;
+  private Command outtakeButton;
+  private Command intakeCommand;
+
+
+
   private final JoystickButton lowFunnelButton;
   private final JoystickButton highFunnelButton;
 
@@ -95,6 +101,12 @@ public class RobotContainer {
   private Command fieldOrienatedCommand;
 
 
+  //down below for claw?
+  private final JoystickButton xButton;
+  private final JoystickButton aButton;
+  private final JoystickButton yButton;
+
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // The robot's subsystems and commands are defined here...
@@ -104,6 +116,12 @@ public class RobotContainer {
     m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
     wrist = new Wrist();
     elevator = new Elevator();
+
+   
+    claw = new Claw();
+    onStop = Commands.runOnce(() -> {claw.stopButton();}, claw);
+    outtakeButton = Commands.runOnce(() -> {claw.outTakeCoral();}, claw);
+    intakeCommand = Commands.run(() -> {claw.intakeCoral();}, claw);
 
     SmartDashboard.putData(wrist);
 
@@ -139,6 +157,13 @@ public class RobotContainer {
     elevatorToL3 = new POVButton(operator, 270);
     elevatorToL4 = new POVButton(operator, 0);
     elevatorToProcessor = new JoystickButton(operator, XboxController.Button.kA.value);
+    
+    //stuff for claw?? down
+    xButton = new JoystickButton(operator, XboxController.Button.kX.value); 
+    aButton = new JoystickButton(operator, XboxController.Button.kA.value);
+    yButton = new JoystickButton(operator, XboxController.Button.kY.value);
+
+    // Configure the trigger bindings
 
     lowFunnelButton = new JoystickButton(operator, XboxController.Button.kLeftBumper.value);
     highFunnelButton = new JoystickButton(operator, XboxController.Button.kRightBumper.value);
@@ -161,6 +186,8 @@ public class RobotContainer {
 
     SmartDashboard.putData(swerve);
 
+    SmartDashboard.putData(claw);
+
     configureBindings();
 
   }
@@ -175,7 +202,6 @@ public class RobotContainer {
  * joysticks}.
  */
 private void configureBindings() {
-  elevatorToL1.onTrue(moveElevatorL1); // down button on d-pad
   elevatorToL2.onTrue(moveElevatorL2); // left button on d-pad
   elevatorToL3.onTrue(moveElevatorL3); // right button on d-pad
   elevatorToL4.onTrue(moveElevatorL4); // top button on d-pad
@@ -187,13 +213,16 @@ private void configureBindings() {
   l4Button.onTrue(wristToL4);
   algaeButton.onTrue(wristToAlgae);
 
+  //claw
+  xButton.whileTrue(onStop);
+  aButton.whileTrue(outtakeButton);
+  yButton.whileTrue(intakeCommand);
   // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
   new Trigger(m_exampleSubsystem::exampleCondition)
       .onTrue(new ExampleCommand(m_exampleSubsystem));
 
   // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
   // cancelling on release.
-  m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
