@@ -17,53 +17,8 @@ public final class Constants {
   /*
    * Constants are tbd
    */
-  public static class WristConstants {
-    //public static final int INTAKE_SENSOR = 1;
-  
-    public static final int WRIST_ID = 5;
-  
-    public static final int MAG_ENCODER = 7;
-  
-    public static final double WRIST_SPEED = 0.7;
 
-    //Wrist PID values; they're a list for sake of simplicity
-    public static final double[] WRIST_PID_VALUES = {1, 0, 0.01};
-  
-    //Wrist position Values (absolute enocder values I think)
-    public static final double LOW_WRIST_POS = 0.2751;
-    public static final double HIGH_WRIST_POS = 0.518;
-
-    //Zeroes below are placeholders for the time being
-    //Because L2 and L3 have the same angles, only L2 will be used
-    public static final double L1_POSITION = .4;
-    public static final double L2_POSITION = 0.32;
-    public static final double L4_POSITION = 0.26;
-    public static final double ALGAE_POSITION = 0.46;
-  
-    public static final double MAX_DISTANCE = 83;
+  public static class ClawConstants {
     
-    public static final double DEFAULT_CURRENT = 30;
-  }
-  
-  public static class OperatorConstants {
-    public static final int kDriverControllerPort = 0;
-  }
-
-  public static class ElevatorConstants {
-    //placeholder values, change as soon as possible
-
-    public static final int ELEVATORLEFT_ID = 0;
-    public static final int ELEVATORRIGHT_ID = 0;
-    public static final int ELEVATOR_ENCODER = 0;
-    public static final int LASERCAN_ID = 0;
-
-    public static final int BOTTOM_POSITION = 0;
-    public static final int TOP_POSITION = 0;
-
-    public static final int L1_HEIGHT = 0;
-    public static final int L2_HEIGHT = 0;
-    public static final int L3_HEIGHT = 0;
-    public static final int L4_HEIGHT = 0;
-    public static final int PROCESSOR_HEIGHT = 0;
   }
 }

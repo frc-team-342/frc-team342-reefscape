@@ -4,62 +4,104 @@
 
 package frc.robot.subsystems;
 
+import java.lang.reflect.Method;
 import java.util.ResourceBundle.Control;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ControlModeValue;
+import com.revrobotics.RelativeEncoder;
 
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 
 public class Claw extends SubsystemBase {
   /** Creates a new Claw. */
   
     private TalonFX claw;
-    private DigitalInput clawSensor;
-    private double intakeSpeed = .09;
-    private double outtakeSpeed = -.09;
+    private DigitalInput forwardSensor;
+    private DigitalInput backwardSensor;
+    private RelativeEncoder relEnc;
 
-   // private Joystick joy;
-    //private JoystickButton jButton;
-
-
+    private double currPos;
+    private double lastPos;
+  
 
   public Claw() {
 
-    TalonFX claw = new TalonFX(1);
-    DigitalInput clawSensor = new DigitalInput(2);
-    //Joystick joy = new Joystick(1);
-   // JoystickButton jButton = new JoystickButton(joy, 1);
+    claw = new TalonFX(13);
+    forwardSensor = new DigitalInput(7);
+    backwardSensor = new DigitalInput(6);
 
-    claw.set(.05);
   }
 
-  public void Intake(){
-      if(clawSensor.get()){
-        claw.set(0);
-      }
-      else{
-        claw.set(intakeSpeed);
-      }
-      //if the sensor detects something it will stop but if not it will default to spinning intake
-  } 
+  public void outTakeAlgae(){
+    claw.set(.5);
+  }
 
-  public void outTake(){
-    if(){
-      claw.set(outtakeSpeed);
+  public void stopButton(){
+    claw.set(0);
+  }
+
+  public void intakeAlgae(){
+    claw.set(-.5);
+  }
+
+  public void outTakeCoral(){
+      
+    claw.set(-.5);
+      
+  }
+
+  public void intakeCoral(){
+    if(forwardSensor.get() & backwardSensor.get()){
+      claw.set(-.5);
+
+      System.out.println("Neither back or front can see");
+      
     }
+    else if(forwardSensor.get() & !backwardSensor.get()){
+      claw.set(-.05);
+
+        System.out.println("Front can't see, Back can see");
+    }
+    else{
+      claw.set(0);
+
+      System.out.println("nothing should be spinning");
+    }
+
   }
+
+ // public double getLastPos(){
+  //    return currPos;
+  //  }
+
+    //public double getCurrentPos(){
+      //return currPos;
+    //}
+
 
   
+  @Override
+  public void initSendable (SendableBuilder sendableBuilder) {
+    
+    sendableBuilder.addBooleanProperty("Front Sensor", ()-> !forwardSensor.get(), null);
+    sendableBuilder.addBooleanProperty("Back Sensor", ()-> !backwardSensor.get(), null);
+    
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    //astPos = currPos;
+   /// currPos = relEnc.getPosition();
+    
   }
 }

@@ -4,27 +4,20 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
+
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.commands.Elevator.MoveElevatorToPosition;
-import frc.robot.commands.Elevator.MoveElevatorWithJoystick;
-import frc.robot.commands.Wrist.WristToPosition;
-import frc.robot.commands.Wrist.WristWithJoystick;
-import frc.robot.subsystems.Elevator;
-import frc.robot.Constants.ElevatorConstants;
+
 
 import frc.robot.subsystems.*;
-
-import static frc.robot.Constants.WristConstants.ALGAE_POSITION;
-import static frc.robot.Constants.WristConstants.L1_POSITION;
-import static frc.robot.Constants.WristConstants.L2_POSITION;
-import static frc.robot.Constants.WristConstants.L4_POSITION;
-
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.PS4Controller.Button;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -33,7 +26,8 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.Constants.WristConstants.*;
+
+import frc.robot.subsystems.Claw;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -44,85 +38,48 @@ import frc.robot.Constants.WristConstants.*;
 public class RobotContainer {
   private final XboxController operator;
 
-  private final Elevator elevator;
-  private final Wrist wrist;
+ 
 
-  private final MoveElevatorToPosition moveElevatorProcessor;
-  private final MoveElevatorToPosition moveElevatorL1;
-  private final MoveElevatorToPosition moveElevatorL2;
-  private final MoveElevatorToPosition moveElevatorL3;
-  private final MoveElevatorToPosition moveElevatorL4;
-  private final MoveElevatorWithJoystick moveElevatorWithJoystick;
-
-  private final JoystickButton elevatorToProcessor;
-  private final POVButton elevatorToL1;
-  private final POVButton elevatorToL2;
-  private final POVButton elevatorToL3;
-  private final POVButton elevatorToL4;
-
+  
   //Because the angles are the same for both L2 & L3, there will only be an L2 command that will be used for both
-  private final WristToPosition wristToL1;
-  private final WristToPosition wristToL2;
-  private final WristToPosition wristToL4;
-  private final WristToPosition wristToAlgae;
+  
 
-  private final WristWithJoystick wristWithJoy;
+  private final Claw claw;
+  private Command onStop;
+  private Command outtakeButton;
+  private Command intakeCommand;
 
-  private final POVButton l1Button;
-  private final POVButton l2Button;
-  private final POVButton l4Button;
-  private final POVButton algaeButton;
 
-  private final CommandXboxController m_driverController;
   private final ExampleSubsystem m_exampleSubsystem;
+
+  //down below for claw?
+  private final JoystickButton xButton;
+  private final JoystickButton aButton;
+  private final JoystickButton yButton;
+
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // The robot's subsystems and commands are defined here...
     m_exampleSubsystem = new ExampleSubsystem();
-  
 
-    // Replace with CommandPS4Controller or CommandJoystick if needed
-    m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
-    wrist = new Wrist();
-    elevator = new Elevator();
+   
+    claw = new Claw();
+    onStop = Commands.runOnce(() -> {claw.stopButton();}, claw);
+    outtakeButton = Commands.runOnce(() -> {claw.outTakeCoral();}, claw);
+    intakeCommand = Commands.run(() -> {claw.intakeCoral();}, claw);
 
     operator = new XboxController(1);
 
-    //Creates commands telling the wrist to go to different coral branches
-    wristToL1 = new WristToPosition(wrist, L1_POSITION);
-    wristToL2 = new WristToPosition(wrist, L2_POSITION);
-    wristToL4 = new WristToPosition(wrist, L4_POSITION);
-    wristToAlgae = new WristToPosition(wrist, ALGAE_POSITION);
-
-    //Creates commands telling the elevator to go to different coral branches
-    moveElevatorL1 = new MoveElevatorToPosition(elevator, ElevatorConstants.L1_HEIGHT);
-    moveElevatorL2 = new MoveElevatorToPosition(elevator, ElevatorConstants.L2_HEIGHT);
-    moveElevatorL3 = new MoveElevatorToPosition(elevator, ElevatorConstants.L3_HEIGHT);
-    moveElevatorL4 = new MoveElevatorToPosition(elevator, ElevatorConstants.L4_HEIGHT);
-    moveElevatorProcessor = new MoveElevatorToPosition(elevator, ElevatorConstants.PROCESSOR_HEIGHT);
-
-    wristWithJoy = new WristWithJoystick(operator, wrist);
-    moveElevatorWithJoystick = new MoveElevatorWithJoystick(elevator, operator);
-
-
-    //Creating new buttons for L1, L2/L3, L4, and algae
-    l1Button = new POVButton(operator, 90);
-    l2Button = new POVButton(operator, 270);
-    l4Button = new POVButton(operator, 0);
-    algaeButton = new POVButton(operator, 180);
-
-    //Operator buttons
-    elevatorToL1 = new POVButton(operator, 180);
-    elevatorToL2 = new POVButton(operator, 90);
-    elevatorToL3 = new POVButton(operator, 270);
-    elevatorToL4 = new POVButton(operator, 0);
-    elevatorToProcessor = new JoystickButton(operator, XboxController.Button.kA.value);
-
-    wrist.setDefaultCommand(wristWithJoy);
-    elevator.setDefaultCommand(moveElevatorWithJoystick);
+    //stuff for claw?? down
+    xButton = new JoystickButton(operator, XboxController.Button.kX.value); 
+    aButton = new JoystickButton(operator, XboxController.Button.kA.value);
+    yButton = new JoystickButton(operator, XboxController.Button.kY.value);
 
     // Configure the trigger bindings
+
+    SmartDashboard.putData(claw);
+
     configureBindings();
   }
 
@@ -136,17 +93,12 @@ public class RobotContainer {
  * joysticks}.
  */
 private void configureBindings() {
-  elevatorToL1.onTrue(moveElevatorL1); // down button on d-pad
-  elevatorToL2.onTrue(moveElevatorL2); // left button on d-pad
-  elevatorToL3.onTrue(moveElevatorL3); // right button on d-pad
-  elevatorToL4.onTrue(moveElevatorL4); // top button on d-pad
-  elevatorToProcessor.onTrue(moveElevatorProcessor); // the A button
+  
 
-  //Moves the wrist to a certain position based on what button is pressed
-  l1Button.onTrue(wristToL1);
-  l2Button.onTrue(wristToL2);
-  l4Button.onTrue(wristToL4);
-  algaeButton.onTrue(wristToAlgae);
+  //claw
+  xButton.whileTrue(onStop);
+  aButton.whileTrue(outtakeButton);
+  yButton.whileTrue(intakeCommand);
 
   // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
   new Trigger(m_exampleSubsystem::exampleCondition)
@@ -154,12 +106,10 @@ private void configureBindings() {
 
   // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
   // cancelling on release.
-  m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-  m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-  }
+ }
 
 /**
  * Use this to pass the autonomous command to the main {@link Robot} class.
