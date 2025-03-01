@@ -71,6 +71,27 @@ public final class Constants {
   public static class ElevatorConstants {
     // placeholder values, change as soon as possible
 
+    public enum ElevatorHeights { 
+      LOW_POSITION(L1_HEIGHT,1),
+      LOW_MIDDLE_POSITION(L2_HEIGHT,2),
+      HIGH_MIDDLE_POSITION(L3_HEIGHT,3),
+      HIGH_POSITION(L4_HEIGHT,4),
+      PROCESSOR_POSITION(0,0);
+
+
+      private double coralHeight;
+      private double algaeHeight;
+
+      ElevatorHeights(double coralHeight, double algaeHeight){
+        this.coralHeight = coralHeight;
+        this.algaeHeight = algaeHeight;
+      }
+      
+      public double getHeight(boolean isCoralMode) {
+        return isCoralMode ? coralHeight : algaeHeight;
+      }
+    }
+
     public static final int ELEVATORLEFT_ID = 9;
     public static final int ELEVATORRIGHT_ID = 10;
     public static final int ELEVATOR_ENCODER = 0;
@@ -123,7 +144,7 @@ public final class Constants {
     // Drive PID Values
     public static final double DRIVE_P_VALUE = 0.1;
     public static final double DRIVE_I_VALUE = 0.0;
-    public static final double DRIVE_D_VALUE = 0.7;
+    public static final double DRIVE_D_VALUE = 0.7; 
     public static final double DRIVE_FF_VALUE = 0.9;
 
     // Rotate PID Values

@@ -6,6 +6,7 @@ package frc.robot.commands.Elevator;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Wrist;
 import frc.robot.Constants.ElevatorConstants;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.MathUtil;
@@ -17,15 +18,18 @@ public class MoveElevatorToPosition extends Command {
   private PIDController elevatorPID;
 
   private Elevator elevator;
+  private Wrist wrist;
 
   public boolean goingDown;
 
   private double nextPosition;
   /** Creates a new MoveElevatorToPosition. */
-  public MoveElevatorToPosition(Elevator elevator, double nextPosition) {
+  public MoveElevatorToPosition(Elevator elevator, Wrist wrist, ElevatorConstants.ElevatorHeights position) {
 
+    this.wrist = wrist;
     this.elevator = elevator;
-    this.nextPosition = nextPosition;
+    nextPosition = position.getHeight(wrist.getCoralMode());
+
 
     //Placeholder values, change after testing
     elevatorPID = new PIDController(0, 0, 0);
