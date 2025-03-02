@@ -23,7 +23,6 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 
@@ -47,6 +46,9 @@ public class Wrist extends SubsystemBase {
   private double currentPosition;
   private double desiredPosition;
   private double time;
+
+  private boolean coralMode;
+  private boolean alageMode;
 
   /** Creates a new Wrist. */
   public Wrist() {
@@ -133,8 +135,25 @@ public class Wrist extends SubsystemBase {
    * VERY IMPORTANT!!! Makes sure the wrist is in the safe range so the robot doesn't critically damage itself
    * @return
    */
+
   public boolean isSafe(){
     return (getPosition() >= 1.3);
+  }
+
+   public boolean getCoralMode(){
+    return (currentPosition <= L4_POSITION);
+  }
+
+  public boolean getAlageMode(){
+    return (currentPosition > L4_POSITION);
+  }
+
+  public void setCoralMode(){
+    coralMode = !coralMode;
+  }
+
+  public void setAlgaeMode(){
+    alageMode = !alageMode;
   }
 
   @Override

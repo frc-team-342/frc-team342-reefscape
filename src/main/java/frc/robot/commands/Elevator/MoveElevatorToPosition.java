@@ -9,6 +9,11 @@ import static frc.robot.Constants.ElevatorConstants.ELEVATOR_ERROR;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Wrist;
+import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.*;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.XboxController;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class MoveElevatorToPosition extends Command {
@@ -16,15 +21,17 @@ public class MoveElevatorToPosition extends Command {
   private Elevator elevator;
   private Wrist wrist;
 
+  public boolean goingDown;
+
   private double nextPosition;
   private boolean hold;
 
   /** Creates a new MoveElevatorToPosition. */
-  public MoveElevatorToPosition(Elevator elevator, Wrist wrist, double nextPosition, boolean hold) {
+  public MoveElevatorToPosition(Elevator elevator, Wrist wrist, ElevatorConstants.ElevatorHeights position, Boolean hold) {
 
     this.elevator = elevator;
     this.wrist = wrist;
-    this.nextPosition = nextPosition;
+    nextPosition = position.getHeight(wrist.getCoralMode());
     this.hold = hold;
 
     // Use addRequirements() here to declare subsystem dependencies.
@@ -32,8 +39,8 @@ public class MoveElevatorToPosition extends Command {
 
   }
 
-  public MoveElevatorToPosition(Elevator elevator, Wrist wrist, double nextPosition) {
-    this(elevator, wrist, nextPosition, false);
+  public MoveElevatorToPosition(Elevator elevator, Wrist wrist, ElevatorConstants.ElevatorHeights position) {
+    this(elevator, wrist, position, false);
   }
 
   // Called when the command is initially scheduled.

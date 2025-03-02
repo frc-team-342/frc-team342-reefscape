@@ -7,7 +7,11 @@ package frc.robot;
 import frc.robot.commands.Autos;
 import frc.robot.commands.DriveWithJoystick;
 import frc.robot.commands.ExampleCommand;
+<<<<<<< HEAD
 import frc.robot.commands.SpinClaw;
+=======
+import frc.robot.commands.Claw.Intake;
+>>>>>>> Modes
 import frc.robot.commands.Elevator.MoveElevatorToPosition;
 import frc.robot.commands.Elevator.MoveElevatorWithJoystick;
 import frc.robot.commands.Wrist.WristToPosition;
@@ -17,6 +21,7 @@ import frc.robot.subsystems.*;
 
 import static frc.robot.Constants.ElevatorConstants.*;
 import static frc.robot.Constants.WristConstants.*;
+import static frc.robot.Constants.ElevatorConstants.*;
 
 import java.io.Writer;
 import java.security.AlgorithmConstraints;
@@ -72,16 +77,28 @@ public class RobotContainer {
   private final WristToPosition wristToAlgae;
   private final WristToPosition wristToBarge;
 
+<<<<<<< HEAD
+=======
+  //private final MoveElevatorToPosition moveElevatorProcessor;
+>>>>>>> Modes
   private final MoveElevatorToPosition moveElevatorL1;
   private final MoveElevatorToPosition moveElevatorL2;
   private final MoveElevatorToPosition moveElevatorL3;
   private final MoveElevatorToPosition moveElevatorL4;
   private final MoveElevatorWithJoystick moveElevatorWithJoystick;
 
+<<<<<<< HEAD
   private final POVButton elevatorToL1;
   private final POVButton elevatorToL2;
   private final POVButton elevatorToL3;
   private final POVButton elevatorToL4;
+=======
+ // private final JoystickButton elevatorToProcessor;
+  private final JoystickButton elevatorToL1;
+  private final JoystickButton elevatorToL2;
+  private final JoystickButton elevatorToL3;
+  private final JoystickButton elevatorToL4;
+>>>>>>> Modes
 
   private final SequentialCommandGroup goToIntake;
   //private final SequentialCommandGroup goToL1;
@@ -92,6 +109,7 @@ public class RobotContainer {
 
   private final WristWithJoystick wristWithJoy;
 
+<<<<<<< HEAD
   private final POVButton l1Button;
   private final POVButton l2Button;
   private final JoystickButton l3Button;
@@ -102,9 +120,18 @@ public class RobotContainer {
   private Command onStop;
   private Command outtakeButton;
   private SpinClaw intakeCommand;
+=======
+  private final JoystickButton l1Button;
+  private final JoystickButton l2Button;
+  private final JoystickButton l4Button;
+  private final JoystickButton algaeButton;
 
-  private final JoystickButton lowFunnelButton;
-  private final JoystickButton highFunnelButton;
+  private final Claw claw;
+  private final Intake intake;
+>>>>>>> Modes
+
+ // private final JoystickButton lowFunnelButton;
+  //private final JoystickButton highFunnelButton;
 
   private final CommandXboxController m_driverController;
 
@@ -122,9 +149,14 @@ public class RobotContainer {
   private SendableChooser<Command> autoChooser;
 
   // down below for claw?
-  private final JoystickButton xButton;
-  private final JoystickButton aButton;
-  private final JoystickButton yButton;
+  private JoystickButton intakeButton;
+  private JoystickButton outtakeButton;
+
+  private Command toggleCoralMode;
+  private Command toggleAlgaeMode;
+
+  private POVButton toggleCoralModeButton;
+  private POVButton toggleAlgaeModeButton;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -138,14 +170,21 @@ public class RobotContainer {
     elevator = new Elevator();
 
     claw = new Claw();
-    onStop = Commands.runOnce(() -> {
+
+   /*  onStop = Commands.runOnce(() -> {
       claw.stopButton();
     }, claw);
     outtakeButton = Commands.runOnce(() -> {
       claw.outTakeCoral();
     }, claw);
+<<<<<<< HEAD
     intakeCommand = new SpinClaw(claw);
     
+=======
+    intakeCommand = Commands.run(() -> {
+      claw.intakeCoral();
+    }, claw); */
+>>>>>>> Modes
 
     SmartDashboard.putData(wrist);
 
@@ -158,16 +197,26 @@ public class RobotContainer {
     wristToAlgae = new WristToPosition(wrist, ALGAE_POSITION);
     wristToBarge = new WristToPosition(wrist, BARGE_POSITION);
 
+<<<<<<< HEAD
     //Creates commands telling the elevator to go to different coral branches
     //L1 is the same height as the processor
     moveElevatorL1 = new MoveElevatorToPosition(elevator, wrist, L1_HEIGHT);
     moveElevatorL2 = new MoveElevatorToPosition(elevator, wrist, L2_HEIGHT);
     moveElevatorL3 = new MoveElevatorToPosition(elevator, wrist, L3_HEIGHT);
     moveElevatorL4 = new MoveElevatorToPosition(elevator, wrist, L4_HEIGHT);
+=======
+    // Creates commands telling the elevator to go to different coral branches
+    moveElevatorL1 = new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION);
+    moveElevatorL2 = new MoveElevatorToPosition(elevator,wrist, ElevatorHeights.LOW_MIDDLE_POSITION);
+    moveElevatorL3 = new MoveElevatorToPosition(elevator,wrist, ElevatorHeights.HIGH_MIDDLE_POSITION);
+    moveElevatorL4 = new MoveElevatorToPosition(elevator,wrist, ElevatorHeights.HIGH_POSITION);
+    //moveElevatorProcessor = new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.PROCESSOR_POSITION);
+>>>>>>> Modes
 
     wristWithJoy = new WristWithJoystick(operator, wrist);
     moveElevatorWithJoystick = new MoveElevatorWithJoystick(elevator, operator);
 
+<<<<<<< HEAD
     // Creating sequential command groups that use wrist and elevator
     goToIntake = new SequentialCommandGroup(
       new WristToPosition(wrist, ALGAE_POSITION),
@@ -226,16 +275,38 @@ public class RobotContainer {
     elevatorToL2 = new POVButton(operator, 90);
     elevatorToL3 = new POVButton(operator, 270);
     elevatorToL4 = new POVButton(operator, 0);
+=======
+    intake = new Intake(claw, wrist);
+
+    // From Mr. Neal, delete this booty implementation
+    l1Button = new JoystickButton(operator,XboxController.Button.kB.value );
+    l2Button = new JoystickButton(operator, XboxController.Button.kX.value);
+    l4Button = new JoystickButton(operator,XboxController.Button.kY.value);
+    algaeButton = new JoystickButton(operator, XboxController.Button.kA.value);
+
+    // From Mr. Neal, this is fine.  Operator buttons
+    elevatorToL1 = new JoystickButton(operator, XboxController.Button.kA.value);
+    elevatorToL2 = new JoystickButton(operator, XboxController.Button.kB.value);
+    elevatorToL3 = new JoystickButton(operator, XboxController.Button.kX.value);
+    elevatorToL4 = new JoystickButton(operator, XboxController.Button.kY.value);
+    //elevatorToProcessor = new JoystickButton(operator, XboxController.Button.kA.value);
+>>>>>>> Modes
 
     // stuff for claw?? down
-    xButton = new JoystickButton(operator, XboxController.Button.kX.value);
-    aButton = new JoystickButton(operator, XboxController.Button.kA.value);
-    yButton = new JoystickButton(operator, XboxController.Button.kY.value);
+    intakeButton = new JoystickButton(operator, XboxController.Button.kLeftBumper.value);
+    outtakeButton = new JoystickButton(operator,XboxController.Button.kRightBumper.value);
+
+    //Toggle modes
+    toggleAlgaeMode = Commands.runOnce(() -> {wrist.setAlgaeMode();}, wrist);
+    toggleCoralMode = Commands.runOnce(() -> {wrist.setCoralMode();}, wrist);
+
+    toggleAlgaeModeButton = new POVButton(operator, 0);
+    toggleCoralModeButton = new POVButton(operator, 180);
 
     // Configure the trigger bindings
 
-    lowFunnelButton = new JoystickButton(operator, XboxController.Button.kLeftBumper.value);
-    highFunnelButton = new JoystickButton(operator, XboxController.Button.kRightBumper.value);
+    //lowFunnelButton = new JoystickButton(operator, XboxController.Button.kLeftBumper.value);
+    //highFunnelButton = new JoystickButton(operator, XboxController.Button.kRightBumper.value);
 
     //wrist.setDefaultCommand(wristToAlgae);
     elevator.setDefaultCommand(moveElevatorWithJoystick);
@@ -282,6 +353,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+<<<<<<< HEAD
     // elevatorToL1.onTrue(moveElevatorL1); // down button on d-pad
     // elevatorToL2.onTrue(moveElevatorL2); // left button on d-pad
     // elevatorToL3.onTrue(moveElevatorL3); // right button on d-pad
@@ -295,11 +367,28 @@ public class RobotContainer {
     algaeButton.onTrue(goToProcessor); //Down button on d-pad
 
 
+=======
+
+    toggleAlgaeModeButton.onTrue(toggleAlgaeMode);
+    toggleCoralModeButton.onTrue(toggleCoralMode);
+
+    elevatorToL1.onTrue(moveElevatorL1); // down button on d-pad
+    elevatorToL2.onTrue(moveElevatorL2); // left button on d-pad
+    elevatorToL3.onTrue(moveElevatorL3); // right button on d-pad
+    elevatorToL4.onTrue(moveElevatorL4); // top button on d-pad
+    
+    //elevatorToProcessor.onTrue(moveElevatorProcessor); // the A button
+
+    // Moves the wrist to a certain position based on what button is pressed
+    l1Button.onTrue(wristToIntake); 
+    l2Button.onTrue(wristToL2);
+    l4Button.onTrue(wristToL4);
+    algaeButton.onTrue(wristToAlgae);
+>>>>>>> Modes
 
     // claw
-    xButton.whileTrue(onStop);
-    aButton.whileTrue(outtakeButton);
-    yButton.whileTrue(intakeCommand);
+    intakeButton.whileTrue(intake);
+    //outtakeButton.whileTrue();
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
     fieldOrienatedButton.whileTrue(fieldOrienatedCommand);

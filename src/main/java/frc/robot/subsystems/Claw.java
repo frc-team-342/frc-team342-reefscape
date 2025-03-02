@@ -54,7 +54,6 @@ public class Claw extends SubsystemBase {
   }
 
   public void outTakeCoral(){
-      
     claw.set(-.5);
       
   }
@@ -62,13 +61,11 @@ public class Claw extends SubsystemBase {
   public void intakeCoral(){
     if(forwardSensor.get() && backwardSensor.get()){
       claw.set(-.2);
-
       System.out.println("Neither back or front can see");
       
     }
     else if(forwardSensor.get() && !backwardSensor.get()){
       claw.set(-.1);
-
         System.out.println("Front can't see, Back can see");
     }
     else if(!forwardSensor.get() && !backwardSensor.get()){
