@@ -171,4 +171,17 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+  
+  public static class ClimbConstants {
+    public static final int CLIMB_ID = 14;
+  }
+
+  public static class FunnelConstants {
+    public static final int FUNNEL_ID = 12;
+    //replace with accurate values TODO
+    public static final double FUNNEL_UP = 0.0;
+    public static final double FUNNEL_DOWN = 0.0;
+    public static final double[] FUNNEL_PID_VALUES = {0.0, 0.0, 0.0};
+    public static final double FUNNEL_POSITION_CONVERSION = 0.0;
+  }
 }
