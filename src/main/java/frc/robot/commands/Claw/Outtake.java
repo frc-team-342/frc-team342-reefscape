@@ -4,25 +4,23 @@
 
 package frc.robot.commands.Claw;
 
-import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Wrist;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class Intake extends Command {
+public class Outtake extends Command {
 
-  private Claw claw;
   private Wrist wrist;
+  private Claw claw;
   
+  /** Creates a new Outtake. */
+  public Outtake(Wrist wrist, Claw claw) {
 
-  /** Creates a new Intake. */
-  public Intake(Claw claw, Wrist wrist) {
- 
-    this.claw = claw;
     this.wrist = wrist;
+    this.claw = claw;
 
-    
+    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
@@ -33,12 +31,14 @@ public class Intake extends Command {
   @Override
   public void execute() {
 
-    if (!wrist.getAlageMode())
-      claw.intakeCoral();
-    else 
-      claw.intakeAlgae();
+    if(!wrist.getAlageMode()){
+      claw.outTakeCoral();
+    } else {
+      claw.outTakeAlgae();
+    }
 
   }
+
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {

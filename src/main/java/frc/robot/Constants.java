@@ -70,10 +70,10 @@ public final class Constants {
   public static class ElevatorConstants {
 
     public enum ElevatorHeights { 
-      LOW_POSITION(L1_HEIGHT,1),
-      LOW_MIDDLE_POSITION(L2_HEIGHT,2),
-      HIGH_MIDDLE_POSITION(L3_HEIGHT,3),
-      HIGH_POSITION(L4_HEIGHT,4),
+      LOW_POSITION(L1_HEIGHT,ALGAE_LOW_HEIGHT),
+      LOW_MIDDLE_POSITION(L2_HEIGHT,0),
+      HIGH_MIDDLE_POSITION(L3_HEIGHT,0),
+      HIGH_POSITION(L4_HEIGHT,ALGAE_HIGH_HEIGHT),
       PROCESSOR_POSITION(0,0);
 
 
@@ -111,6 +111,10 @@ public final class Constants {
     public static final double L3_HEIGHT = 644.58 /**485.0*/;
     public static final double L4_HEIGHT = 1400.0 /**850.0*/;
     public static final double PROCESSOR_HEIGHT = 0.0;
+
+    public static final double ALGAE_LOW_HEIGHT = 462.36;
+    public static final double ALGAE_HIGH_HEIGHT = 884.672;
+
   }
 
   public static class ClawConstants {

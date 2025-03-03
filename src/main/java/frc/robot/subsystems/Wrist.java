@@ -44,7 +44,6 @@ public class Wrist extends SubsystemBase {
 
   private double speed;
   private double currentPosition;
-  private double desiredPosition;
   private double time;
 
   private boolean coralMode;
@@ -91,11 +90,11 @@ public class Wrist extends SubsystemBase {
    * Moves wrist at a specified speed
    */
   public void move(double speed){
-    if(speed > 0.05) {
+    if(Math.abs(speed) > 0.05) {
       wrist.set(speed);
       currentPosition = getPosition();
     }else{
-      holdWristPosition();
+      wrist.set(0);
     }
   }
 
@@ -103,12 +102,12 @@ public class Wrist extends SubsystemBase {
    * Moves wrist to a certain position
    */
   public void wristToPosition(double position){
-    this.desiredPosition = position;
+    currentPosition = position;
     wristController.setReference(position, ControlType.kPosition);
   }
 
   public void holdWristPosition() {
-    wristController.setReference(getPosition(), ControlType.kPosition);
+    wristController.setReference(currentPosition, ControlType.kPosition);
   }
 
   /*
@@ -141,19 +140,23 @@ public class Wrist extends SubsystemBase {
   }
 
    public boolean getCoralMode(){
-    return (currentPosition <= L4_POSITION);
+    return coralMode;
   }
 
   public boolean getAlageMode(){
-    return (currentPosition > L4_POSITION);
+    return alageMode;
   }
 
   public void setCoralMode(){
-    coralMode = !coralMode;
+    coralMode = true;
+    alageMode = false;
+    
   }
 
   public void setAlgaeMode(){
-    alageMode = !alageMode;
+    alageMode = true;
+    coralMode = false;
+   
   }
 
   @Override
@@ -173,7 +176,13 @@ public class Wrist extends SubsystemBase {
         builder.addDoubleProperty("ThroughBore", () -> throughBore.get(), null);
         builder.addDoubleProperty("Encoder", () -> wristEncoder.getPosition(), null);
         builder.addDoubleProperty("Speed", () -> wristEncoder.getVelocity(), null);
-        builder.addDoubleProperty("Desired Position", () -> desiredPosition, null);
+        builder.addDoubleProperty("Desired Position", () -> currentPosition, null);
+
+        builder.addBooleanProperty("Coral Mode", () -> coralMode, null);
+        builder.addBooleanProperty("Algae Mode", () -> alageMode, null);
+
+        builder.addBooleanProperty("Get Coral Mode", () -> getCoralMode() , null);
+        builder.addBooleanProperty("Get Algae Mode", () -> getAlageMode(), null);
       // }
   }
 }
