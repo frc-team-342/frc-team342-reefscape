@@ -148,9 +148,9 @@ public class Elevator extends SubsystemBase {
 
     if(goingDown && tooLow || !goingDown && tooHigh)
       stop();
-    else
+    else {
       elevatorPID.setReference(nextPosition, ControlType.kPosition);
-      currentPosition = nextPosition;
+      currentPosition = nextPosition;}
 
   }
 

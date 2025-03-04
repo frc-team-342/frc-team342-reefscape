@@ -48,7 +48,7 @@ public class WristWithJoystick extends Command {
 
     goingDown = (speed > 0);
 
-    if((goingDown && currentPosition <= LOW_WRIST_POS) || (!goingDown && currentPosition >= HIGH_WRIST_POS))
+    if((goingDown && currentPosition >= LOW_WRIST_POS) || (!goingDown && currentPosition <= HIGH_WRIST_POS))
       wrist.move(0);
     else 
       //Divided by four to reduce speed

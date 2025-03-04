@@ -4,27 +4,36 @@
 
 package frc.robot.commands.Wrist;
 
-import static frc.robot.Constants.WristConstants.WRIST_ERROR;
+import static frc.robot.Constants.WristConstants.*;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.WristConstants;
+import frc.robot.Constants.WristConstants.WristPositions;
 import frc.robot.subsystems.Wrist;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class WristToPosition extends Command {
   private final Wrist wrist;
-  private final double position;
+  private double position;
+
+  private WristConstants.WristPositions enumPosition;
 
   /** Creates a new WristToPosition. */
-  public WristToPosition(Wrist wrist, double position) {
+  public WristToPosition(Wrist wrist, WristConstants.WristPositions position) {
+    
     this.wrist = wrist;
-    this.position = position;
+    enumPosition = position;
 
     addRequirements(wrist);
   }
-
+  
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+
+  position = enumPosition.getPosition(wrist.getCoralMode());
+
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override

@@ -25,6 +25,7 @@ import java.io.Writer;
 import java.security.AlgorithmConstraints;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -77,6 +78,7 @@ public class RobotContainer {
   //private final MoveElevatorToPosition moveElevatorL2;
   //private final MoveElevatorToPosition moveElevatorL3;
   //private final MoveElevatorToPosition moveElevatorL4;
+
   private final MoveElevatorWithJoystick moveElevatorWithJoystick;
 
   /* 
@@ -88,8 +90,9 @@ public class RobotContainer {
 
   private final JoystickButton level1Button;
   private final JoystickButton level2Button;
-  //private final JoystickButton level3Button;
+  private final JoystickButton level3Button;
   private final JoystickButton level4Button;
+  private final JoystickButton proccesorButton;
 
   private final SequentialCommandGroup goToIntake;
   //private final SequentialCommandGroup goToL1;
@@ -167,10 +170,11 @@ public class RobotContainer {
 
     operator = new XboxController(1);
 
-    level1Button = new JoystickButton(operator, XboxController.Button.kY.value );
+    level1Button = new JoystickButton(operator, XboxController.Button.kA.value );
     level2Button = new JoystickButton(operator, XboxController.Button.kB.value);
-    //level3Button = new JoystickButton(operator, XboxController.Button.kA.value);
-    level4Button = new JoystickButton(operator, XboxController.Button.kX.value);
+    level3Button = new JoystickButton(operator, XboxController.Button.kX.value);
+    level4Button = new JoystickButton(operator, XboxController.Button.kY.value);
+    proccesorButton = new JoystickButton(operator, XboxController.Button.kStart.value );
     /* 
 
     // Creates commands telling the wrist to go to different coral branches
@@ -194,42 +198,47 @@ public class RobotContainer {
 
     // Creating sequential command groups that use wrist and elevator
     goToIntake = new SequentialCommandGroup(
-      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION),
+      new WristToPosition(wrist, WristPositions.ALGAE_WRIST_POSITION),
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION_L1),
       new ParallelCommandGroup(
-      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION, true), 
-      new WristToPosition(wrist, INTAKE_POSITION)
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION_L1, true), 
+      new WristToPosition(wrist, WristPositions.LOW_WRIST_POSITION)
       )
     );
 
     goToL2 = new SequentialCommandGroup(
-      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_MIDDLE_POSITION), 
+      new WristToPosition(wrist, WristPositions.ALGAE_WRIST_POSITION),
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_MIDDLE_POSITION_L2), 
       new ParallelCommandGroup(
-        new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_MIDDLE_POSITION, true), 
-        new WristToPosition(wrist, L2_POSITION)
+        new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_MIDDLE_POSITION_L2, true), 
+        new WristToPosition(wrist, WristPositions.MIDDLE_WRIST_POSITION)
       )
     );
 
     goToL3 = new SequentialCommandGroup(
-      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_MIDDLE_POSITION), 
+      new WristToPosition(wrist, WristPositions.ALGAE_WRIST_POSITION),
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_MIDDLE_POSITION_L3), 
       new ParallelCommandGroup(
-        new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_MIDDLE_POSITION, true), 
-        new WristToPosition(wrist, L2_POSITION)
+        new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_MIDDLE_POSITION_L3, true), 
+        new WristToPosition(wrist, WristPositions.MIDDLE_WRIST_POSITION)
       )
     );
 
     goToL4 = new SequentialCommandGroup(
-      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION),
+      new WristToPosition(wrist, WristPositions.ALGAE_WRIST_POSITION),
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4),
       new ParallelCommandGroup(
-        new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION, true), 
-        new WristToPosition(wrist, L4_POSITION)
+        new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true), 
+        new WristToPosition(wrist, WristPositions.HIGH_WRIST_POSITION)
       )
     );
 
     goToProcessor = new SequentialCommandGroup(
-      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION),
+      new WristToPosition(wrist, WristPositions.ALGAE_WRIST_POSITION),
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.PROCESSOR_POSITION),
       new ParallelCommandGroup(
-        new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION, true), 
-        new WristToPosition(wrist, ALGAE_POSITION)
+        new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.PROCESSOR_POSITION, true), 
+        new WristToPosition(wrist, WristPositions.ALGAE_WRIST_POSITION)
       )
     );
 
@@ -241,8 +250,8 @@ public class RobotContainer {
     outtakeButton = new JoystickButton(operator,XboxController.Button.kRightBumper.value);
 
     //Toggle modes
-    toggleAlgaeMode = new SequentialCommandGroup(Commands.runOnce(() -> {wrist.setAlgaeMode();}, wrist), new WristToPosition(wrist, ALGAE_POSITION));
-    toggleCoralMode = new SequentialCommandGroup(Commands.runOnce(() -> {wrist.setCoralMode();}, wrist), new WristToPosition(wrist, L2_POSITION));
+    toggleAlgaeMode = new SequentialCommandGroup(Commands.runOnce(() -> {wrist.setAlgaeMode();}, wrist), new WristToPosition(wrist, WristPositions.TOGGLE_POSITION));
+    toggleCoralMode = new SequentialCommandGroup(Commands.runOnce(() -> {wrist.setCoralMode();}, wrist), new WristToPosition(wrist, WristPositions.TOGGLE_POSITION));
 
     toggleAlgaeModeButton = new POVButton(operator, 0);
     toggleCoralModeButton = new POVButton(operator, 180);
@@ -252,7 +261,7 @@ public class RobotContainer {
     //lowFunnelButton = new JoystickButton(operator, XboxController.Button.kLeftBumper.value);
     //highFunnelButton = new JoystickButton(operator, XboxController.Button.kRightBumper.value);
 
-    //wrist.setDefaultCommand(wristToAlgae);
+    wrist.setDefaultCommand(wristWithJoy);
     elevator.setDefaultCommand(moveElevatorWithJoystick);
 
     // Configure the trigger bindings
@@ -313,8 +322,9 @@ public class RobotContainer {
     // Moves the wrist to a certain position based on what button is pressed
     level1Button.onTrue(goToIntake); 
     level2Button.onTrue(goToL2);
+    level3Button.onTrue(goToL3);
     level4Button.onTrue(goToL4);
-    //algaeButton.onTrue(wristToAlgae);
+    proccesorButton.onTrue(goToProcessor);
 
     // claw
     intakeButton.whileTrue(intake);
