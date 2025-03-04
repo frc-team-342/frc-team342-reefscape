@@ -8,14 +8,17 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.DriveWithJoystick;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.SpinClaw;
+import frc.robot.commands.Climber.Climb;
 import frc.robot.commands.Elevator.MoveElevatorToPosition;
 import frc.robot.commands.Elevator.MoveElevatorWithJoystick;
+import frc.robot.commands.Funnel.FunnelToPosition;
 import frc.robot.commands.Wrist.WristToPosition;
 import frc.robot.commands.Wrist.WristWithJoystick;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.*;
 
 import static frc.robot.Constants.ElevatorConstants.*;
+import static frc.robot.Constants.FunnelConstants.FUNNEL_UP;
 import static frc.robot.Constants.WristConstants.*;
 
 import java.io.Writer;
@@ -29,8 +32,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.SwerveDrive;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
@@ -103,10 +104,12 @@ public class RobotContainer {
   private Command outtakeButton;
   private SpinClaw intakeCommand;
 
-  private final JoystickButton lowFunnelButton;
-  private final JoystickButton highFunnelButton;
-
-  private final CommandXboxController m_driverController;
+  private final Climber climber;
+  private final Climb climb;
+  private final JoystickButton climbButton;
+  
+  private final Funnel funnel;
+  private final FunnelToPosition funnelToPosition;
 
 
   // The robot's subsystems and commands are defined here...
@@ -132,8 +135,7 @@ public class RobotContainer {
   public RobotContainer() {
     // The robot's subsystems and commands are defined here...
 
-    // Replace with CommandPS4Controller or CommandJoystick if needed
-    m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+
     wrist = new Wrist();
     elevator = new Elevator();
 
@@ -149,6 +151,7 @@ public class RobotContainer {
 
     SmartDashboard.putData(wrist);
 
+    driver = new XboxController(0);
     operator = new XboxController(1);
 
     // Creates commands telling the wrist to go to different coral branches
@@ -234,8 +237,13 @@ public class RobotContainer {
 
     // Configure the trigger bindings
 
-    lowFunnelButton = new JoystickButton(operator, XboxController.Button.kLeftBumper.value);
-    highFunnelButton = new JoystickButton(operator, XboxController.Button.kRightBumper.value);
+    climber = new Climber();
+    climb = new Climb(climber, driver);
+    climbButton = new JoystickButton(operator, XboxController.Button.kX.value);
+    climber.setDefaultCommand(climb);
+    
+    funnel = new Funnel(climber);
+    funnelToPosition = new FunnelToPosition(funnel, climber);
 
     //wrist.setDefaultCommand(wristToAlgae);
     elevator.setDefaultCommand(moveElevatorWithJoystick);
@@ -262,6 +270,7 @@ public class RobotContainer {
     SmartDashboard.putData(swerve);
     SmartDashboard.putData(claw);
     SmartDashboard.putData(autoChooser);
+    SmartDashboard.putData(climber);
 
     configureBindings();
 
@@ -293,7 +302,12 @@ public class RobotContainer {
     l3Button.onTrue(goToL3); //B button
     l4Button.onTrue(goToL4); //Top button on d-pad
     algaeButton.onTrue(goToProcessor); //Down button on d-pad
-
+    
+    //Toggles climb mode
+    climbButton.onTrue(new SequentialCommandGroup(
+      Commands.runOnce(() -> {climber.toggleClimbMode();}, climber),
+      Commands.run(() -> {climber.moveClimber(0.01);}, climber).withTimeout(3)
+    )); // X button
 
 
     // claw
