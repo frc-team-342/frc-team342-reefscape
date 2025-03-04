@@ -302,4 +302,7 @@ public class SwerveDrive extends SubsystemBase {
     odometry.update(NavX.getRotation2d(), getCurrentSwerveModulePositions());
 
   }
+  public AHRS getGyro() {
+    return NavX;
+  }
 }

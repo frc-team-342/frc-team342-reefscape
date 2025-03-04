@@ -4,10 +4,10 @@
 
 package frc.robot;
 
-import frc.robot.commands.Autos;
 import frc.robot.commands.DriveWithJoystick;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.SpinClaw;
+import frc.robot.commands.Autos.Autos;
 import frc.robot.commands.Elevator.MoveElevatorToPosition;
 import frc.robot.commands.Elevator.MoveElevatorWithJoystick;
 import frc.robot.commands.Wrist.WristToPosition;
@@ -120,6 +120,7 @@ public class RobotContainer {
   private Command fieldOrienatedCommand;
 
   private SendableChooser<Command> autoChooser;
+  private SendableChooser<Command> autonomousChooser;
 
   // down below for claw?
   private final JoystickButton xButton;
@@ -142,10 +143,13 @@ public class RobotContainer {
       claw.stopButton();
     }, claw);
     outtakeButton = Commands.runOnce(() -> {
-      claw.outTakeCoral();
+      claw.outtakeCoral();
     }, claw);
     intakeCommand = new SpinClaw(claw);
     
+    autonomousChooser = new SendableChooser();
+    autonomousChooser.addOption("trough auto", Autos.troughAuto(swerve, claw));
+    autonomousChooser.addOption("forward auto", Autos.forwardAuto(swerve));
 
     SmartDashboard.putData(wrist);
 
