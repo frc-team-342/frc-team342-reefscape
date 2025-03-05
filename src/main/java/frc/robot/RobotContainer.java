@@ -61,83 +61,48 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private final XboxController operator;
 
-  private final Wrist wrist;
-  private final Elevator elevator;
-
-  // Because the angles are the same for both L2 & L3, there will only be an L2
-  // command that will be used for both
-  //private final WristToPosition wristToIntake;
-  //private final WristToPosition wristToL2;
-  //private final WristToPosition wristToL4;
-  //private final WristToPosition wristToAlgae;
-  //private final WristToPosition wristToBarge;
-
-  //private final MoveElevatorToPosition moveElevatorL1;
-  //private final MoveElevatorToPosition moveElevatorL2;
-  //private final MoveElevatorToPosition moveElevatorL3;
-  //private final MoveElevatorToPosition moveElevatorL4;
-
-  private final MoveElevatorWithJoystick moveElevatorWithJoystick;
-
-  /* 
-  private final JoystickButton elevatorToL1;
-  private final JoystickButton elevatorToL2;
-  private final JoystickButton elevatorToL3;
-  private final JoystickButton elevatorToL4;
-*/
-
-  private final JoystickButton level1Button;
-  private final JoystickButton level2Button;
-  private final JoystickButton level3Button;
-  private final JoystickButton level4Button;
-  private final JoystickButton proccesorButton;
-
-  private final SequentialCommandGroup goToIntake;
-  //private final SequentialCommandGroup goToL1;
-  private final SequentialCommandGroup goToL2;
-  private final SequentialCommandGroup goToL3;
-  private final SequentialCommandGroup goToL4;
-  private final SequentialCommandGroup goToProcessor;
-
-  private final WristWithJoystick wristWithJoy;
-
-  //private final JoystickButton l1Button;
-  //private final JoystickButton l2Button;
-  //private final JoystickButton l3Button;
-  //private final JoystickButton l4Button;
-  //private final JoystickButton algaeButton;
-
-  private final Claw claw;
-  private Intake intake;
-  private Outtake outtake;
-  private Command onStop;
-  private SpinClaw intakeCommand;
-
- // private final JoystickButton lowFunnelButton;
-  //private final JoystickButton highFunnelButton;
-
-  private final CommandXboxController m_driverController;
-
-  // The robot's subsystems and commands are defined here...
-  
-  private SwerveDrive swerve;
+  // Controllers 
+  private XboxController operator;
   private XboxController driver;
 
-  private JoystickButton fieldOrienatedButton;
+  // Subsytems 
+  private Wrist wrist;
+  private Elevator elevator;
+  private SwerveDrive swerve;
+  private Claw claw;
 
+  // Commands
+  private Intake intake;
+  private Outtake outtake;
+  private MoveElevatorWithJoystick moveElevatorWithJoystick;
+  private WristWithJoystick wristWithJoy;
   private DriveWithJoystick driveWithJoystick;
   private Command fieldOrienatedCommand;
 
-  private SendableChooser<Command> autoChooser;
-
-  // down below for claw?
-  private JoystickButton intakeButton;
-  private JoystickButton outtakeButton;
-
   private Command toggleCoralMode;
   private Command toggleAlgaeMode;
+
+  private SendableChooser<Command> autoChooser;
+
+  private SequentialCommandGroup goToIntake;
+  private SequentialCommandGroup goToL2;
+  private SequentialCommandGroup goToL3;
+  private SequentialCommandGroup goToL4;
+  private SequentialCommandGroup goToProcessor;
+
+  // Buttons
+  private JoystickButton intakeButton;
+  private JoystickButton outtakeButton;
+  private JoystickButton level1Button;
+  private JoystickButton level2Button;
+  private JoystickButton level3Button;
+  private JoystickButton level4Button;
+
+  private JoystickButton fieldOrienatedButton;
+
+  private JoystickButton elevatorOverrideButton;
+  private JoystickButton wristOverrideButton;
 
   private POVButton toggleCoralModeButton;
   private POVButton toggleAlgaeModeButton;
@@ -146,55 +111,31 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    // The robot's subsystems and commands are defined here...
 
-    // Replace with CommandPS4Controller or CommandJoystick if needed
-    m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+    // Controllers
+    driver = new XboxController(0);
+    operator = new XboxController(1);
+
+    // Subsytems 
     wrist = new Wrist();
     elevator = new Elevator();
     claw = new Claw();
+    swerve = new SwerveDrive();
 
-   /*  onStop = Commands.runOnce(() -> {
-      claw.stopButton();
-    }, claw);
-    outtakeButton = Commands.runOnce(() -> {
-      claw.outTakeCoral();
-    }, claw);
-    intakeCommand = new SpinClaw(claw);
-    
-    intakeCommand = Commands.run(() -> {
-      claw.intakeCoral();
-    }, claw); */
 
-    SmartDashboard.putData(wrist);
-
-    operator = new XboxController(1);
-
-    level1Button = new JoystickButton(operator, XboxController.Button.kA.value );
-    level2Button = new JoystickButton(operator, XboxController.Button.kB.value);
-    level3Button = new JoystickButton(operator, XboxController.Button.kX.value);
-    level4Button = new JoystickButton(operator, XboxController.Button.kY.value);
-    proccesorButton = new JoystickButton(operator, XboxController.Button.kStart.value );
-    /* 
-
-    // Creates commands telling the wrist to go to different coral branches
-    wristToIntake = new WristToPosition(wrist, INTAKE_POSITION);
-    wristToL2 = new WristToPosition(wrist, L2_POSITION);
-    wristToL4 = new WristToPosition(wrist, L4_POSITION);
-    wristToAlgae = new WristToPosition(wrist, ALGAE_POSITION);
-    wristToBarge = new WristToPosition(wrist, BARGE_POSITION);
-
-    // Creates commands telling the elevator to go to different coral branches
-    moveElevatorL1 = new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION);
-    moveElevatorL2 = new MoveElevatorToPosition(elevator,wrist, ElevatorHeights.LOW_MIDDLE_POSITION);
-    moveElevatorL3 = new MoveElevatorToPosition(elevator,wrist, ElevatorHeights.HIGH_MIDDLE_POSITION);
-    moveElevatorL4 = new MoveElevatorToPosition(elevator,wrist, ElevatorHeights.HIGH_POSITION);
-    //moveElevatorProcessor = new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.PROCESSOR_POSITION);
-
-    */
-
+    // Commands 
     wristWithJoy = new WristWithJoystick(operator, wrist);
     moveElevatorWithJoystick = new MoveElevatorWithJoystick(elevator, operator);
+
+    intake = new Intake(claw, wrist);
+    outtake = new Outtake(wrist, claw);
+
+    toggleAlgaeMode = new SequentialCommandGroup(Commands.runOnce(() -> {wrist.setAlgaeMode();}, wrist), new WristToPosition(wrist, WristPositions.TOGGLE_POSITION));
+    toggleCoralMode = new SequentialCommandGroup(Commands.runOnce(() -> {wrist.setCoralMode();}, wrist), new WristToPosition(wrist, WristPositions.TOGGLE_POSITION));
+
+    fieldOrienatedCommand = Commands.runOnce(() -> {
+        swerve.toggleFieldOriented();
+      }, swerve);
 
     // Creating sequential command groups that use wrist and elevator
     goToIntake = new SequentialCommandGroup(
@@ -211,7 +152,7 @@ public class RobotContainer {
       new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_MIDDLE_POSITION_L2), 
       new ParallelCommandGroup(
         new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_MIDDLE_POSITION_L2, true), 
-        new WristToPosition(wrist, WristPositions.MIDDLE_WRIST_POSITION)
+        new WristToPosition(wrist, WristPositions.LOW_WRIST_POSITION)
       )
     );
 
@@ -242,50 +183,39 @@ public class RobotContainer {
       )
     );
 
-    intake = new Intake(claw, wrist);
-    outtake = new Outtake(wrist, claw);
+    // Button Assigments 
+    level1Button = new JoystickButton(operator, XboxController.Button.kA.value );
+    level2Button = new JoystickButton(operator, XboxController.Button.kB.value);
+    level3Button = new JoystickButton(operator, XboxController.Button.kX.value);
+    level4Button = new JoystickButton(operator, XboxController.Button.kY.value);
 
-    // stuff for claw?? down
     intakeButton = new JoystickButton(operator, XboxController.Button.kLeftBumper.value);
     outtakeButton = new JoystickButton(operator,XboxController.Button.kRightBumper.value);
-
-    //Toggle modes
-    toggleAlgaeMode = new SequentialCommandGroup(Commands.runOnce(() -> {wrist.setAlgaeMode();}, wrist), new WristToPosition(wrist, WristPositions.TOGGLE_POSITION));
-    toggleCoralMode = new SequentialCommandGroup(Commands.runOnce(() -> {wrist.setCoralMode();}, wrist), new WristToPosition(wrist, WristPositions.TOGGLE_POSITION));
 
     toggleAlgaeModeButton = new POVButton(operator, 0);
     toggleCoralModeButton = new POVButton(operator, 180);
 
-    // Configure the trigger bindings
-
-    //lowFunnelButton = new JoystickButton(operator, XboxController.Button.kLeftBumper.value);
-    //highFunnelButton = new JoystickButton(operator, XboxController.Button.kRightBumper.value);
-
-    wrist.setDefaultCommand(wristWithJoy);
-    elevator.setDefaultCommand(moveElevatorWithJoystick);
-
-    // Configure the trigger bindings
-
-    swerve = new SwerveDrive();
-
-    driver = new XboxController(0);
-
     fieldOrienatedButton = new JoystickButton(driver, XboxController.Button.kY.value);
     driveWithJoystick = new DriveWithJoystick(swerve, driver);
 
+    wristOverrideButton = new JoystickButton(operator, XboxController.Button.kStart.value);
+    elevatorOverrideButton = new JoystickButton(operator, XboxController.Button.kBack.value);
 
-    fieldOrienatedCommand = Commands.runOnce(() -> {
-      swerve.toggleFieldOriented();
-    }, swerve);
-
-    swerve.setDefaultCommand(driveWithJoystick);
+    // Autos
     autoChooser = new SendableChooser<>();
-
     autoChooser.addOption("PathPlannerTest", new PathPlannerAuto("New Auto"));
 
+    // Smartdashboard Data 
+    SmartDashboard.putData(wrist);
     SmartDashboard.putData(swerve);
     SmartDashboard.putData(claw);
     SmartDashboard.putData(autoChooser);
+    SmartDashboard.putData(elevator);
+    
+    // Defualt Commands
+    wrist.setDefaultCommand(wristWithJoy);
+    elevator.setDefaultCommand(moveElevatorWithJoystick);
+    swerve.setDefaultCommand(driveWithJoystick);
 
     configureBindings();
 
@@ -310,25 +240,19 @@ public class RobotContainer {
     toggleAlgaeModeButton.onTrue(toggleAlgaeMode);
     toggleCoralModeButton.onTrue(toggleCoralMode);
 
-    /*
-    elevatorToL1.onTrue(goToIntake); // down button on d-pad
-    elevatorToL2.onTrue(goToL2); // left button on d-pad
-    elevatorToL3.onTrue(goToL3); // right button on d-pad
-    elevatorToL4.onTrue(goToL4); // top button on d-pad
- */
-
-    //elevatorToProcessor.onTrue(moveElevatorProcessor); // the A button
-
     // Moves the wrist to a certain position based on what button is pressed
     level1Button.onTrue(goToIntake); 
     level2Button.onTrue(goToL2);
     level3Button.onTrue(goToL3);
     level4Button.onTrue(goToL4);
-    proccesorButton.onTrue(goToProcessor);
 
     // claw
     intakeButton.whileTrue(intake);
     outtakeButton.whileTrue(outtake);
+
+    elevatorOverrideButton.onTrue(moveElevatorWithJoystick);
+    wristOverrideButton.onTrue(wristWithJoy);
+
     //outtakeButton.whileTrue();
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
