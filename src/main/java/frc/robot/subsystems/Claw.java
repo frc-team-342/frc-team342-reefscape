@@ -41,7 +41,7 @@ public class Claw extends SubsystemBase {
 
   }
 
-  public void outTakeAlgae(){
+  public void outtakeAlgae(){
     claw.set(.5);
   }
 
@@ -53,7 +53,7 @@ public class Claw extends SubsystemBase {
     claw.set(-.5);
   }
 
-  public void outTakeCoral(){
+  public void outtakeCoral(){
       
     claw.set(-.5);
       
