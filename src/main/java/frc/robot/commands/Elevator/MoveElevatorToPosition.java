@@ -23,6 +23,8 @@ public class MoveElevatorToPosition extends Command {
 
   public boolean goingDown;
 
+  public ElevatorConstants.ElevatorHeights enumPosition;
+
   private double nextPosition;
   private boolean hold;
 
@@ -31,7 +33,7 @@ public class MoveElevatorToPosition extends Command {
 
     this.elevator = elevator;
     this.wrist = wrist;
-    nextPosition = position.getHeight(wrist.getCoralMode());
+    enumPosition = position;
     this.hold = hold;
 
     // Use addRequirements() here to declare subsystem dependencies.
@@ -45,7 +47,10 @@ public class MoveElevatorToPosition extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+
+    nextPosition = enumPosition.getHeight(wrist.getCoralMode());
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
