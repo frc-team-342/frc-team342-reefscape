@@ -7,10 +7,8 @@ import frc.robot.LimelightHelpers;
 
 
 public class Limelight extends SubsystemBase {
-    private String limelightName = "limey";
 
     public Limelight(String limelightName){
-        this.limelightName = limelightName;
     }
 @Override
   public void initSendable(SendableBuilder builder){

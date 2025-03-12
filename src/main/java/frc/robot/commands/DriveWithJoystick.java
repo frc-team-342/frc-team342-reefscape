@@ -5,10 +5,10 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.LimelightHelpers;
 import frc.robot.subsystems.SwerveDrive;
@@ -17,18 +17,19 @@ import frc.robot.subsystems.Vision.Limelight;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class DriveWithJoystick extends Command {
   /** Creates a new DriveWithJoystick. */
-  public boolean DriveAssist;
+  public boolean DriveAssist = SwerveDrive.getDriveAssist();
   private SwerveDrive swerve;
   private XboxController joyStick;
   private ChassisSpeeds chassisSpeeds;
-  private Limelight limelight;
+  public Limelight limelight;
   public double tx;
+  private PIDController visionPID;
 
   public DriveWithJoystick(SwerveDrive swerve, XboxController joyStick) {
 
     this.swerve = swerve;
     this.joyStick = joyStick;
-
+    visionPID = new PIDController(.010,0,0);
     addRequirements(swerve);
 
   }
@@ -36,14 +37,14 @@ public class DriveWithJoystick extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    DriveAssist = true;
+    visionPID.setTolerance(2);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
   if(DriveAssist = false){
-    /* Gets values from the Left(Drive) and Right(Rotate) Joysticks on the Xbox controller */
+    /* Gets values from the Left(Drive) on the Xbox controller */
       double xSpeed = joyStick.getLeftY();
       double ySpeed = joyStick.getLeftX();
       double rotateSpeed = joyStick.getRawAxis(4);
@@ -73,10 +74,10 @@ public class DriveWithJoystick extends Command {
 
       xSpeed = xSpeed * DriveConstants.MAX_DRIVE_SPEED;
       ySpeed = ySpeed * DriveConstants.MAX_DRIVE_SPEED;
-      tx = LimelightHelpers.getTX("limey");
+      tx = LimelightHelpers.getTX("");
       System.out.println(tx);
-      double rSpeed = -1.0 * tx * Constants.DriveConstants.ROTATE_P_VALUE * Constants.DriveConstants.MAX_ROTATE_SPEED;
-
+      double rSpeed = -visionPID.calculate(tx, 0);//tx * /*pid*/ .010 * Constants.DriveConstants.MAX_ROTATE_SPEED;
+  
       /* Puts the x,y, and rotates speeds into a new ChasisSpeeds */
       chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rSpeed);
 

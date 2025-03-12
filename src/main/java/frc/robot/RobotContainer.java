@@ -16,6 +16,7 @@ import frc.robot.commands.Wrist.WristToPosition;
 import frc.robot.commands.Wrist.WristWithJoystick;
 import frc.robot.Constants.ElevatorConstants.ElevatorHeights;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.WristConstants.WristPositions;
 import frc.robot.subsystems.*;
 
 import static frc.robot.Constants.ElevatorConstants.*;
@@ -80,6 +81,8 @@ public class RobotContainer {
   private DriveWithJoystick driveWithJoystick;
   private Command fieldOrienatedCommand;
 
+  private Command driveAssistToggle;
+
   private Command toggleCoralMode;
   private Command toggleAlgaeMode;
 
@@ -100,6 +103,8 @@ public class RobotContainer {
   private JoystickButton level4Button;
 
   private JoystickButton fieldOrienatedButton;
+
+  private JoystickButton driveAssistButton;
 
   private JoystickButton elevatorOverrideButton;
   private JoystickButton wristOverrideButton;
@@ -136,7 +141,7 @@ public class RobotContainer {
     fieldOrienatedCommand = Commands.runOnce(() -> {
         swerve.toggleFieldOriented();
       }, swerve);
-
+    driveAssistToggle = Commands.runOnce(() -> {swerve.toggleDriveAssist();}, swerve);
     // Creating sequential command groups that use wrist and elevator
     goToIntake = new SequentialCommandGroup(
       new WristToPosition(wrist, WristPositions.ALGAE_WRIST_POSITION),
@@ -198,6 +203,7 @@ public class RobotContainer {
     fieldOrienatedButton = new JoystickButton(driver, XboxController.Button.kY.value);
     driveWithJoystick = new DriveWithJoystick(swerve, driver);
 
+    driveAssistButton = new JoystickButton(driver, XboxController.Button.kB.value);
     wristOverrideButton = new JoystickButton(operator, XboxController.Button.kStart.value);
     elevatorOverrideButton = new JoystickButton(operator, XboxController.Button.kBack.value);
 
@@ -240,6 +246,8 @@ public class RobotContainer {
     toggleAlgaeModeButton.onTrue(toggleAlgaeMode);
     toggleCoralModeButton.onTrue(toggleCoralMode);
 
+    driveAssistButton.onTrue(driveAssistToggle);
+
     // Moves the wrist to a certain position based on what button is pressed
     level1Button.onTrue(goToIntake); 
     level2Button.onTrue(goToL2);
@@ -252,6 +260,8 @@ public class RobotContainer {
 
     elevatorOverrideButton.onTrue(moveElevatorWithJoystick);
     wristOverrideButton.onTrue(wristWithJoy);
+
+    
 
     //outtakeButton.whileTrue();
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
