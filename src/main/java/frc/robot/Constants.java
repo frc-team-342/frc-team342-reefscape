@@ -185,17 +185,17 @@ public final class Constants {
     public static final double DRIVE_FF_VALUE = 0.9;
 
     // Rotate PID Values
-    public static final double ROTATE_P_VALUE = 0.25;
+    public static final double ROTATE_P_VALUE = 0.35;
     public static final double ROTATE_I_VALUE = 0.0;
-    public static final double ROTATE_D_VALUE = 0.3;
+    public static final double ROTATE_D_VALUE = 0.4;
     public static double ROTATE_FF_VALUE;
 
     // Offsets
 
-    public static final double FRONT_LEFT_OFFSET = 0.83;
-    public static final double FRONT_RIGHT_OFFSET = 4.57;
-    public static final double BACK_LEFT_OFFSET = 3.08;
-    public static final double BACK_RIGHT_OFFSET = 5.89;
+    public static final double FRONT_LEFT_OFFSET = 0.79;
+    public static final double FRONT_RIGHT_OFFSET = 0.26;
+    public static final double BACK_LEFT_OFFSET = 3.07;
+    public static final double BACK_RIGHT_OFFSET = 5.95;
 
 
     // Factors

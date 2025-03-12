@@ -27,6 +27,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -59,12 +60,19 @@ public class SwerveDrive extends SubsystemBase {
   private RobotConfig config;
   private Field2d feild;
 
+  //Mr. Neal Cooking, delete later
+  private double heading = NavX.getAngle();
+  private PIDController rotateCompensator;
 
   SwerveModuleState[] swerveModuleStates;
   SwerveModulePosition[] swerveModulePositions;
 
   /** Creates a new SwerveDrive. */
   public SwerveDrive() {
+
+      rotateCompensator = new PIDController(0.1,0,0);
+
+      chassisSpeeds = new ChassisSpeeds(0, 0, 0);
 
       frontLeftModule = new SwerveModule(
         DriveConstants.FRONT_LEFT_DRIVE_ID, 
@@ -181,6 +189,16 @@ public class SwerveDrive extends SubsystemBase {
         /* When Field Orientated is True, passes the chassis speed and the Gryo's current angle through "fromFieldRelativeSpeeds",
          before passing it through the rest of the drive Method */
 
+         /*
+         //More Garbage Mr. Neal Cooked Up
+         if(Math.abs(chassisSpeeds.omegaRadiansPerSecond) > 0)
+            heading = NavX.getAngle();
+
+         double rotateCompensation = rotateCompensator.calculate(NavX.getAngle(), heading);
+         chassisSpeeds = new ChassisSpeeds(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond + rotateCompensation);
+        //Stop Mr. Neal Garbage
+        */
+        
         if (fieldOriented) {
           chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, new Rotation2d(NavX.getRotation2d().getRadians()));
 
@@ -192,6 +210,8 @@ public class SwerveDrive extends SubsystemBase {
         frontRightModule.setState(swerveModuleStates[1]);
         backLeftModule.setState(swerveModuleStates[2]);
         backRightModule.setState(swerveModuleStates[3]);
+
+        
 
 
       }
@@ -262,6 +282,7 @@ public class SwerveDrive extends SubsystemBase {
       sendableBuilder.addDoubleProperty(frontLeftModule.printLabel() + " Offset", ()-> frontLeftModule.getRawOffsets(), null);
       sendableBuilder.addDoubleProperty(frontLeftModule.printLabel() + " Rotate Encoder(Radians): " , ()-> frontLeftModule.getRotateEncoderPosition(), null);
       sendableBuilder.addDoubleProperty(frontLeftModule.printLabel() + " Absoulete Position " , ()-> frontLeftModule.getAnalogEnoderValue(), null);
+      sendableBuilder.addDoubleProperty(frontLeftModule.printLabel() + "Velocity", () -> frontLeftModule.getDriveVelocity(), null);
       if(swerveModuleStates != null)
         sendableBuilder.addDoubleProperty(frontLeftModule.printLabel() + " Analog Offest " , ()-> swerveModuleStates[0].angle.getRadians(), null);
 
@@ -271,6 +292,7 @@ public class SwerveDrive extends SubsystemBase {
       sendableBuilder.addDoubleProperty(frontRightModule.printLabel() + " Offset", ()-> frontRightModule.getRawOffsets(), null);
       sendableBuilder.addDoubleProperty(frontRightModule.printLabel() + " Rotate Encoder(Radians): " , ()-> frontRightModule.getRotateEncoderPosition(), null);
       sendableBuilder.addDoubleProperty(frontRightModule.printLabel() + " Absoulete Position " , ()-> frontRightModule.getAnalogEnoderValue(), null);
+      sendableBuilder.addDoubleProperty(frontRightModule.printLabel() + "Velocity", () -> frontRightModule.getDriveVelocity(), null);
       if(swerveModuleStates != null)
         sendableBuilder.addDoubleProperty(frontRightModule.printLabel() + " Analog Offest " , ()-> swerveModuleStates[1].angle.getRadians(), null);
     }
@@ -279,6 +301,7 @@ public class SwerveDrive extends SubsystemBase {
       sendableBuilder.addDoubleProperty(backLeftModule.printLabel() + " Offset", ()-> backLeftModule.getRawOffsets(), null);
       sendableBuilder.addDoubleProperty(backLeftModule.printLabel() + " Rotate Encoder(Radians): " , ()-> backLeftModule.getRotateEncoderPosition(), null);
       sendableBuilder.addDoubleProperty(backLeftModule.printLabel() + " Absoulete Position " , ()-> backLeftModule.getAnalogEnoderValue(), null);
+      sendableBuilder.addDoubleProperty(backLeftModule.printLabel() + "Velocity", () -> backLeftModule.getDriveVelocity(), null);
       if(swerveModuleStates != null)
         sendableBuilder.addDoubleProperty(backLeftModule.printLabel() + " Analog Offest " , ()-> swerveModuleStates[2].angle.getRadians(), null);
 
@@ -288,6 +311,7 @@ public class SwerveDrive extends SubsystemBase {
       sendableBuilder.addDoubleProperty(backRightModule.printLabel() + " Offset", ()-> backRightModule.getRawOffsets(), null);
       sendableBuilder.addDoubleProperty(backRightModule.printLabel() + " Rotate Encoder(Radians): " , ()-> backRightModule.getRotateEncoderPosition(), null);
       sendableBuilder.addDoubleProperty(backRightModule.printLabel() + " Absoulete Position " , ()-> backRightModule.getAnalogEnoderValue(), null);
+      sendableBuilder.addDoubleProperty(backRightModule.printLabel() + "Velocity", () -> backRightModule.getDriveVelocity(), null);
       if(swerveModuleStates != null)
         sendableBuilder.addDoubleProperty(backRightModule.printLabel() + " Analog Offest " , ()-> swerveModuleStates[3].angle.getRadians(), null);
     }
