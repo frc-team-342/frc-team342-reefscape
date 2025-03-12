@@ -7,7 +7,6 @@ package frc.robot;
 import frc.robot.commands.Autos;
 import frc.robot.commands.DriveWithJoystick;
 import frc.robot.commands.ExampleCommand;
-<<<<<<< HEAD
 import frc.robot.commands.SpinClaw;
 import frc.robot.commands.Claw.Intake;
 import frc.robot.commands.Claw.Outtake;
