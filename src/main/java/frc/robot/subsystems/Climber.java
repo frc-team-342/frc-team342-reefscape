@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -16,49 +17,101 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ClimbConstants;
+import static frc.robot.Constants.ClimbConstants.*;
 
 public class Climber extends SubsystemBase {
   private SparkMax climbMotor;
-  private SparkMaxConfig climbConfig;
+  private SparkMax funnelMotor;
 
-  private RelativeEncoder relativeEncoder;
+  private SparkMaxConfig climbConfig;
+  private SparkMaxConfig funnelConfig;
+
+  private RelativeEncoder climbEncoder;
+  private RelativeEncoder funnelEncoder;
+  private DutyCycleEncoder funnelDuty;
 
   private SparkClosedLoopController climbPID;
+  private SparkClosedLoopController funnelPID;
 
   private boolean climbMode = false;
+  private Timer timer;
+  private boolean didReset;
 
   /** Creates a new Climb. */
   public Climber() {
-    climbMotor = new SparkMax(ClimbConstants.CLIMB_ID, MotorType.kBrushless);
+    climbMotor = new SparkMax(CLIMB_ID, MotorType.kBrushless);
+    funnelMotor = new SparkMax(FUNNEL_ID, MotorType.kBrushless);
+
     climbConfig = new SparkMaxConfig();
+    funnelConfig = new SparkMaxConfig();
+
     climbPID = climbMotor.getClosedLoopController();
+    funnelPID = funnelMotor.getClosedLoopController();
+
+    climbEncoder = climbMotor.getEncoder();
+    funnelEncoder = funnelMotor.getEncoder(); 
+    funnelDuty = new DutyCycleEncoder(FUNNEL_DUTY_ID, (Math.PI * 2), 0); 
+    
+    timer = new Timer();
+    didReset = false;
 
     climbConfig
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(30);
-    
+      funnelConfig.closedLoop
+      .p(FUNNEL_P)
+      .i(FUNNEL_I)
+      .d(FUNNEL_D)
+      .outputRange(-.2, .2);
       
-      climbMotor.configure(climbConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-      relativeEncoder = climbMotor.getEncoder();
-    }
+    funnelConfig
+      .idleMode(IdleMode.kBrake)
+      .smartCurrentLimit(30);
+    funnelConfig.closedLoop
+      .p(FUNNEL_P)
+      .i(FUNNEL_I)
+      .d(FUNNEL_D)
+      .outputRange(-.2, .2);
+      
+    climbMotor.configure(climbConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    funnelMotor.configure(funnelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+  }
+
+  public double getClimbPosition(){
+    return climbEncoder.getPosition();
+  }
+
+  public double getFunnelPosition(){
+    return funnelDuty.get();
+  }
 
   public void moveClimber(double speed){
     climbMotor.set(speed);
   }
-  public void stop() {
-    climbMotor.set(0);
+
+  public RelativeEncoder getEncoder(){
+    return climbEncoder;
   }
 
-  public double getPosition(){
-    return relativeEncoder.getPosition();
-  } 
+  public void climberUp(){
+    climbPID.setReference(CLIMB_UP, ControlType.kPosition);
+  }
 
-  public void holdPosition() {
-    climbPID.setReference(getPosition(), ControlType.kPosition);
+  public void funnelUp(){
+    funnelPID.setReference(FUNNEL_UP, ControlType.kPosition);
+  }
+
+  public void funnelDown(){
+    funnelPID.setReference(FUNNEL_DOWN, ControlType.kPosition);
+  }
+  ///
+  public void stop() {
+    climbMotor.set(0);
   }
 
   public boolean getClimbMode() {
@@ -67,20 +120,23 @@ public class Climber extends SubsystemBase {
 
   public void toggleClimbMode(){
     climbMode = !climbMode;
-    //if(climbMode)
-    //  open funnel
-    //  loosen
   }
   
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Climber Position", getPosition());
+    if(timer.get()>= 1.5 && !didReset){
+      funnelEncoder.setPosition(funnelDuty.get());
+      didReset = true;
+    }
 
   }
   @Override
   public void initSendable(SendableBuilder sendableBuilder) {
     sendableBuilder.addBooleanProperty("Climb Mode", () -> climbMode, null);
+    sendableBuilder.addDoubleProperty("Climber Relative Position", () -> getClimbPosition(), null);
+    sendableBuilder.addDoubleProperty("Funnel Relative Position", () -> funnelEncoder.getPosition(), null);
+    sendableBuilder.addDoubleProperty("Funnel Absolute Position", () -> getFunnelPosition(), null);
   }
 }

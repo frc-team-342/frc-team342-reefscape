@@ -5,6 +5,8 @@
 package frc.robot.commands.Climber;
 
 
+import static frc.robot.Constants.ClimbConstants.CLIMB_UP;
+
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Climber;
@@ -18,8 +20,6 @@ public class Climb extends Command {
   public Climb(Climber climber, XboxController joystick) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.climber=climber;
-    this.joystick=joystick;
-    addRequirements(climber);
   }
 
   // Called when the command is initially scheduled.
@@ -29,12 +29,8 @@ public class Climb extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    boolean move = joystick.getBButton();
-    if (climber.getClimbMode()){
-
-      climber.moveClimber((move)? 0.1 : 0);
-
-    }
+    if(climber.getClimbMode())
+      climber.moveClimber(0.1);
   }
 
   // Called once the command ends or is interrupted.
@@ -46,6 +42,6 @@ public class Climb extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return climber.getClimbPosition() >= CLIMB_UP;
   }
 }
