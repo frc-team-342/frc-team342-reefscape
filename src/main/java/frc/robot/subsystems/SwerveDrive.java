@@ -215,9 +215,13 @@ public class SwerveDrive extends SubsystemBase {
   
           };
         } 
-        public void toggleDriveAssist() {
+        public void driveAssistOn() {
           driveAssist = true;
           System.out.println("driveassist is true!!");
+        }
+        public void driveAssistOff() {
+          driveAssist = false;
+          System.out.println("driveassist is false!!");
         }
     
         public boolean getDriveAssist() {

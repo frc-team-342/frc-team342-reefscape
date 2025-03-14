@@ -141,7 +141,7 @@ public class RobotContainer {
     fieldOrienatedCommand = Commands.runOnce(() -> {
         swerve.toggleFieldOriented();
       }, swerve);
-    driveAssistToggle = Commands.runOnce(() -> {swerve.toggleDriveAssist();}, swerve);
+   // driveAssistToggle = Commands.runOnce(() -> {swerve.toggleDriveAssist();}, swerve);
     // Creating sequential command groups that use wrist and elevator
     goToIntake = new SequentialCommandGroup(
       new WristToPosition(wrist, WristPositions.ALGAE_WRIST_POSITION),
@@ -246,7 +246,7 @@ public class RobotContainer {
     toggleAlgaeModeButton.onTrue(toggleAlgaeMode);
     toggleCoralModeButton.onTrue(toggleCoralMode);
 
-    driveAssistButton.whileTrue(driveAssistToggle);
+    driveAssistButton.whileTrue(Commands.startEnd(()->{swerve.driveAssistOn();},()->{swerve.driveAssistOff();}));
 
     // Moves the wrist to a certain position based on what button is pressed
     level1Button.onTrue(goToIntake); 
