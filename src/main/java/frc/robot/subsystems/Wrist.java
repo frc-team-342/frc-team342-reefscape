@@ -23,7 +23,6 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 
@@ -45,14 +44,17 @@ public class Wrist extends SubsystemBase {
 
   private double speed;
   private double currentPosition;
-  private double desiredPosition;
   private double time;
+
+  private boolean coralMode;
+  private boolean alageMode;
 
   /** Creates a new Wrist. */
   public Wrist() {
     // Wrist instantiatiion
     wrist = new SparkMax(WRIST_ID, MotorType.kBrushless);
     wristConfig = new SparkMaxConfig();
+    coralMode = true;
     goingDown = false;
     didReset = false;
 
@@ -60,7 +62,7 @@ public class Wrist extends SubsystemBase {
 
     //Encoder instantiation
     throughBore = new DutyCycleEncoder(THROUGHBORE_PORT, (2 * Math.PI), WRIST_ZERO);
-    currentPosition = throughBore.get();
+    currentPosition = INTAKE_POSITION;
       
     //Wrist idle mode & smart current limit
     wristConfig
@@ -79,7 +81,7 @@ public class Wrist extends SubsystemBase {
     wristConfig.closedLoop.p(WRIST_PID_VALUES[0]);
     wristConfig.closedLoop.i(WRIST_PID_VALUES[1]);
     wristConfig.closedLoop.d(WRIST_PID_VALUES[2]);
-    wristConfig.closedLoop.outputRange(-0.3, .3);
+    wristConfig.closedLoop.outputRange(-0.2, .2); 
 
     wrist.configure(wristConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     timer.start();
@@ -89,7 +91,7 @@ public class Wrist extends SubsystemBase {
    * Moves wrist at a specified speed
    */
   public void move(double speed){
-    if(speed > 0.05) {
+    if(Math.abs(speed) > 0.05) {
       wrist.set(speed);
       currentPosition = getPosition();
     }else{
@@ -101,12 +103,12 @@ public class Wrist extends SubsystemBase {
    * Moves wrist to a certain position
    */
   public void wristToPosition(double position){
-    this.desiredPosition = position;
+    currentPosition = position;
     wristController.setReference(position, ControlType.kPosition);
   }
 
   public void holdWristPosition() {
-    wristController.setReference(getPosition(), ControlType.kPosition);
+    wristController.setReference(currentPosition, ControlType.kPosition);
   }
 
   /*
@@ -126,15 +128,35 @@ public class Wrist extends SubsystemBase {
   /**resets relative encoder to equal the through bore value*/
   public void resetEncoder(){
     wristEncoder.setPosition(throughBore.get());
-    didReset = true;
   }
 
   /**
    * VERY IMPORTANT!!! Makes sure the wrist is in the safe range so the robot doesn't critically damage itself
    * @return
    */
+
   public boolean isSafe(){
     return (getPosition() >= 1.3);
+  }
+
+   public boolean getCoralMode(){
+    return coralMode;
+  }
+
+  public boolean getAlageMode(){
+    return alageMode;
+  }
+
+  public void setCoralMode(){
+    coralMode = true;
+    alageMode = false;
+    
+  }
+
+  public void setAlgaeMode(){
+    alageMode = true;
+    coralMode = false;
+   
   }
 
   @Override
@@ -142,6 +164,7 @@ public class Wrist extends SubsystemBase {
     time = timer.get();
     if(time >= 1.5 && !didReset)
       resetEncoder();
+      didReset = true;
   }
 
   @Override
@@ -154,7 +177,13 @@ public class Wrist extends SubsystemBase {
         builder.addDoubleProperty("ThroughBore", () -> throughBore.get(), null);
         builder.addDoubleProperty("Encoder", () -> wristEncoder.getPosition(), null);
         builder.addDoubleProperty("Speed", () -> wristEncoder.getVelocity(), null);
-        builder.addDoubleProperty("Desired Position", () -> desiredPosition, null);
+        builder.addDoubleProperty("Desired Position", () -> currentPosition, null);
+
+        builder.addBooleanProperty("Coral Mode", () -> coralMode, null);
+        builder.addBooleanProperty("Algae Mode", () -> alageMode, null);
+
+        builder.addBooleanProperty("Get Coral Mode", () -> getCoralMode() , null);
+        builder.addBooleanProperty("Get Algae Mode", () -> getAlageMode(), null);
       // }
   }
 }
