@@ -246,7 +246,7 @@ public class RobotContainer {
     toggleAlgaeModeButton.onTrue(toggleAlgaeMode);
     toggleCoralModeButton.onTrue(toggleCoralMode);
 
-    driveAssistButton.onTrue(driveAssistToggle);
+    driveAssistButton.whileTrue(driveAssistToggle);
 
     // Moves the wrist to a certain position based on what button is pressed
     level1Button.onTrue(goToIntake); 

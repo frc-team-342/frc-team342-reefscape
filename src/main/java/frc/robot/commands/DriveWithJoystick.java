@@ -17,8 +17,8 @@ import frc.robot.subsystems.Vision.Limelight;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class DriveWithJoystick extends Command {
   /** Creates a new DriveWithJoystick. */
-  public boolean DriveAssist = SwerveDrive.getDriveAssist();
   private SwerveDrive swerve;
+  public boolean DriveAssist;
   private XboxController joyStick;
   private ChassisSpeeds chassisSpeeds;
   public Limelight limelight;
@@ -28,6 +28,7 @@ public class DriveWithJoystick extends Command {
   public DriveWithJoystick(SwerveDrive swerve, XboxController joyStick) {
 
     this.swerve = swerve;
+    DriveAssist = swerve.getDriveAssist();
     this.joyStick = joyStick;
     visionPID = new PIDController(.010,0,0);
     addRequirements(swerve);
@@ -43,7 +44,8 @@ public class DriveWithJoystick extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-  if(DriveAssist = false){
+    DriveAssist = swerve.getDriveAssist();
+  if (DriveAssist == false){
     /* Gets values from the Left(Drive) on the Xbox controller */
       double xSpeed = joyStick.getLeftY();
       double ySpeed = joyStick.getLeftX();
@@ -57,12 +59,13 @@ public class DriveWithJoystick extends Command {
       xSpeed = xSpeed * DriveConstants.MAX_DRIVE_SPEED;
       ySpeed = ySpeed * DriveConstants.MAX_DRIVE_SPEED;
 
-      /* Puts the x,y, and rotates speeds into a new ChasisSpeeds */
+      /* Puts the x,y, and rotates speeds into a new ChassisSpeeds */
       chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rotateSpeed);
 
-      /* Passes through the Chasisspeeds just created into the Drive Method */
+      /* Passes through the Chassisspeeds just created into the Drive Method */
       swerve.drive(chassisSpeeds);
     } else {
+      System.out.println("drive assist is on!! :3");
       /* Gets values from the Left(Drive) and Right(Rotate) Joysticks on the Xbox controller */
       double xSpeed = joyStick.getLeftY();
       double ySpeed = joyStick.getLeftX();
@@ -76,12 +79,12 @@ public class DriveWithJoystick extends Command {
       ySpeed = ySpeed * DriveConstants.MAX_DRIVE_SPEED;
       tx = LimelightHelpers.getTX("");
       System.out.println(tx);
-      double rSpeed = -visionPID.calculate(tx, 0);//tx * /*pid*/ .010 * Constants.DriveConstants.MAX_ROTATE_SPEED;
+      double rSpeed = -visionPID.calculate(tx, 0);
   
-      /* Puts the x,y, and rotates speeds into a new ChasisSpeeds */
+      /* Puts the x,y, and rotates speeds into a new ChassisSpeeds */
       chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rSpeed);
 
-      /* Passes through the Chasisspeeds just created into the Drive Method */
+      /* Passes through the Chassisspeeds just created into the Drive Method */
       swerve.drive(chassisSpeeds);
     }
 

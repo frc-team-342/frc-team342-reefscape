@@ -58,7 +58,7 @@ public class SwerveDrive extends SubsystemBase {
   private BooleanSupplier shouldFlipSupplier;
   private RobotConfig config;
   private Field2d feild;
-  public static boolean driveAssist;
+  public boolean driveAssist;
   
   
     SwerveModuleState[] swerveModuleStates;
@@ -216,10 +216,11 @@ public class SwerveDrive extends SubsystemBase {
           };
         } 
         public void toggleDriveAssist() {
-          driveAssist = !driveAssist;
+          driveAssist = true;
+          System.out.println("driveassist is true!!");
         }
     
-        public static boolean getDriveAssist() {
+        public boolean getDriveAssist() {
           return driveAssist;
       }
       /* Method that stops all modules */
