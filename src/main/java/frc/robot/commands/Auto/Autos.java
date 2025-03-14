@@ -11,6 +11,12 @@ import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.Wrist;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
@@ -36,9 +42,13 @@ public final class Autos {
 
     );
 
+   
   } 
 
-  
+   public static Command move(SwerveDrive swerve){
+      return AutoBuilder.pathfindToPose(new Pose2d(1,.5,new Rotation2d(0)), new PathConstraints(1, 20, 1.0, 1.0));
+    }
+
 
   private Autos() {
     throw new UnsupportedOperationException("This is a utility class!");

@@ -192,10 +192,10 @@ public final class Constants {
 
     // Offsets
 
-    public static final double FRONT_LEFT_OFFSET = 0.79;
-    public static final double FRONT_RIGHT_OFFSET = 0.26;
-    public static final double BACK_LEFT_OFFSET = 3.07;
-    public static final double BACK_RIGHT_OFFSET = 5.95;
+    public static final double FRONT_LEFT_OFFSET = 0.81;
+    public static final double FRONT_RIGHT_OFFSET = 4.42;
+    public static final double BACK_LEFT_OFFSET = 3.09;
+    public static final double BACK_RIGHT_OFFSET = 5.96;
 
 
     // Factors
