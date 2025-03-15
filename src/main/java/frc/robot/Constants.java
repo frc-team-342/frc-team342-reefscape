@@ -44,7 +44,7 @@ public final class Constants {
     public static final double WRIST_ZERO = 0.136; //.336
 
     // Wrist PID values; they're a list for sake of simplicity
-    public static final double[] WRIST_PID_VALUES = { 0.3, 0, 0.1 };
+    public static final double[] WRIST_PID_VALUES = { 0.35, 0, 0.1 };
     public static final double WRIST_ERROR = 0.1;
 
     // Wrist position Values (absolute enocder values I think)
@@ -58,6 +58,7 @@ public final class Constants {
     public static final double L2_POSITION = 0.59; //  0.39
     public static final double L4_POSITION = 1.249; // 1.049
     public static final double SAFE_POSITION = 1.769; // 1.569
+    public static final double MOVE_VALUE = 1.869; // 1.569
     public static final double ALGAE_POSITION = 2.704; // 2.504
     public static final double BARGE_POSITION = 1.12; //  0.92  
 
@@ -69,9 +70,10 @@ public final class Constants {
 
     public enum WristPositions { 
       TOGGLE_POSITION(SAFE_POSITION, ALGAE_POSITION),
+      MOVE_POSITION(MOVE_VALUE,ALGAE_POSITION),
       LOW_WRIST_POSITION(INTAKE_POSITION,ALGAE_POSITION),
-      MIDDLE_WRIST_POSITION(L2_POSITION,BARGE_POSITION),
-      HIGH_WRIST_POSITION(L4_POSITION,ALGAE_POSITION),
+      MIDDLE_WRIST_POSITION(L2_POSITION,ALGAE_POSITION), //CHANGE MADE
+      HIGH_WRIST_POSITION(L4_POSITION,BARGE_POSITION), //CHANGE MADE
       PROCESSOR_WRIST_POSITION(INTAKE_POSITION,ALGAE_POSITION),
       ALGAE_WRIST_POSITION(ALGAE_POSITION,ALGAE_POSITION);
 
@@ -134,7 +136,7 @@ public final class Constants {
     public static final double L1_HEIGHT = 0.0;
     public static final double L2_HEIGHT = 241.7 /**300.0*/;
     public static final double L3_HEIGHT = 644.58 /**485.0*/;
-    public static final double L4_HEIGHT = 1400.0 /**850.0*/;
+    public static final double L4_HEIGHT = 1384.0 /**850.0*/;
     public static final double PROCESSOR_HEIGHT = 0.0;
 
     public static final double ALGAE_LOW_HEIGHT = 462.36;
@@ -205,7 +207,7 @@ public final class Constants {
 
     // Speeds
     public static double MAX_DRIVE_SPEED = Units.feetToMeters(6);
-    public static double SLOW_DRIVE_SPEED = Units.feetToMeters(5);
+    public static double SLOW_DRIVE_SPEED = Units.feetToMeters(2);
 
     public static double MAX_ROTATE_SPEED = 4 * Math.PI;
 

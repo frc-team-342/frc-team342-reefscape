@@ -76,6 +76,18 @@ public class Claw extends SubsystemBase {
 
   }
 
+  public void reverseCoralIntake(){
+    claw.set(.2);
+  }
+
+  public void slowOutakeCoral(){
+    claw.set(-.15);
+  }
+
+  public void spin(double speed){
+    claw.set(speed);
+  }
+
  // public double getLastPos(){
   //    return currPos;
   //  }

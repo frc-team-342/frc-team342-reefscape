@@ -44,6 +44,7 @@ public class DriveWithJoystick extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
     DriveAssist = swerve.getDriveAssist();
   if (DriveAssist == false){
     /* Gets values from the Left(Drive) on the Xbox controller */
@@ -56,8 +57,13 @@ public class DriveWithJoystick extends Command {
       ySpeed = MathUtil.applyDeadband(ySpeed, 0.15);
       rotateSpeed = MathUtil.applyDeadband(rotateSpeed, 0.15);
 
-      xSpeed = xSpeed * DriveConstants.MAX_DRIVE_SPEED;
-      ySpeed = ySpeed * DriveConstants.MAX_DRIVE_SPEED;
+     if (swerve.getSlowMode()){
+      xSpeed = xSpeed * DriveConstants.SLOW_DRIVE_SPEED;
+      ySpeed = ySpeed * DriveConstants.SLOW_DRIVE_SPEED;
+     } else {
+     xSpeed = xSpeed * DriveConstants.MAX_DRIVE_SPEED;
+     ySpeed = ySpeed * DriveConstants.MAX_DRIVE_SPEED;
+    }
 
       /* Puts the x,y, and rotates speeds into a new ChassisSpeeds */
       chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rotateSpeed);
@@ -75,9 +81,15 @@ public class DriveWithJoystick extends Command {
       /*Applies deadband */
       xSpeed = MathUtil.applyDeadband(xSpeed, 0.15);
       ySpeed = MathUtil.applyDeadband(ySpeed, 0.15);
-
-      xSpeed = xSpeed * DriveConstants.MAX_DRIVE_SPEED;
-      ySpeed = ySpeed * DriveConstants.MAX_DRIVE_SPEED;
+    
+      if (swerve.getSlowMode()){
+        xSpeed = xSpeed * DriveConstants.SLOW_DRIVE_SPEED;
+        ySpeed = ySpeed * DriveConstants.SLOW_DRIVE_SPEED;
+       } else {
+       xSpeed = xSpeed * DriveConstants.MAX_DRIVE_SPEED;
+       ySpeed = ySpeed * DriveConstants.MAX_DRIVE_SPEED;
+      }
+    
       tx = LimelightHelpers.getTX("");
       System.out.println(tx);
       double rSpeed = -visionPID.calculate(tx, 0);
@@ -89,7 +101,6 @@ public class DriveWithJoystick extends Command {
       swerve.drive(chassisSpeeds);
     }
 
-   
   }
 
   // Called once the command ends or is interrupted.

@@ -47,6 +47,7 @@ public class SwerveDrive extends SubsystemBase {
   private ChassisSpeeds chassisSpeeds;
   
   private boolean fieldOriented; 
+  private boolean slowMode;
   
   private SwerveModule frontLeftModule;
   private SwerveModule frontRightModule;
@@ -128,24 +129,25 @@ public class SwerveDrive extends SubsystemBase {
           getCurrentSwerveModulePositions()
   
           );
-  
-          fieldOriented = false;
-  
-        poseSupplier = () -> getPose2d();
-        resetPoseConsumer = pose -> resetOdometry(pose);
-        robotRelativeOutput = chassisSpeeds -> drive(chassisSpeeds);
-        chasisSpeedSupplier = () -> getChassisSpeeds();
-        shouldFlipSupplier = () -> false;
-  
-          try {
-            config = RobotConfig.fromGUISettings();
-          } catch (IOException e) {
-            e.printStackTrace();
-          } catch (ParseException e) {
-            e.printStackTrace();
-          }    
-  
-          field = new Field2d();
+      
+        fieldOriented = false;
+        slowMode = false;
+
+      poseSupplier = () -> getPose2d();
+      resetPoseConsumer = pose -> resetOdometry(pose);
+      robotRelativeOutput = chassisSpeeds -> drive(chassisSpeeds);
+      chasisSpeedSupplier = () -> getChassisSpeeds();
+      shouldFlipSupplier = () -> false;
+
+        try {
+          config = RobotConfig.fromGUISettings();
+        } catch (IOException e) {
+          e.printStackTrace();
+        } catch (ParseException e) {
+          e.printStackTrace();
+        }    
+
+        feild = new Field2d();
   
           new Thread(() -> {
             try {
@@ -163,6 +165,14 @@ public class SwerveDrive extends SubsystemBase {
   
       }
   
+      public void toggleSlowMode() {
+      slowMode = !slowMode;
+      }
+
+      public boolean getSlowMode() {
+        return slowMode;
+      }
+  
       public ChassisSpeeds getChassisSpeeds(){
   
         return new ChassisSpeeds(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond);
@@ -174,23 +184,23 @@ public class SwerveDrive extends SubsystemBase {
     
         public void drive(ChassisSpeeds chassisSpeeds) {
   
-          /* When Field Orientated is True, passes the chassis speed and the Gryo's current angle through "fromFieldRelativeSpeeds",
+          /* When Field Oriented is True, passes the chassis speed and the Gryo's current angle through "fromFieldRelativeSpeeds",
            before passing it through the rest of the drive Method */
   
           if (fieldOriented) {
             chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, new Rotation2d(NavX.getRotation2d().getRadians()));
   
           }
-      
+
           SwerveModuleState swerveModuleStates[] = kinematics.toWheelSpeeds(chassisSpeeds);
+
   
           frontLeftModule.setState(swerveModuleStates[0]);
           frontRightModule.setState(swerveModuleStates[1]);
           backLeftModule.setState(swerveModuleStates[2]);
           backRightModule.setState(swerveModuleStates[3]);
-  
-  
-        }
+
+    }
   
         /* This drive method simply spins wheels  */
   
@@ -208,7 +218,7 @@ public class SwerveDrive extends SubsystemBase {
   
   
   
-        /* Method that returns the Moudle positions */
+        /* Method that returns the Module positions */
         public SwerveModulePosition[] getCurrentSwerveModulePositions(){
           return new SwerveModulePosition[]{
   
@@ -245,6 +255,10 @@ public class SwerveDrive extends SubsystemBase {
 
     public void resetOdometry(Pose2d pose){
        odometry.resetPosition(NavX.getRotation2d(), getCurrentSwerveModulePositions(), pose);
+    }
+    
+    public AHRS getGyro(){
+      return NavX;
     }
 
     public void resetPose(Pose2d pose){
@@ -316,9 +330,10 @@ public class SwerveDrive extends SubsystemBase {
     putBackRightModule(sendableBuilder);
 
     sendableBuilder.addBooleanProperty("Field Orienated", ()-> fieldOriented, null);
+    sendableBuilder.addBooleanProperty("Slow Mode", ()-> slowMode, null);
     sendableBuilder.addDoubleProperty("Gyro Reading", ()-> NavX.getAngle(), null);
 
-    sendableBuilder.addDoubleProperty("FL Distance Travlled", ()-> frontLeftModule.getDistance(), null);
+    sendableBuilder.addDoubleProperty("FL Distance Travelled", ()-> frontLeftModule.getDistance(), null);
     sendableBuilder.addDoubleProperty("FL Velocity", ()-> frontLeftModule.getDriveVelocity(), null);
 
   }
