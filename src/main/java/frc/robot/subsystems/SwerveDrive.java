@@ -35,6 +35,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class SwerveDrive extends SubsystemBase {
@@ -59,11 +60,11 @@ public class SwerveDrive extends SubsystemBase {
   private Supplier<ChassisSpeeds> chasisSpeedSupplier;
   private BooleanSupplier shouldFlipSupplier;
   private RobotConfig config;
-  private Field2d feild;
+  private Field2d field;
 
   //Mr. Neal Cooking, delete later
   // private double heading = NavX.getAngle();
-  private PIDController rotateCompensator;
+  // private PIDController rotateCompensator;
 
   SwerveModuleState[] swerveModuleStates;
   SwerveModulePosition[] swerveModulePositions;
@@ -81,7 +82,8 @@ public class SwerveDrive extends SubsystemBase {
         DriveConstants.FL_ENCODER_PORT, 
         false, true, 
         DriveConstants.FRONT_LEFT_OFFSET, 
-        "FL"
+        "FL",
+        DriveConstants.FL_WHEEL_DIAMETER
         );
 
         frontRightModule = new SwerveModule(
@@ -90,7 +92,8 @@ public class SwerveDrive extends SubsystemBase {
         DriveConstants.FR_ENCODER_PORT, 
         false, true, 
         DriveConstants.FRONT_RIGHT_OFFSET, 
-        "FR"
+        "FR",
+        DriveConstants.FR_WHEEL_DIAMETER
         );
 
         backLeftModule = new SwerveModule(
@@ -99,7 +102,8 @@ public class SwerveDrive extends SubsystemBase {
         DriveConstants.BL_ENCODER_PORT, 
         false, true, 
         DriveConstants.BACK_LEFT_OFFSET, 
-        "BL"
+        "BL",
+        DriveConstants.BL_WHEEL_DIAMETER
         );
 
         backRightModule = new SwerveModule(
@@ -108,7 +112,8 @@ public class SwerveDrive extends SubsystemBase {
         DriveConstants.BR_ENCODER_PORT, 
         false, true, 
         DriveConstants.BACK_RIGHT_OFFSET, 
-        "BR"
+        "BR",
+        DriveConstants.BR_WHEEL_DIAMETER
         );
 
       /* Initalizes Kinematics */
@@ -128,10 +133,12 @@ public class SwerveDrive extends SubsystemBase {
       odometry = new SwerveDriveOdometry( 
 
         kinematics, 
-        Rotation2d.fromDegrees(NavX.getAngle() % 360),
+        Rotation2d.fromDegrees(-NavX.getAngle() % 360),
         getCurrentSwerveModulePositions()
 
         );
+
+        odometry.resetPose(new Pose2d(2,4,new Rotation2d(0)));
 
         fieldOriented = false;
         slowMode = false;
@@ -142,9 +149,7 @@ public class SwerveDrive extends SubsystemBase {
       chasisSpeedSupplier = () -> getChassisSpeeds();
       shouldFlipSupplier = () -> { var alliance = DriverStation.getAlliance(); System.out.println(alliance.get() == DriverStation.Alliance.Red);  
                                    return alliance.get() == DriverStation.Alliance.Red;};
-
-                               
-
+                       
         try {
           config = RobotConfig.fromGUISettings();
         } catch (IOException e) {
@@ -153,7 +158,7 @@ public class SwerveDrive extends SubsystemBase {
           e.printStackTrace();
         }    
 
-        feild = new Field2d();
+        field = new Field2d();
 
         new Thread(() -> {
           try {
@@ -259,6 +264,10 @@ public class SwerveDrive extends SubsystemBase {
       return odometry.getPoseMeters();
     }
 
+    public Pose2d setPose2d(double X, double Y, double rotation){
+      return new Pose2d(X, Y, new Rotation2d(rotation));
+    }
+
     public void resetOdometry(Pose2d pose){
        odometry.resetPosition(NavX.getRotation2d(), getCurrentSwerveModulePositions(), pose);
     }
@@ -343,6 +352,8 @@ public class SwerveDrive extends SubsystemBase {
     sendableBuilder.addDoubleProperty("Chasis speeds, Y", () -> getChassisSpeeds().vyMetersPerSecond, null);
     sendableBuilder.addDoubleProperty("Chasis speeds, rotation", () -> getChassisSpeeds().omegaRadiansPerSecond, null);
 
+    
+    SmartDashboard.putData(field);
 
   }
       
@@ -351,7 +362,9 @@ public class SwerveDrive extends SubsystemBase {
     // This method will be called once per scheduler run
 
     //Updates the odometry every run
-    odometry.update(Rotation2d.fromDegrees(NavX.getAngle() % 360), getCurrentSwerveModulePositions());
+    odometry.update(Rotation2d.fromDegrees(-NavX.getAngle() % 360), getCurrentSwerveModulePositions());
+    field.setRobotPose(odometry.getPoseMeters());
+    
 
   }
 }

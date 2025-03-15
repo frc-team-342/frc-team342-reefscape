@@ -9,7 +9,7 @@ import org.opencv.core.Mat;
 
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-
+import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.util.Units;
 
@@ -156,7 +156,13 @@ public final class Constants {
     public static final double DRIVE_GEAR_RATIO = 6.75;
     public static final double ROTATE_GEAR_RATIO = 12.8;
 
-    public static final double WHEEL_DIAMETER = Units.inchesToMeters(4);
+    public static final double WHEEL_DIAMETER = Units.inchesToMeters(3.77);
+
+    public static final double FL_WHEEL_DIAMETER = Units.inchesToMeters(3.74);
+    public static final double FR_WHEEL_DIAMETER = Units.inchesToMeters(3.87);
+    public static final double BL_WHEEL_DIAMETER = Units.inchesToMeters(3.73);
+    public static final double BR_WHEEL_DIAMETER = Units.inchesToMeters(3.77);
+
     public static final double WHEEL_CIRCUMFERENCE = 2 * Math.PI;
 
     // Drive Motor IDs
@@ -179,10 +185,10 @@ public final class Constants {
     public static final int BR_ENCODER_PORT = 3;
 
     // Drive PID Values
-    public static final double DRIVE_P_VALUE = 0.1;
+    public static final double DRIVE_P_VALUE = 0.23;
     public static final double DRIVE_I_VALUE = 0.0;
     public static final double DRIVE_D_VALUE = 0.7; 
-    public static final double DRIVE_FF_VALUE = 0.9;
+    public static final double DRIVE_FF_VALUE = 0.25;
 
     // Rotate PID Values
     public static final double ROTATE_P_VALUE = 0.35;
@@ -199,8 +205,8 @@ public final class Constants {
 
 
     // Factors
-    public static final double DRIVE_POSITION_CONVERSION = ((Math.PI * WHEEL_DIAMETER) / DRIVE_GEAR_RATIO);
-    public static final double DRIVE_VELOCITY_CONVERSION = DRIVE_POSITION_CONVERSION / 60;
+    //public static final double DRIVE_POSITION_CONVERSION = ((Math.PI * WHEEL_DIAMETER) / DRIVE_GEAR_RATIO);
+    //public static final double DRIVE_VELOCITY_CONVERSION = DRIVE_POSITION_CONVERSION / 60;
 
     public static final double ROTATE_POSITION_CONVERSION = (Math.PI * 2) / ROTATE_GEAR_RATIO;
     public static final double ROTATE_VELOCITY_CONVERSION = ROTATE_POSITION_CONVERSION / 60;
@@ -214,9 +220,11 @@ public final class Constants {
 
     public static final PPHolonomicDriveController PATH_CONFIG_CONTROLLER = new PPHolonomicDriveController
 
-    (new PIDConstants(0.1, 0, 0.7),
+        (new PIDConstants(0.1, 0, 0.7),
         new PIDConstants(0.25, 0, 0.3));
 
+
+    public static final PathConstraints CONSTRAINTS = new PathConstraints(1.0, 20, 1.0, 1.0);
 
   }
 

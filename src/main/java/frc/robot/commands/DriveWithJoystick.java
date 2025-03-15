@@ -63,7 +63,7 @@ public class DriveWithJoystick extends Command {
   }
 
    /* Puts the x,y, and rotates speeds into a new ChasisSpeeds */
-   chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, rotateSpeed);
+   chassisSpeeds = new ChassisSpeeds(-xSpeed, -ySpeed, -rotateSpeed);
 
    /* Passes through the Chasisspeeds just created into the Drive Method */
    swerve.drive(chassisSpeeds);
