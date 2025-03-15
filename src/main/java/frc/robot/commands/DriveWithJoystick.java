@@ -66,6 +66,7 @@ public class DriveWithJoystick extends Command {
       swerve.drive(chassisSpeeds);
     } else {
       System.out.println("drive assist is on!! :3");
+      
       /* Gets values from the Left(Drive) and Right(Rotate) Joysticks on the Xbox controller */
       double xSpeed = joyStick.getLeftY();
       double ySpeed = joyStick.getLeftX();
