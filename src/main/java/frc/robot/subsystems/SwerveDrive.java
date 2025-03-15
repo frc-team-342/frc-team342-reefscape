@@ -21,6 +21,8 @@ import com.studica.frc.AHRS;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.SwerveModule;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.LimelightHelpers;
+import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.commands.DriveWithJoystick;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.Odometry;
@@ -57,7 +59,7 @@ public class SwerveDrive extends SubsystemBase {
   private Supplier<ChassisSpeeds> chasisSpeedSupplier;
   private BooleanSupplier shouldFlipSupplier;
   private RobotConfig config;
-  private Field2d feild;
+  private Field2d field;
   public boolean driveAssist;
   
   
@@ -103,6 +105,8 @@ public class SwerveDrive extends SubsystemBase {
           "BR"
           );
   
+          field = new Field2d();
+
         /* Initalizes Kinematics */
         kinematics = new SwerveDriveKinematics(
   
@@ -141,7 +145,7 @@ public class SwerveDrive extends SubsystemBase {
             e.printStackTrace();
           }    
   
-          feild = new Field2d();
+          field = new Field2d();
   
           new Thread(() -> {
             try {
@@ -243,6 +247,18 @@ public class SwerveDrive extends SubsystemBase {
        odometry.resetPosition(NavX.getRotation2d(), getCurrentSwerveModulePositions(), pose);
     }
 
+    public void resetPose(Pose2d pose){
+      odometry.resetPose(pose);
+    }
+
+    public void resetPoseLimelight(){
+      PoseEstimate estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("");
+      if(estimate.tagCount > 0 && LimelightHelpers.getTA("") >= .5){
+        System.out.println(LimelightHelpers.getTargetCount(""));
+        resetPose(estimate.pose);
+      }
+    }
+
     public void configureAutoBuilder() {
       AutoBuilder.configure(
         poseSupplier, 
@@ -313,6 +329,6 @@ public class SwerveDrive extends SubsystemBase {
 
     //Updates the odometry every run
     odometry.update(NavX.getRotation2d(), getCurrentSwerveModulePositions());
-
+    field.setRobotPose(odometry.getPoseMeters());
   }
 }
