@@ -13,24 +13,32 @@ import frc.robot.subsystems.Climber;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class Climb extends Command {
   private Climber climber;
-
-  private XboxController joystick;
-
+  private double position;
+  private static int iter = 0;
   /** Creates a new Climb. */
-  public Climb(Climber climber, XboxController joystick) {
+  public Climb(Climber climber) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.climber=climber;
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    position = climber.getClimbPosition();
+    if(climber.getClimbMode())
+      iter++;
+    System.out.println(iter);
+  }
 
+  public static int getIter(){
+    return iter;
+  }
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     if(climber.getClimbMode())
-      climber.moveClimber(0.1);
+      climber.climberUp(CLIMB_UP * iter);
+
   }
 
   // Called once the command ends or is interrupted.
@@ -42,6 +50,6 @@ public class Climb extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return climber.getClimbPosition() >= CLIMB_UP;
+    return false;
   }
 }

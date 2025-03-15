@@ -56,30 +56,30 @@ public class Climber extends SubsystemBase {
     climbEncoder = climbMotor.getEncoder();
     funnelEncoder = funnelMotor.getEncoder(); 
     funnelDuty = new DutyCycleEncoder(FUNNEL_DUTY_ID, (Math.PI * 2), 0); 
-    
+
     timer = new Timer();
     didReset = false;
 
     climbConfig
-      .idleMode(IdleMode.kBrake)
+      .idleMode(IdleMode.kCoast) //TODO kBrake
       .smartCurrentLimit(30);
-      funnelConfig.closedLoop
-      .p(FUNNEL_P)
-      .i(FUNNEL_I)
-      .d(FUNNEL_D)
-      .outputRange(-.2, .2);
+    climbConfig.closedLoop
+      .p(CLIMB_P)
+      .i(CLIMB_I)
+      .d(CLIMB_D);
       
     funnelConfig
-      .idleMode(IdleMode.kBrake)
+      .idleMode(IdleMode.kCoast) //TODO kBrake
       .smartCurrentLimit(30);
     funnelConfig.closedLoop
       .p(FUNNEL_P)
       .i(FUNNEL_I)
       .d(FUNNEL_D)
-      .outputRange(-.2, .2);
-      
+      .outputRange(-1, 0.3);
     climbMotor.configure(climbConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     funnelMotor.configure(funnelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    
   }
 
   public double getClimbPosition(){
@@ -93,13 +93,12 @@ public class Climber extends SubsystemBase {
   public void moveClimber(double speed){
     climbMotor.set(speed);
   }
-
   public RelativeEncoder getEncoder(){
     return climbEncoder;
   }
 
-  public void climberUp(){
-    climbPID.setReference(CLIMB_UP, ControlType.kPosition);
+  public void climberUp(double position){
+    climbPID.setReference(position, ControlType.kPosition);
   }
 
   public void funnelUp(){

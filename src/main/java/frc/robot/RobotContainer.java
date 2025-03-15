@@ -193,7 +193,6 @@ public class RobotContainer {
     onStop = Commands.runOnce(() -> { claw.stopButton(); }, claw);
     outtakeCommand = Commands.runOnce(() -> { claw.outTakeCoral(); }, claw);
     intakeCommand = new SpinClaw(claw);
-    climb = new Climb(climber, driver);
 
     // Creating sequential command groups that use wrist and elevator
     goToIntake = new SequentialCommandGroup(
@@ -240,9 +239,17 @@ public class RobotContainer {
         new WristToPosition(wrist, WristPositions.ALGAE_WRIST_POSITION)
       )
     );
-    climb = new Climb(climber, driver);
+
     climbSequence = new ParallelCommandGroup(
-      climb
+      new Climb(climber),
+      Commands.run(() -> {
+        if(climber.getClimbMode()){
+          if(Climb.getIter() % 2 == 1)
+            climber.funnelUp();
+          else
+            climber.funnelDown();
+        }
+      }, climber)
     );
     // Button Assigments 
     level1Button = new JoystickButton(operator, XboxController.Button.kA.value );
@@ -258,8 +265,8 @@ public class RobotContainer {
 
     // Configure the trigger bindings
     
-    toggleClimbButton = new JoystickButton(operator, XboxController.Button.kX.value);
-    climbButton = new JoystickButton(operator, XboxController.Button.kB.value);
+    toggleClimbButton = new JoystickButton(driver, XboxController.Button.kX.value);
+    climbButton = new JoystickButton(driver, XboxController.Button.kB.value);
     
     //wrist.setDefaultCommand(wristToAlgae);
     elevator.setDefaultCommand(moveElevatorWithJoystick);
@@ -332,8 +339,8 @@ public class RobotContainer {
     //Toggles climb mode
     toggleClimbButton.onTrue(Commands.runOnce(() -> {climber.toggleClimbMode();}, climber)); // X button
     //runs climber
-    //climbButton.onTrue(climbSequence); // B button
-    climbButton.whileTrue(Commands.run(() -> {if(climber.getClimbMode()) climber.moveClimber(0.1); }, climber)); // B button
+    climbButton.onTrue(climbSequence); // B button
+    //climbButton.whileTrue(climb); // B button
 
     // claw
     intakeButton.whileTrue(intake);
