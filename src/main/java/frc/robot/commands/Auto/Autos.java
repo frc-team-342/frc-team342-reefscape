@@ -53,13 +53,26 @@ public final class Autos {
     }
 
 
-    public static Command leftAndDiagonal(SwerveDrive swerve){
+    public static Command TestAuto(SwerveDrive swerve){
 
       return Commands.sequence(
         
       AutoBuilder.pathfindToPose(swerve.setPose2d(2, 5, (Math.PI / 2)), DriveConstants.CONSTRAINTS),
       
-      AutoBuilder.pathfindToPose(swerve.setPose2d(4, 6, (Math.PI / 2)), DriveConstants.CONSTRAINTS)
+      AutoBuilder.pathfindToPose(swerve.setPose2d(4, 6, (Math.PI / 2)), DriveConstants.CONSTRAINTS),
+
+      swerve.posetest(2.0, 5.0, 0.0)
+      
+      );
+
+    }
+
+    
+    public static Command scoreCommand(SwerveDrive swerve){
+
+      return Commands.sequence(
+
+      swerve.posetest(5.7, 3, Math.PI)
       
       );
 
