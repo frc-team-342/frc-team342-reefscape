@@ -76,40 +76,72 @@ public class SwerveDrive extends SubsystemBase {
           DriveConstants.FRONT_LEFT_DRIVE_ID, 
           DriveConstants.FRONT_LEFT_ROTATE_ID, 
           DriveConstants.FL_ENCODER_PORT, 
+<<<<<<< HEAD
+=======
+
+>>>>>>> a9da9727f8a2a3a82f881cd56ce00bf0916ee339
           false, true, 
           DriveConstants.FRONT_LEFT_OFFSET, 
           "FL",
           DriveConstants.FL_WHEEL_DIAMETER
+<<<<<<< HEAD
+=======
+
+>>>>>>> a9da9727f8a2a3a82f881cd56ce00bf0916ee339
           );
   
           frontRightModule = new SwerveModule(
           DriveConstants.FRONT_RIGHT_DRIVE_ID, 
           DriveConstants.FRONT_RIGHT_ROTATE_ID, 
           DriveConstants.FR_ENCODER_PORT, 
+<<<<<<< HEAD
+=======
+
+>>>>>>> a9da9727f8a2a3a82f881cd56ce00bf0916ee339
           false, true, 
           DriveConstants.FRONT_RIGHT_OFFSET, 
           "FR",
           DriveConstants.FR_WHEEL_DIAMETER
+<<<<<<< HEAD
+=======
+
+>>>>>>> a9da9727f8a2a3a82f881cd56ce00bf0916ee339
           );
   
           backLeftModule = new SwerveModule(
           DriveConstants.BACK_LEFT_DRIVE_ID, 
           DriveConstants.BACK_LEFT_ROTATE_ID, 
           DriveConstants.BL_ENCODER_PORT, 
+<<<<<<< HEAD
+=======
+
+>>>>>>> a9da9727f8a2a3a82f881cd56ce00bf0916ee339
           false, true, 
           DriveConstants.BACK_LEFT_OFFSET, 
           "BL",
           DriveConstants.BL_WHEEL_DIAMETER
+<<<<<<< HEAD
+=======
+
+>>>>>>> a9da9727f8a2a3a82f881cd56ce00bf0916ee339
           );
   
           backRightModule = new SwerveModule(
           DriveConstants.BACK_RIGHT_DRIVE_ID, 
           DriveConstants.BACK_RIGHT_ROTATE_ID, 
           DriveConstants.BR_ENCODER_PORT, 
+<<<<<<< HEAD
+=======
+
+>>>>>>> a9da9727f8a2a3a82f881cd56ce00bf0916ee339
           false, true, 
           DriveConstants.BACK_RIGHT_OFFSET, 
           "BR",
           DriveConstants.BR_WHEEL_DIAMETER
+<<<<<<< HEAD
+=======
+
+>>>>>>> a9da9727f8a2a3a82f881cd56ce00bf0916ee339
           );
   
           field = new Field2d();
@@ -131,7 +163,13 @@ public class SwerveDrive extends SubsystemBase {
         odometry = new SwerveDriveOdometry( 
   
           kinematics, 
+<<<<<<< HEAD
           Rotation2d.fromDegrees(-NavX.getAngle() % 360),
+=======
+
+          Rotation2d.fromDegrees(-NavX.getAngle() % 360),
+
+>>>>>>> a9da9727f8a2a3a82f881cd56ce00bf0916ee339
           getCurrentSwerveModulePositions()
   
           );
@@ -154,7 +192,13 @@ public class SwerveDrive extends SubsystemBase {
           e.printStackTrace();
         }    
 
+<<<<<<< HEAD
         field = new Field2d();
+=======
+
+        field = new Field2d();
+
+>>>>>>> a9da9727f8a2a3a82f881cd56ce00bf0916ee339
   
           new Thread(() -> {
             try {
@@ -182,7 +226,13 @@ public class SwerveDrive extends SubsystemBase {
   
       public ChassisSpeeds getChassisSpeeds(){
   
+<<<<<<< HEAD
         return chassisSpeeds;
+=======
+
+        return chassisSpeeds;
+
+>>>>>>> a9da9727f8a2a3a82f881cd56ce00bf0916ee339
   
       }
   
@@ -370,9 +420,15 @@ public class SwerveDrive extends SubsystemBase {
     // This method will be called once per scheduler run
 
     //Updates the odometry every run
+<<<<<<< HEAD
     odometry.update(Rotation2d.fromDegrees(-NavX.getAngle() % 360), getCurrentSwerveModulePositions());
     field.setRobotPose(odometry.getPoseMeters());
     
+=======
+
+    odometry.update(Rotation2d.fromDegrees(-NavX.getAngle() % 360), getCurrentSwerveModulePositions());
+    field.setRobotPose(odometry.getPoseMeters());
+>>>>>>> a9da9727f8a2a3a82f881cd56ce00bf0916ee339
 
   }
 }
