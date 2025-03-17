@@ -18,6 +18,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.studica.frc.AHRS;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.SwerveModule;
 import frc.robot.Constants.DriveConstants;
@@ -71,6 +72,8 @@ public class SwerveDrive extends SubsystemBase {
   
     /** Creates a new SwerveDrive. */
     public SwerveDrive() {
+
+         chassisSpeeds = new ChassisSpeeds(0, 0, 0);
   
         frontLeftModule = new SwerveModule(
           DriveConstants.FRONT_LEFT_DRIVE_ID, 
@@ -135,6 +138,8 @@ public class SwerveDrive extends SubsystemBase {
           getCurrentSwerveModulePositions()
   
           );
+
+          odometry.resetPose(new Pose2d(7,3,new Rotation2d(0)));
       
         fieldOriented = false;
         slowMode = false;
@@ -207,6 +212,8 @@ public class SwerveDrive extends SubsystemBase {
           backLeftModule.setState(swerveModuleStates[2]);
           backRightModule.setState(swerveModuleStates[3]);
 
+          this.chassisSpeeds = chassisSpeeds;
+
     }
   
         /* This drive method simply spins wheels  */
@@ -262,6 +269,10 @@ public class SwerveDrive extends SubsystemBase {
 
     public Pose2d setPose2d(double X, double Y, double rotation){
       return new Pose2d(X, Y, new Rotation2d(rotation));
+    }
+
+    public Command posetest(double X, double Y, double rotation){
+      return AutoBuilder.pathfindToPose(new Pose2d(X, Y, new Rotation2d(rotation)), DriveConstants.CONSTRAINTS);
     }
 
     public void resetOdometry(Pose2d pose){

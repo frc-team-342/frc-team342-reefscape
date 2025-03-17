@@ -193,7 +193,7 @@ public class RobotContainer {
       new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_MIDDLE_POSITION_L3), 
       new ParallelCommandGroup(
         new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_MIDDLE_POSITION_L3, true), 
-        new WristToPosition(wrist, WristPositions.MIDDLE_WRIST_POSITION)
+        new WristToPosition(wrist, WristPositions.L3_WRIST_POSITION)
       )
     );
 
@@ -250,7 +250,7 @@ public class RobotContainer {
     autoChooser.addOption("Do Nothing", Autos.doNothing(swerve));
 
     autoChooser.addOption("Pose Drive", Autos.move(swerve));
-    autoChooser.addOption("Pose Drive 2", Autos.leftAndDiagonal(swerve));
+    autoChooser.addOption("score", Autos.scoreCommand(swerve));
 
     //autoChooser.addOption("Test PATHPLANNER", new PathPlannerAuto("Test Auto"));
 

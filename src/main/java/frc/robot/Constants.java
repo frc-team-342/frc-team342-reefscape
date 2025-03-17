@@ -56,6 +56,7 @@ public final class Constants {
     public static final double INTAKE_POSITION = 0.2; // 0.0
     public static final double L1_POSITION = 0.2; // 0.0
     public static final double L2_POSITION = 0.59; //  0.39
+    public static final double L3_POSITION = 0.72;
     public static final double L4_POSITION = 1.249; // 1.049
     public static final double SAFE_POSITION = 1.769; // 1.569
     public static final double MOVE_VALUE = 1.869; // 1.569
@@ -73,6 +74,7 @@ public final class Constants {
       MOVE_POSITION(MOVE_VALUE,ALGAE_POSITION),
       LOW_WRIST_POSITION(INTAKE_POSITION,ALGAE_POSITION),
       MIDDLE_WRIST_POSITION(L2_POSITION,ALGAE_POSITION), //CHANGE MADE
+      L3_WRIST_POSITION(L3_POSITION,ALGAE_POSITION),
       HIGH_WRIST_POSITION(L4_POSITION,BARGE_POSITION), //CHANGE MADE
       PROCESSOR_WRIST_POSITION(INTAKE_POSITION,ALGAE_POSITION),
       ALGAE_WRIST_POSITION(ALGAE_POSITION,ALGAE_POSITION);
