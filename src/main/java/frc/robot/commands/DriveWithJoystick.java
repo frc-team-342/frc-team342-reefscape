@@ -95,13 +95,7 @@ public class DriveWithJoystick extends Command {
       double rSpeed = -visionPID.calculate(tx, 0);
   
       /* Puts the x,y, and rotates speeds into a new ChassisSpeeds */
-<<<<<<< HEAD
       chassisSpeeds = new ChassisSpeeds(-xSpeed, -ySpeed, -rSpeed);
-=======
-
-      chassisSpeeds = new ChassisSpeeds(-xSpeed, -ySpeed, -rSpeed);
-
->>>>>>> a9da9727f8a2a3a82f881cd56ce00bf0916ee339
 
       /* Passes through the Chassisspeeds just created into the Drive Method */
       swerve.drive(chassisSpeeds);
