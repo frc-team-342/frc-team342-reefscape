@@ -5,12 +5,21 @@
 package frc.robot.commands.Auto;
 
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ElevatorConstants.ElevatorHeights;
+import frc.robot.Constants.WristConstants.WristPositions;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.Claw.Outtake;
+import frc.robot.commands.Elevator.MoveElevatorToPosition;
+import frc.robot.commands.Limelight.AutoAlign;
+import frc.robot.commands.Wrist.WristToPosition;
 import frc.robot.subsystems.Claw;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.Wrist;
+import frc.robot.subsystems.Vision.Limelight;
+
+import static frc.robot.Constants.ElevatorConstants.L4_HEIGHT;
 
 import org.opencv.core.Mat;
 
@@ -21,6 +30,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public final class Autos {
   /** Example static factory for an autonomous command. */
@@ -53,29 +64,34 @@ public final class Autos {
     }
 
 
-    public static Command TestAuto(SwerveDrive swerve){
 
+    public static Command scoreCommand(SwerveDrive swerve, Elevator elevator, Wrist wrist){
+
+      
+      
       return Commands.sequence(
-        
-      AutoBuilder.pathfindToPose(swerve.setPose2d(2, 5, (Math.PI / 2)), DriveConstants.CONSTRAINTS),
-      
-      AutoBuilder.pathfindToPose(swerve.setPose2d(4, 6, (Math.PI / 2)), DriveConstants.CONSTRAINTS),
 
-      swerve.posetest(2.0, 5.0, 0.0)
-      
-      );
+      Commands.runOnce(() -> {swerve.resetOdometry(new Pose2d(7.18, 4.05, new Rotation2d(0)));}),
 
-    }
+      swerve.setPose2d(6.68, 4.05, Math.PI),
 
+      Commands.runOnce(() -> {swerve.resetPoseLimelight();}),
+
+      swerve.setPose2d(6.68, 4.21, Math.PI),
+
+      new SequentialCommandGroup(
+      new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4)),
+
+      new ParallelCommandGroup(
+        new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true), 
+        new WristToPosition(wrist, WristPositions.HIGH_WRIST_POSITION)).withTimeout(4),
+
+        new ParallelCommandGroup(
+          new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
+          swerve.setPose2d(5.67, 4.21, Math.PI)
+      )); 
     
-    public static Command scoreCommand(SwerveDrive swerve){
-
-      return Commands.sequence(
-
-      swerve.posetest(5.7, 3, Math.PI)
-      
-      );
-
     }
 
 

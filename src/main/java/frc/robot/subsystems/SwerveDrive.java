@@ -37,6 +37,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -51,6 +52,7 @@ public class SwerveDrive extends SubsystemBase {
   
   private boolean fieldOriented; 
   private boolean slowMode;
+  private boolean redSide;
   
   private SwerveModule frontLeftModule;
   private SwerveModule frontRightModule;
@@ -74,7 +76,8 @@ public class SwerveDrive extends SubsystemBase {
     public SwerveDrive() {
 
          chassisSpeeds = new ChassisSpeeds(0, 0, 0);
-  
+        redSide = isRed();
+
         frontLeftModule = new SwerveModule(
           DriveConstants.FRONT_LEFT_DRIVE_ID, 
           DriveConstants.FRONT_LEFT_ROTATE_ID, 
@@ -143,6 +146,7 @@ public class SwerveDrive extends SubsystemBase {
       
         fieldOriented = false;
         slowMode = false;
+        
 
       poseSupplier = () -> getPose2d();
       resetPoseConsumer = pose -> resetOdometry(pose);
@@ -169,6 +173,11 @@ public class SwerveDrive extends SubsystemBase {
           }).start();
   
           configureAutoBuilder();
+      }
+
+      public Boolean isRed(){
+        var alliance = DriverStation.getAlliance();
+        return alliance.get() == DriverStation.Alliance.Red;
       }
   
       public void toggleFieldOriented (){
@@ -267,11 +276,7 @@ public class SwerveDrive extends SubsystemBase {
       return odometry.getPoseMeters();
     }
 
-    public Pose2d setPose2d(double X, double Y, double rotation){
-      return new Pose2d(X, Y, new Rotation2d(rotation));
-    }
-
-    public Command posetest(double X, double Y, double rotation){
+    public Command setPose2d(double X, double Y, double rotation){
       return AutoBuilder.pathfindToPose(new Pose2d(X, Y, new Rotation2d(rotation)), DriveConstants.CONSTRAINTS);
     }
 
@@ -287,12 +292,27 @@ public class SwerveDrive extends SubsystemBase {
       odometry.resetPose(pose);
     }
 
+  
     public void resetPoseLimelight(){
-      PoseEstimate estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("");
-      if(estimate.tagCount > 0 && LimelightHelpers.getTA("") >= .5){
-        System.out.println(LimelightHelpers.getTargetCount(""));
-        resetPose(estimate.pose);
+
+      PoseEstimate estimate;
+
+      if(redSide){
+        estimate = LimelightHelpers.getBotPoseEstimate_wpiRed("limelight");
+      }else{
+        estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
       }
+
+      if(estimate.tagCount > 0 && LimelightHelpers.getTA("limelight") >= .5){
+        System.out.println(LimelightHelpers.getTargetCount("limelight"));
+        resetPose(estimate.pose);
+      } else {
+        System.out.println("NO tags found");
+      } 
+    }
+
+    public void resetCamSide(){
+      
     }
 
     public void configureAutoBuilder() {
@@ -370,6 +390,8 @@ public class SwerveDrive extends SubsystemBase {
     sendableBuilder.addDoubleProperty("Chasis speeds, X", () -> getChassisSpeeds().vxMetersPerSecond, null);
     sendableBuilder.addDoubleProperty("Chasis speeds, Y", () -> getChassisSpeeds().vyMetersPerSecond, null);
     sendableBuilder.addDoubleProperty("Chasis speeds, rotation", () -> getChassisSpeeds().omegaRadiansPerSecond, null);
+
+    sendableBuilder.addBooleanProperty("Am i red?", () -> redSide, null);
 
     
     SmartDashboard.putData(field);
