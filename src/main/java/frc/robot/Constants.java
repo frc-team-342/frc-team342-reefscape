@@ -234,9 +234,9 @@ public final class Constants {
     public static final double FUNNEL_UP = -30;
     public static final double FUNNEL_DOWN = 0;
 
-    public static final double FUNNEL_P = 0.1;
-    public static final double FUNNEL_I = 0;
-    public static final double FUNNEL_D = 0.07;
+    public static final double FUNNEL_P = 0.06;
+    public static final double FUNNEL_I = 0.01;
+    public static final double FUNNEL_D = 0.03;
     public static final double CLIMB_P = 0.03;
     public static final double CLIMB_I = 0;
     public static final double CLIMB_D = 0.04;
