@@ -54,6 +54,8 @@ public class SwerveDrive extends SubsystemBase {
   private boolean slowMode;
   private boolean redSide;
   
+  private int tag;
+  
   private SwerveModule frontLeftModule;
   private SwerveModule frontRightModule;
   private SwerveModule backLeftModule;
@@ -308,14 +310,13 @@ public class SwerveDrive extends SubsystemBase {
 
       if(estimate.tagCount > 0 && LimelightHelpers.getTA("limelight") >= .5){
         System.out.println(LimelightHelpers.getTargetCount("limelight"));
+        tag = estimate.rawFiducials[0].id;
         resetPose(estimate.pose);
       } else {
         System.out.println("NO tags found");
-      } 
-    }
+        tag = 0;
 
-    public void resetCamSide(){
-      
+      } 
     }
 
     public void configureAutoBuilder() {
@@ -394,8 +395,13 @@ public class SwerveDrive extends SubsystemBase {
     sendableBuilder.addDoubleProperty("Chasis speeds, Y", () -> getChassisSpeeds().vyMetersPerSecond, null);
     sendableBuilder.addDoubleProperty("Chasis speeds, rotation", () -> getChassisSpeeds().omegaRadiansPerSecond, null);
 
+    sendableBuilder.addFloatProperty("Tag Number", () -> tag, null);
+
     sendableBuilder.addBooleanProperty("Am i red?", () -> redSide, null);
 
+    sendableBuilder.addDoubleProperty("Field setter", () -> {return 0.0;}, (double dummy) -> resetPoseLimelight());
+
+    sendableBuilder.addDoubleProperty("Match Time", () -> DriverStation.getMatchTime(), null);
     
     SmartDashboard.putData(field);
 

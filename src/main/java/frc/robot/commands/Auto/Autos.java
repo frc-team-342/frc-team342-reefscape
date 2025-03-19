@@ -67,18 +67,20 @@ public final class Autos {
 
 
 
-    public static Command scoreCommand(SwerveDrive swerve, Elevator elevator, Wrist wrist, Claw claw){
+    public static Command middleScore(SwerveDrive swerve, Elevator elevator, Wrist wrist, Claw claw){
 
       
       return Commands.sequence(
 
       Commands.runOnce(() -> {swerve.resetOdometry(new Pose2d(7.18, 4.05, new Rotation2d(0)));}),
+      
+      new RotateToAngle(180, swerve),
 
       swerve.setPose2d(6.68, 4.05, Math.PI),
 
       Commands.runOnce(() -> {swerve.resetPoseLimelight();}),
 
-      swerve.setPose2d(6.68, 4.21, Math.PI),
+      swerve.setPose2d(6.68, 4.20, Math.PI),
 
       new SequentialCommandGroup(
       new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
@@ -90,7 +92,7 @@ public final class Autos {
 
       new ParallelCommandGroup(
       new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
-      swerve.setSlowPose2d(5.67, 4.18, Math.PI)).withTimeout(3),
+      swerve.setSlowPose2d(5.67, 4.20, Math.PI)).withTimeout(2.5),
 
       new ParallelCommandGroup(
       new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
@@ -98,7 +100,7 @@ public final class Autos {
       
       new ParallelCommandGroup(
       new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
-      swerve.setSlowPose2d(6.68, 4.18, Math.PI)).withTimeout(3),
+      swerve.setSlowPose2d(6.68, 4.20, Math.PI)).withTimeout(3),
 
       new SequentialCommandGroup(
       new WristToPosition(wrist, WristPositions.TOGGLE_POSITION)),
@@ -109,7 +111,7 @@ public final class Autos {
     }
 
 
-    public static Command leftScoreCommand(SwerveDrive swerve, Elevator elevator, Wrist wrist, Claw claw){
+    public static Command leftScore(SwerveDrive swerve, Elevator elevator, Wrist wrist, Claw claw){
 
       
       return Commands.sequence(
@@ -132,20 +134,21 @@ public final class Autos {
 
       new ParallelCommandGroup(
       new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
-      swerve.setSlowPose2d(5.065, 5.185, (Units.degreesToRadians(236)))).withTimeout(3),
+      swerve.setSlowPose2d(5.3, 5.1, (Units.degreesToRadians(236)))).withTimeout(3),
 
         new ParallelCommandGroup(
         new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
-       new Outtake(wrist, claw)).withTimeout(1));
+       new Outtake(wrist, claw)).withTimeout(1),
       
-      //new ParallelCommandGroup(
-      // new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
-       // swerve.setSlowPose2d(6.68, 6.34, (Units.degreesToRadians(236)))).withTimeout(3),
+      new ParallelCommandGroup(
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
+       swerve.setSlowPose2d(6.68, 6.34, (Units.degreesToRadians(236)))).withTimeout(3),
 
-      //new SequentialCommandGroup(
-     // new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
-     // new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION_L1), 
-     // new WristToPosition(wrist, WristPositions.LOW_WRIST_POSITION)));
+      new SequentialCommandGroup(
+      new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION_L1), 
+      new WristToPosition(wrist, WristPositions.LOW_WRIST_POSITION)));
+      
       
     }
 

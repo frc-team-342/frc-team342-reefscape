@@ -218,7 +218,8 @@ public final class Constants {
     public static double MAX_DRIVE_SPEED = Units.feetToMeters(15);
     public static double SLOW_DRIVE_SPEED = Units.feetToMeters(2);
 
-    public static double MAX_ROTATE_SPEED = 4 * Math.PI;
+    public static double SLOW_ROTATE_SPEED = .5 * Math.PI;
+    public static double MAX_ROTATE_SPEED = 1 * Math.PI;
 
 
     public static final PPHolonomicDriveController PATH_CONFIG_CONTROLLER = new PPHolonomicDriveController
