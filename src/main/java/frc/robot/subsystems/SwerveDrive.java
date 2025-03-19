@@ -152,8 +152,7 @@ public class SwerveDrive extends SubsystemBase {
       resetPoseConsumer = pose -> resetOdometry(pose);
       robotRelativeOutput = chassisSpeeds -> drive(chassisSpeeds);
       chasisSpeedSupplier = () -> getChassisSpeeds();
-      shouldFlipSupplier = () -> { var alliance = DriverStation.getAlliance(); System.out.println(alliance.get() == DriverStation.Alliance.Red);  
-                                   return alliance.get() == DriverStation.Alliance.Red;};
+      shouldFlipSupplier = () -> isRed();
                        
         try {
           config = RobotConfig.fromGUISettings();
@@ -277,6 +276,10 @@ public class SwerveDrive extends SubsystemBase {
     }
 
     public Command setPose2d(double X, double Y, double rotation){
+      return AutoBuilder.pathfindToPose(new Pose2d(X, Y, new Rotation2d(rotation)), DriveConstants.CONSTRAINTS);
+    }
+
+    public Command setSlowPose2d(double X, double Y, double rotation){
       return AutoBuilder.pathfindToPose(new Pose2d(X, Y, new Rotation2d(rotation)), DriveConstants.CONSTRAINTS);
     }
 

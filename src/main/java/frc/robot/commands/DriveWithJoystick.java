@@ -77,7 +77,6 @@ public class DriveWithJoystick extends Command {
       double xSpeed = joyStick.getLeftY();
       double ySpeed = joyStick.getLeftX();
 
-
       /*Applies deadband */
       xSpeed = MathUtil.applyDeadband(xSpeed, 0.15);
       ySpeed = MathUtil.applyDeadband(ySpeed, 0.15);

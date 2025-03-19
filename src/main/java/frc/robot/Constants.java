@@ -215,7 +215,7 @@ public final class Constants {
     public static final double ROTATE_VELOCITY_CONVERSION = ROTATE_POSITION_CONVERSION / 60;
 
     // Speeds
-    public static double MAX_DRIVE_SPEED = Units.feetToMeters(10);
+    public static double MAX_DRIVE_SPEED = Units.feetToMeters(15);
     public static double SLOW_DRIVE_SPEED = Units.feetToMeters(2);
 
     public static double MAX_ROTATE_SPEED = 4 * Math.PI;
@@ -227,7 +227,9 @@ public final class Constants {
         new PIDConstants(0.25, 0, 0.3));
 
 
-    public static final PathConstraints CONSTRAINTS = new PathConstraints(1.0, 20, 10, 20);
+    public static final PathConstraints CONSTRAINTS = new PathConstraints(1.0, 20, 15, 20);
+
+    public static final PathConstraints SLOW_CONSTRAINTS = new PathConstraints(.2, 5, 5, 10);
 
   }
 
