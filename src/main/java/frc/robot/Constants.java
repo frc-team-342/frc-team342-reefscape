@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.security.DrbgParameters.Reseed;
+
 import org.opencv.core.Mat;
 
 
@@ -11,6 +13,7 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -105,7 +108,6 @@ public final class Constants {
       HIGH_POSITION_L4(L4_HEIGHT,TOP_POSITION),
       PROCESSOR_POSITION(PROCESSOR_HEIGHT,PROCESSOR_HEIGHT);
 
-
       private double coralHeight;
       private double algaeHeight;
 
@@ -193,7 +195,7 @@ public final class Constants {
     public static final double DRIVE_FF_VALUE = 0.25;
 
     // Rotate PID Values
-    public static final double ROTATE_P_VALUE = 0.35;
+    public static final double ROTATE_P_VALUE = 0.55;
     public static final double ROTATE_I_VALUE = 0.0;
     public static final double ROTATE_D_VALUE = 0.4;
     public static double ROTATE_FF_VALUE;
@@ -213,10 +215,11 @@ public final class Constants {
     public static final double ROTATE_VELOCITY_CONVERSION = ROTATE_POSITION_CONVERSION / 60;
 
     // Speeds
-    public static double MAX_DRIVE_SPEED = Units.feetToMeters(6);
+    public static double MAX_DRIVE_SPEED = Units.feetToMeters(15);
     public static double SLOW_DRIVE_SPEED = Units.feetToMeters(2);
 
-    public static double MAX_ROTATE_SPEED = 4 * Math.PI;
+    public static double SLOW_ROTATE_SPEED = .5 * Math.PI;
+    public static double MAX_ROTATE_SPEED = 1 * Math.PI;
 
 
     public static final PPHolonomicDriveController PATH_CONFIG_CONTROLLER = new PPHolonomicDriveController
@@ -225,11 +228,31 @@ public final class Constants {
         new PIDConstants(0.25, 0, 0.3));
 
 
-    public static final PathConstraints CONSTRAINTS = new PathConstraints(1.0, 20, 1.0, 1.0);
+    public static final PathConstraints CONSTRAINTS = new PathConstraints(1.0, 20, 15, 20);
+
+    public static final PathConstraints SLOW_CONSTRAINTS = new PathConstraints(.2, 5, 5, 10);
 
   }
 
-  public static class OperatorConstants {
-    public static final int kDriverControllerPort = 0;
+  public static class AutoConstants {
+    /* 
+    public enum FieldPoses {
+      MIDDLE_POSE(new Pose2d(1,1, new Rotation2d(0)), new Pose2d(1,1,new Rotation2d(0))),
+      LEFT_POSE(new Pose2d(1,2, new Rotation2d(0)),new Pose2d(1,1,new Rotation2d(0))),
+      RIGHT_POSE(new Pose2d(1,2, new Rotation2d(0)),new Pose2d(1,1,new Rotation2d(0)));
+
+      private Pose2d redSide;
+      private Pose2d blueSide;
+
+      FieldPoses (Pose2d redSide, Pose2d blueSide){
+        this.redSide = redSide;
+        this.blueSide = blueSide;
+      }
+
+
+
+
+    }
+    */
   }
 }

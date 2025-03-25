@@ -37,6 +37,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -51,6 +52,9 @@ public class SwerveDrive extends SubsystemBase {
   
   private boolean fieldOriented; 
   private boolean slowMode;
+  private boolean redSide;
+  
+  private int tag;
   
   private SwerveModule frontLeftModule;
   private SwerveModule frontRightModule;
@@ -74,7 +78,12 @@ public class SwerveDrive extends SubsystemBase {
     public SwerveDrive() {
 
          chassisSpeeds = new ChassisSpeeds(0, 0, 0);
+<<<<<<< HEAD
   
+=======
+        redSide = isRed();
+
+>>>>>>> 5f54c1526ed61b70e9f670bf83f92035509db04a
         frontLeftModule = new SwerveModule(
           DriveConstants.FRONT_LEFT_DRIVE_ID, 
           DriveConstants.FRONT_LEFT_ROTATE_ID, 
@@ -143,13 +152,13 @@ public class SwerveDrive extends SubsystemBase {
       
         fieldOriented = false;
         slowMode = false;
+        
 
       poseSupplier = () -> getPose2d();
       resetPoseConsumer = pose -> resetOdometry(pose);
       robotRelativeOutput = chassisSpeeds -> drive(chassisSpeeds);
       chasisSpeedSupplier = () -> getChassisSpeeds();
-      shouldFlipSupplier = () -> { var alliance = DriverStation.getAlliance(); System.out.println(alliance.get() == DriverStation.Alliance.Red);  
-                                   return alliance.get() == DriverStation.Alliance.Red;};
+      shouldFlipSupplier = () -> isRed();
                        
         try {
           config = RobotConfig.fromGUISettings();
@@ -169,6 +178,11 @@ public class SwerveDrive extends SubsystemBase {
           }).start();
   
           configureAutoBuilder();
+      }
+
+      public Boolean isRed(){
+        var alliance = DriverStation.getAlliance();
+        return alliance.get() == DriverStation.Alliance.Red;
       }
   
       public void toggleFieldOriented (){
@@ -267,8 +281,12 @@ public class SwerveDrive extends SubsystemBase {
       return odometry.getPoseMeters();
     }
 
-    public Pose2d setPose2d(double X, double Y, double rotation){
-      return new Pose2d(X, Y, new Rotation2d(rotation));
+    public Command setPose2d(double X, double Y, double rotation){
+      return AutoBuilder.pathfindToPose(new Pose2d(X, Y, new Rotation2d(rotation)), DriveConstants.CONSTRAINTS);
+    }
+
+    public Command setSlowPose2d(double X, double Y, double rotation){
+      return AutoBuilder.pathfindToPose(new Pose2d(X, Y, new Rotation2d(rotation)), DriveConstants.CONSTRAINTS);
     }
 
     public Command posetest(double X, double Y, double rotation){
@@ -287,12 +305,26 @@ public class SwerveDrive extends SubsystemBase {
       odometry.resetPose(pose);
     }
 
+  
     public void resetPoseLimelight(){
-      PoseEstimate estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("");
-      if(estimate.tagCount > 0 && LimelightHelpers.getTA("") >= .5){
-        System.out.println(LimelightHelpers.getTargetCount(""));
-        resetPose(estimate.pose);
+
+      PoseEstimate estimate;
+
+      if(redSide){
+        estimate = LimelightHelpers.getBotPoseEstimate_wpiRed("limelight");
+      }else{
+        estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
       }
+
+      if(estimate.tagCount > 0 && LimelightHelpers.getTA("limelight") >= .5){
+        System.out.println(LimelightHelpers.getTargetCount("limelight"));
+        tag = estimate.rawFiducials[0].id;
+        resetPose(estimate.pose);
+      } else {
+        System.out.println("NO tags found");
+        tag = 0;
+
+      } 
     }
 
     public void configureAutoBuilder() {
@@ -371,6 +403,13 @@ public class SwerveDrive extends SubsystemBase {
     sendableBuilder.addDoubleProperty("Chasis speeds, Y", () -> getChassisSpeeds().vyMetersPerSecond, null);
     sendableBuilder.addDoubleProperty("Chasis speeds, rotation", () -> getChassisSpeeds().omegaRadiansPerSecond, null);
 
+    sendableBuilder.addFloatProperty("Tag Number", () -> tag, null);
+
+    sendableBuilder.addBooleanProperty("Am i red?", () -> redSide, null);
+
+    sendableBuilder.addDoubleProperty("Field setter", () -> {return 0.0;}, (double dummy) -> resetPoseLimelight());
+
+    sendableBuilder.addDoubleProperty("Match Time", () -> DriverStation.getMatchTime(), null);
     
     SmartDashboard.putData(field);
 

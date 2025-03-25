@@ -5,22 +5,35 @@
 package frc.robot.commands.Auto;
 
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ElevatorConstants.ElevatorHeights;
+import frc.robot.Constants.WristConstants.WristPositions;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.Claw.Outtake;
+import frc.robot.commands.Elevator.MoveElevatorToPosition;
+import frc.robot.commands.Limelight.AutoAlign;
+import frc.robot.commands.Wrist.WristToPosition;
 import frc.robot.subsystems.Claw;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.Wrist;
+import frc.robot.subsystems.Vision.Limelight;
+
+import static frc.robot.Constants.ElevatorConstants.L4_HEIGHT;
 
 import org.opencv.core.Mat;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public final class Autos {
   /** Example static factory for an autonomous command. */
@@ -53,12 +66,19 @@ public final class Autos {
     }
 
 
+<<<<<<< HEAD
     public static Command TestAuto(SwerveDrive swerve){
+=======
+>>>>>>> 5f54c1526ed61b70e9f670bf83f92035509db04a
 
-      return Commands.sequence(
-        
-      AutoBuilder.pathfindToPose(swerve.setPose2d(2, 5, (Math.PI / 2)), DriveConstants.CONSTRAINTS),
+    public static Command middleScore(SwerveDrive swerve, Elevator elevator, Wrist wrist, Claw claw){
+
       
+      return Commands.sequence(
+
+      Commands.runOnce(() -> {swerve.resetOdometry(new Pose2d(7.18, 4.05, new Rotation2d(0)));}),
+      
+<<<<<<< HEAD
       AutoBuilder.pathfindToPose(swerve.setPose2d(4, 6, (Math.PI / 2)), DriveConstants.CONSTRAINTS),
 
       swerve.posetest(2.0, 5.0, 0.0)
@@ -73,9 +93,84 @@ public final class Autos {
       return Commands.sequence(
 
       swerve.posetest(5.7, 3, Math.PI)
+=======
+      new RotateToAngle(180, swerve).withTimeout(2.5),
+
+      swerve.setPose2d(6.68, 4.05, Math.PI),
+
+      Commands.runOnce(() -> {swerve.resetPoseLimelight();}),
+
+      swerve.setPose2d(6.68, 4.30, Math.PI),
+
+      new SequentialCommandGroup(
+      new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4)),
+   
+      new ParallelCommandGroup(
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true), 
+      new WristToPosition(wrist, WristPositions.HIGH_WRIST_POSITION)).withTimeout(2),
+
+      new ParallelCommandGroup(
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
+      swerve.setSlowPose2d(5.66, 4.31, Math.PI)).withTimeout(2.5),
+
+      new ParallelCommandGroup(
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
+      new Outtake(wrist, claw)).withTimeout(1),
+>>>>>>> 5f54c1526ed61b70e9f670bf83f92035509db04a
       
+      new ParallelCommandGroup(
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
+      swerve.setSlowPose2d(6.68, 4.30, Math.PI)).withTimeout(3),
+
+      new SequentialCommandGroup(
+      new WristToPosition(wrist, WristPositions.TOGGLE_POSITION)),
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION_L1), 
+      new WristToPosition(wrist, WristPositions.LOW_WRIST_POSITION)
       );
 
+    }
+
+
+    public static Command leftScore(SwerveDrive swerve, Elevator elevator, Wrist wrist, Claw claw){
+
+      
+      return Commands.sequence(
+
+      Commands.runOnce(() -> {swerve.resetOdometry(new Pose2d(7.34, 5.64, new Rotation2d(0)));}),
+
+      swerve.setPose2d(6.34, 5.64, (Units.degreesToRadians(236))),
+
+      Commands.runOnce(() -> {swerve.resetPoseLimelight();}),
+
+      swerve.setPose2d(6.635, 6.355, (Units.degreesToRadians(236))),
+
+     new SequentialCommandGroup(
+      new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
+     new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4)),
+
+     new ParallelCommandGroup(
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true), 
+      new WristToPosition(wrist, WristPositions.HIGH_WRIST_POSITION)).withTimeout(2),
+
+      new ParallelCommandGroup(
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
+      swerve.setSlowPose2d(4.98, 5.18, (Units.degreesToRadians(236)))).withTimeout(3),
+
+        new ParallelCommandGroup(
+        new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
+       new Outtake(wrist, claw)).withTimeout(1),
+      
+      new ParallelCommandGroup(
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
+       swerve.setSlowPose2d(6.68, 6.34, (Units.degreesToRadians(236)))).withTimeout(3),
+
+      new SequentialCommandGroup(
+      new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION_L1), 
+      new WristToPosition(wrist, WristPositions.LOW_WRIST_POSITION)));
+      
+      
     }
 
 
