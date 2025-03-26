@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import javax.print.attribute.standard.MediaSize.NA;
+import javax.sound.midi.Sequence;
 
 import org.json.simple.parser.ParseException;
 
@@ -19,8 +20,10 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.studica.frc.AHRS;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.SwerveModule;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.PoseEstimate;
@@ -55,7 +58,7 @@ public class SwerveDrive extends SubsystemBase {
   private boolean redSide;
   
   private int tag;
-  
+
   private SwerveModule frontLeftModule;
   private SwerveModule frontRightModule;
   private SwerveModule backLeftModule;
@@ -78,12 +81,8 @@ public class SwerveDrive extends SubsystemBase {
     public SwerveDrive() {
 
          chassisSpeeds = new ChassisSpeeds(0, 0, 0);
-<<<<<<< HEAD
-  
-=======
         redSide = isRed();
 
->>>>>>> 5f54c1526ed61b70e9f670bf83f92035509db04a
         frontLeftModule = new SwerveModule(
           DriveConstants.FRONT_LEFT_DRIVE_ID, 
           DriveConstants.FRONT_LEFT_ROTATE_ID, 
@@ -286,11 +285,7 @@ public class SwerveDrive extends SubsystemBase {
     }
 
     public Command setSlowPose2d(double X, double Y, double rotation){
-      return AutoBuilder.pathfindToPose(new Pose2d(X, Y, new Rotation2d(rotation)), DriveConstants.CONSTRAINTS);
-    }
-
-    public Command posetest(double X, double Y, double rotation){
-      return AutoBuilder.pathfindToPose(new Pose2d(X, Y, new Rotation2d(rotation)), DriveConstants.CONSTRAINTS);
+      return AutoBuilder.pathfindToPose(new Pose2d(X, Y, new Rotation2d(rotation)), DriveConstants.SLOW_CONSTRAINTS);
     }
 
     public void resetOdometry(Pose2d pose){

@@ -14,6 +14,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -81,8 +82,6 @@ public final class Constants {
       HIGH_WRIST_POSITION(L4_POSITION,BARGE_POSITION), //CHANGE MADE
       PROCESSOR_WRIST_POSITION(INTAKE_POSITION,ALGAE_POSITION),
       ALGAE_WRIST_POSITION(ALGAE_POSITION,ALGAE_POSITION);
-
-
 
       private double coralPosition;
       private double algaePosition;
@@ -230,29 +229,21 @@ public final class Constants {
 
     public static final PathConstraints CONSTRAINTS = new PathConstraints(1.0, 20, 15, 20);
 
+    public static final PathConstraints testConstraists = new PathConstraints(1.0, 4, 15, 20);
+
     public static final PathConstraints SLOW_CONSTRAINTS = new PathConstraints(.2, 5, 5, 10);
 
   }
 
   public static class AutoConstants {
-    /* 
-    public enum FieldPoses {
-      MIDDLE_POSE(new Pose2d(1,1, new Rotation2d(0)), new Pose2d(1,1,new Rotation2d(0))),
-      LEFT_POSE(new Pose2d(1,2, new Rotation2d(0)),new Pose2d(1,1,new Rotation2d(0))),
-      RIGHT_POSE(new Pose2d(1,2, new Rotation2d(0)),new Pose2d(1,1,new Rotation2d(0)));
 
-      private Pose2d redSide;
-      private Pose2d blueSide;
+    // Red side 
+    public static final Pose2d RED_SIDE = new Pose2d(0.0,0.0, new Rotation2d(0));
 
-      FieldPoses (Pose2d redSide, Pose2d blueSide){
-        this.redSide = redSide;
-        this.blueSide = blueSide;
-      }
-
-
-
-
-    }
-    */
+    public static final Pose2d Blue_SIDE = new Pose2d(0.0,0.0, new Rotation2d(0));    
+   
   }
+
+
+
 }

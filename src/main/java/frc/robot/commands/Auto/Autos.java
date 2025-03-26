@@ -4,6 +4,7 @@
 
 package frc.robot.commands.Auto;
 
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorHeights;
 import frc.robot.Constants.WristConstants.WristPositions;
@@ -110,9 +111,7 @@ public final class Autos {
 
     }
 
-
     public static Command leftScore(SwerveDrive swerve, Elevator elevator, Wrist wrist, Claw claw){
-
       
       return Commands.sequence(
 
@@ -124,34 +123,41 @@ public final class Autos {
 
       swerve.setPose2d(6.635, 6.355, (Units.degreesToRadians(236))),
 
-     new SequentialCommandGroup(
+    new SequentialCommandGroup(
       new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
-     new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4)),
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4)),
 
-     new ParallelCommandGroup(
+    new ParallelCommandGroup(
       new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true), 
       new WristToPosition(wrist, WristPositions.HIGH_WRIST_POSITION)).withTimeout(2),
 
-      new ParallelCommandGroup(
+    new ParallelCommandGroup(
       new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
       swerve.setSlowPose2d(4.98, 5.18, (Units.degreesToRadians(236)))).withTimeout(3),
 
-        new ParallelCommandGroup(
-        new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
-       new Outtake(wrist, claw)).withTimeout(1),
-      
-      new ParallelCommandGroup(
+    new ParallelCommandGroup(
       new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
-       swerve.setSlowPose2d(6.68, 6.34, (Units.degreesToRadians(236)))).withTimeout(3),
+      new Outtake(wrist, claw)).withTimeout(1),
+      
+    new ParallelCommandGroup(
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
+      swerve.setSlowPose2d(6.68, 6.34, (Units.degreesToRadians(236)))).withTimeout(3),
 
-      new SequentialCommandGroup(
+    new SequentialCommandGroup(
       new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
       new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION_L1), 
       new WristToPosition(wrist, WristPositions.LOW_WRIST_POSITION)));
       
-      
     }
 
+    public static Command test(SwerveDrive swerve, Elevator elevator, Wrist wrist, Claw claw){
+
+      return Commands.sequence(
+        
+      Commands.runOnce(() -> {swerve.resetOdometry(new Pose2d(7.34, 5.64, new Rotation2d(0)));}));
+
+
+    }
 
   private Autos() {
     throw new UnsupportedOperationException("This is a utility class!");

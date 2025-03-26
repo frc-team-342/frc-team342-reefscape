@@ -256,12 +256,8 @@ public class RobotContainer {
     autoChooser.addOption("Do Nothing", Autos.doNothing(swerve));
 
     autoChooser.addOption("Pose Drive", Autos.move(swerve));
-<<<<<<< HEAD
-    autoChooser.addOption("score", Autos.scoreCommand(swerve));
-=======
     autoChooser.addOption("score", Autos.middleScore(swerve, elevator, wrist, claw));
     autoChooser.addOption("Left Auto", Autos.leftScore(swerve, elevator, wrist, claw));
->>>>>>> 5f54c1526ed61b70e9f670bf83f92035509db04a
 
     //autoChooser.addOption("Test PATHPLANNER", new PathPlannerAuto("Test Auto"));
 
