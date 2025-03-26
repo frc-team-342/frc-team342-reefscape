@@ -66,10 +66,6 @@ public final class Autos {
     }
 
 
-<<<<<<< HEAD
-    public static Command TestAuto(SwerveDrive swerve){
-=======
->>>>>>> 5f54c1526ed61b70e9f670bf83f92035509db04a
 
     public static Command middleScore(SwerveDrive swerve, Elevator elevator, Wrist wrist, Claw claw){
 
@@ -78,22 +74,6 @@ public final class Autos {
 
       Commands.runOnce(() -> {swerve.resetOdometry(new Pose2d(7.18, 4.05, new Rotation2d(0)));}),
       
-<<<<<<< HEAD
-      AutoBuilder.pathfindToPose(swerve.setPose2d(4, 6, (Math.PI / 2)), DriveConstants.CONSTRAINTS),
-
-      swerve.posetest(2.0, 5.0, 0.0)
-      
-      );
-
-    }
-
-    
-    public static Command scoreCommand(SwerveDrive swerve){
-
-      return Commands.sequence(
-
-      swerve.posetest(5.7, 3, Math.PI)
-=======
       new RotateToAngle(180, swerve).withTimeout(2.5),
 
       swerve.setPose2d(6.68, 4.05, Math.PI),
@@ -117,7 +97,6 @@ public final class Autos {
       new ParallelCommandGroup(
       new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
       new Outtake(wrist, claw)).withTimeout(1),
->>>>>>> 5f54c1526ed61b70e9f670bf83f92035509db04a
       
       new ParallelCommandGroup(
       new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
