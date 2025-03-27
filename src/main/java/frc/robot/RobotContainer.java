@@ -258,6 +258,8 @@ public class RobotContainer {
     autoChooser.addOption("Pose Drive", Autos.move(swerve));
     autoChooser.addOption("score", Autos.middleScore(swerve, elevator, wrist, claw));
     autoChooser.addOption("Left Auto", Autos.leftScore(swerve, elevator, wrist, claw));
+    autoChooser.addOption("Test sides", Autos.test(swerve, elevator, wrist, claw));
+    autoChooser.addOption("Test forward", Autos.forward(swerve, elevator, wrist, claw));
 
     //autoChooser.addOption("Test PATHPLANNER", new PathPlannerAuto("Test Auto"));
 

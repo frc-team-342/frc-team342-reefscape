@@ -4,7 +4,8 @@
 
 package frc.robot.commands.Auto;
 
-import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.AutoConstants.FieldPoses.*;
+import frc.robot.Constants.AutoConstants.*;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorHeights;
 import frc.robot.Constants.WristConstants.WristPositions;
@@ -65,8 +66,6 @@ public final class Autos {
     return AutoBuilder.pathfindToPose(new Pose2d(3,0,new Rotation2d(0)), new PathConstraints(1, 20, 1.0, 1.0));
      
     }
-
-
 
     public static Command middleScore(SwerveDrive swerve, Elevator elevator, Wrist wrist, Claw claw){
 
@@ -141,7 +140,7 @@ public final class Autos {
       
     new ParallelCommandGroup(
       new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
-      swerve.setSlowPose2d(6.68, 6.34, (Units.degreesToRadians(236)))).withTimeout(3),
+      swerve.setPose2d(6.68, 6.34, (Units.degreesToRadians(236)))).withTimeout(3),
 
     new SequentialCommandGroup(
       new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
@@ -153,11 +152,37 @@ public final class Autos {
     public static Command test(SwerveDrive swerve, Elevator elevator, Wrist wrist, Claw claw){
 
       return Commands.sequence(
-        
-      Commands.runOnce(() -> {swerve.resetOdometry(new Pose2d(7.34, 5.64, new Rotation2d(0)));}));
 
+      Commands.runOnce(() -> {swerve.resetOdometry(new Pose2d(7.18, 4.05, new Rotation2d(0)));}),
+      
+      new RotateToAngle(180, swerve).withTimeout(2.5),
+
+      swerve.setPose2d(6.68, 4.05, Math.PI),
+
+      Commands.runOnce(() -> {swerve.resetPoseLimelight();}),
+
+      swerve.setPose2d(6.68, 4.30, Math.PI),
+
+      swerve.setPose2d(5.66, 4.31, Math.PI),
+
+      swerve.setPose2d(6.68, 2.00, Math.PI), 
+
+      swerve.setPose2d(.20, 2.00, Units.degreesToRadians(-30)));
 
     }
+
+    public static Command forward(SwerveDrive swerve, Elevator elevator, Wrist wrist, Claw claw){
+
+      return Commands.sequence(
+
+      Commands.runOnce(() -> {swerve.resetOdometry(new Pose2d(7.18, 4.05, new Rotation2d(0)));}),
+
+      swerve.setPose2d(5.68, 4.05, 0));
+
+    }
+
+
+
 
   private Autos() {
     throw new UnsupportedOperationException("This is a utility class!");

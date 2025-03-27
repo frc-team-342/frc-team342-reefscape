@@ -17,6 +17,7 @@ import org.json.simple.parser.ParseException;
 import com.fasterxml.jackson.core.filter.FilteringGeneratorDelegate;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.PathConstraints;
 import com.studica.frc.AHRS;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -281,7 +282,7 @@ public class SwerveDrive extends SubsystemBase {
     }
 
     public Command setPose2d(double X, double Y, double rotation){
-      return AutoBuilder.pathfindToPose(new Pose2d(X, Y, new Rotation2d(rotation)), DriveConstants.CONSTRAINTS);
+      return AutoBuilder.pathfindToPose(new Pose2d(X, Y, new Rotation2d(rotation)), DriveConstants.testConstraists);
     }
 
     public Command setSlowPose2d(double X, double Y, double rotation){
@@ -290,6 +291,14 @@ public class SwerveDrive extends SubsystemBase {
 
     public void resetOdometry(Pose2d pose){
        odometry.resetPosition(NavX.getRotation2d(), getCurrentSwerveModulePositions(), pose);
+    }
+
+    public Pose2d getConstantPose(AutoConstants.FieldPoses pose){
+      return pose.getPose2d(redSide);
+    }
+
+    public Command setPose2d(Pose2d pose, PathConstraints constraints){
+      return AutoBuilder.pathfindToPose(pose, constraints);
     }
     
     public AHRS getGyro(){

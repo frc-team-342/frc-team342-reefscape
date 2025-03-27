@@ -161,10 +161,10 @@ public final class Constants {
 
     public static final double WHEEL_DIAMETER = Units.inchesToMeters(3.77);
 
-    public static final double FL_WHEEL_DIAMETER = Units.inchesToMeters(3.74);
-    public static final double FR_WHEEL_DIAMETER = Units.inchesToMeters(3.87);
-    public static final double BL_WHEEL_DIAMETER = Units.inchesToMeters(3.73);
-    public static final double BR_WHEEL_DIAMETER = Units.inchesToMeters(3.77);
+    public static final double FL_WHEEL_DIAMETER = Units.inchesToMeters(3.913);
+    public static final double FR_WHEEL_DIAMETER = Units.inchesToMeters(3.906);
+    public static final double BL_WHEEL_DIAMETER = Units.inchesToMeters(3.913);
+    public static final double BR_WHEEL_DIAMETER = Units.inchesToMeters(3.918);
 
     public static final double WHEEL_CIRCUMFERENCE = 2 * Math.PI;
 
@@ -229,18 +229,75 @@ public final class Constants {
 
     public static final PathConstraints CONSTRAINTS = new PathConstraints(1.0, 20, 15, 20);
 
-    public static final PathConstraints testConstraists = new PathConstraints(1.0, 4, 15, 20);
+    public static final PathConstraints testConstraists = new PathConstraints(2.5, 4, 15, 20);
 
     public static final PathConstraints SLOW_CONSTRAINTS = new PathConstraints(.2, 5, 5, 10);
+
+
 
   }
 
   public static class AutoConstants {
 
-    // Red side 
-    public static final Pose2d RED_SIDE = new Pose2d(0.0,0.0, new Rotation2d(0));
+    public enum FieldPoses {
 
-    public static final Pose2d Blue_SIDE = new Pose2d(0.0,0.0, new Rotation2d(0));    
+      // Middle poses
+      MIDDLE_START_POSE (
+        new Pose2d(1,1, new Rotation2d(0)),  // Start : Red 
+        new Pose2d(1,1,new Rotation2d(0))),  // Start : Blue 
+
+      MIDDLE_APPROACH_POSE (
+        new Pose2d(1,2, new Rotation2d(0)), // Approach : Red
+        new Pose2d(1,1,new Rotation2d(0))), // Approach : Blue
+
+      MIDDLE_SCORE_POSE (
+        new Pose2d(1,2, new Rotation2d(0)), // Score : Red
+        new Pose2d(1,1,new Rotation2d(0))), // Score : Blue
+
+      // Left Pose
+      LEFT_START_POSE (
+        new Pose2d(1,1, new Rotation2d(0)), // Start : Red 
+        new Pose2d(1,1,new Rotation2d(0))), // Start : Blue 
+
+      LEFT_APPROACH_POSE (
+        new Pose2d(1,2, new Rotation2d(0)), // Approach : Red
+        new Pose2d(1,1,new Rotation2d(0))), // Approach : Red
+
+      LEFT_SCORE_POSE (
+        new Pose2d(1,2, new Rotation2d(0)), // Score : Red
+        new Pose2d(1,1,new Rotation2d(0))), // Score : Blue
+
+      //Right Poses
+      RIGHT_START_POSE (
+        new Pose2d(1,1, new Rotation2d(0)), // Start : Red 
+        new Pose2d(1,1,new Rotation2d(0))), // Start : Blue 
+
+      RIGHT_APPROACH_POSE(
+        new Pose2d(1,2, new Rotation2d(0)), // Approach : Red
+        new Pose2d(1,1,new Rotation2d(0))), // Approach : Blue
+
+      RIGHT_SCORE_POSE(
+        new Pose2d(1,2, new Rotation2d(0)), // Score : Red
+        new Pose2d(1,1,new Rotation2d(0))), // Score : Blue
+
+      TEST_POSES(
+        new Pose2d(3,4, new Rotation2d(0)),  //Red
+        new Pose2d(1,4, new Rotation2d(0))  //Blue
+      );
+
+      private Pose2d redSide;
+      private Pose2d blueSide;
+
+      FieldPoses (Pose2d redSide, Pose2d blueSide){
+        this.redSide = redSide;
+        this.blueSide = blueSide;
+      }
+
+      public Pose2d getPose2d(boolean isRed) {
+        return isRed ? redSide : blueSide;
+      }
+
+    } 
    
   }
 
