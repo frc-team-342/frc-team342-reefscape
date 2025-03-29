@@ -227,11 +227,9 @@ public final class Constants {
         new PIDConstants(0.25, 0, 0.3));
 
 
-    public static final PathConstraints CONSTRAINTS = new PathConstraints(1.0, 20, 15, 20);
+    public static final PathConstraints CONSTRAINTS = new PathConstraints(2.5, 10, 15, 20);
 
-    public static final PathConstraints testConstraists = new PathConstraints(2.5, 4, 15, 20);
-
-    public static final PathConstraints SLOW_CONSTRAINTS = new PathConstraints(.2, 5, 5, 10);
+    public static final PathConstraints SLOW_CONSTRAINTS = new PathConstraints(1.5, 2, 5, 10);
 
 
 

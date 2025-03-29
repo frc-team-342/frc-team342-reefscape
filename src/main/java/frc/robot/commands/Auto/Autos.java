@@ -4,12 +4,12 @@
 
 package frc.robot.commands.Auto;
 
-import frc.robot.Constants.AutoConstants.FieldPoses.*;
 import frc.robot.Constants.AutoConstants.*;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ElevatorConstants.ElevatorHeights;
 import frc.robot.Constants.WristConstants.WristPositions;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.Claw.Intake;
 import frc.robot.commands.Claw.Outtake;
 import frc.robot.commands.Elevator.MoveElevatorToPosition;
 import frc.robot.commands.Limelight.AutoAlign;
@@ -155,19 +155,39 @@ public final class Autos {
 
       Commands.runOnce(() -> {swerve.resetOdometry(new Pose2d(7.18, 4.05, new Rotation2d(0)));}),
       
-      new RotateToAngle(180, swerve).withTimeout(2.5),
+      //new RotateToAngle(180, swerve),
 
       swerve.setPose2d(6.68, 4.05, Math.PI),
 
       Commands.runOnce(() -> {swerve.resetPoseLimelight();}),
 
-      swerve.setPose2d(6.68, 4.30, Math.PI),
+      swerve.setPose2d(6.68, 4.30,  Math.PI),
 
-      swerve.setPose2d(5.66, 4.31, Math.PI),
+      new SequentialCommandGroup(
+        new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
+        new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4),
+        new WristToPosition(wrist, WristPositions.HIGH_WRIST_POSITION)).withTimeout(2),  
 
-      swerve.setPose2d(6.68, 2.00, Math.PI), 
+      swerve.setSlowPose2d(5.56, 4.38,  Math.PI),
 
-      swerve.setPose2d(.20, 2.00, Units.degreesToRadians(-30)));
+      new ParallelCommandGroup(
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
+      new Outtake(wrist, claw)).withTimeout(1),
+
+      swerve.setSlowPose2d(6.68, 4.30,  Math.PI),
+
+      new SequentialCommandGroup(
+        new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
+        new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION_L1), 
+        new WristToPosition(wrist, WristPositions.LOW_WRIST_POSITION),
+        swerve.setPose2d(6.68, 2.00,  Math.PI)
+        ),
+
+      swerve.setPose2d(.0, 1, Units.degreesToRadians(-270)),
+
+      new Intake(claw, wrist)
+      
+      );
 
     }
 
