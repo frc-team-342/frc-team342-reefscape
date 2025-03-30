@@ -48,7 +48,7 @@ public final class Constants {
     public static final double WRIST_ZERO = 0.136; //.336
 
     // Wrist PID values; they're a list for sake of simplicity
-    public static final double[] WRIST_PID_VALUES = { 0.37, 0, 0.1 };
+    public static final double[] WRIST_PID_VALUES = { 0.35, 0, 0.1 };
     public static final double WRIST_ERROR = 0.1;
 
     // Wrist position Values (absolute enocder values I think)
@@ -227,9 +227,9 @@ public final class Constants {
         new PIDConstants(0.25, 0, 0.3));
 
 
-    public static final PathConstraints CONSTRAINTS = new PathConstraints(2.5, 10, 15, 20);
+    public static final PathConstraints CONSTRAINTS = new PathConstraints(2.5, 4, 15, 20);
 
-    public static final PathConstraints SLOW_CONSTRAINTS = new PathConstraints(1.5, 2, 5, 10);
+    public static final PathConstraints SLOW_CONSTRAINTS = new PathConstraints(1,2, 5, 5);
 
 
 

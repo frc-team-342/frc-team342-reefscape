@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public final class Autos {
   /** Example static factory for an autonomous command. */
@@ -68,85 +69,64 @@ public final class Autos {
     }
 
     public static Command middleScore(SwerveDrive swerve, Elevator elevator, Wrist wrist, Claw claw){
-
       
       return Commands.sequence(
 
-      Commands.runOnce(() -> {swerve.resetOdometry(new Pose2d(7.18, 4.05, new Rotation2d(0)));}),
+        Commands.runOnce(() -> {swerve.resetOdometry(new Pose2d(7.18, 4.05, new Rotation2d(0)));}),
       
-      new RotateToAngle(180, swerve).withTimeout(2.5),
+        new RotateToAngle(180, swerve).withTimeout(2.5),
 
-      swerve.setPose2d(6.68, 4.05, Math.PI),
+        swerve.setPose2d(6.68, 4.05, Math.PI),
 
-      Commands.runOnce(() -> {swerve.resetPoseLimelight();}),
+        Commands.runOnce(() -> {swerve.resetPoseLimelight();}),
 
-      swerve.setPose2d(6.68, 4.30, Math.PI),
+        swerve.setPose2d(6.68, 4.30, Math.PI),
 
-      new SequentialCommandGroup(
-      new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
-      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4)),
-   
-      new ParallelCommandGroup(
-      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true), 
-      new WristToPosition(wrist, WristPositions.HIGH_WRIST_POSITION)).withTimeout(2),
+        new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
+        new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4),
+        new WristToPosition(wrist, WristPositions.HIGH_WRIST_POSITION),
 
-      new ParallelCommandGroup(
-      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
-      swerve.setSlowPose2d(5.66, 4.31, Math.PI)).withTimeout(2.5),
+        swerve.setSlowPose2d(5.66, 4.31, Math.PI),
 
-      new ParallelCommandGroup(
-      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
-      new Outtake(wrist, claw)).withTimeout(1),
-      
-      new ParallelCommandGroup(
-      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
-      swerve.setSlowPose2d(6.68, 4.30, Math.PI)).withTimeout(3),
+        new Outtake(wrist, claw).withTimeout(0.2),
 
-      new SequentialCommandGroup(
-      new WristToPosition(wrist, WristPositions.TOGGLE_POSITION)),
-      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION_L1), 
-      new WristToPosition(wrist, WristPositions.LOW_WRIST_POSITION)
+        swerve.setSlowPose2d(6.68, 4.30, Math.PI),
+
+        new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
+        new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION_L1), 
+        new WristToPosition(wrist, WristPositions.LOW_WRIST_POSITION)
+
       );
-
     }
 
     public static Command leftScore(SwerveDrive swerve, Elevator elevator, Wrist wrist, Claw claw){
       
       return Commands.sequence(
 
-      Commands.runOnce(() -> {swerve.resetOdometry(new Pose2d(7.34, 5.64, new Rotation2d(0)));}),
+        Commands.runOnce(() -> {swerve.resetOdometry(new Pose2d(7.34, 5.64, new Rotation2d(0)));}),
 
-      swerve.setPose2d(6.34, 5.64, (Units.degreesToRadians(236))),
+        swerve.setPose2d(6.34, 5.64, (Units.degreesToRadians(236))),
 
-      Commands.runOnce(() -> {swerve.resetPoseLimelight();}),
+        Commands.runOnce(() -> {swerve.resetPoseLimelight();}),
 
-      swerve.setPose2d(6.635, 6.355, (Units.degreesToRadians(236))),
+        swerve.setPose2d(6.635, 6.355, (Units.degreesToRadians(236))),
 
-    new SequentialCommandGroup(
-      new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
-      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4)),
+        new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
+        new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4),
+        new WristToPosition(wrist, WristPositions.HIGH_WRIST_POSITION),
 
-    new ParallelCommandGroup(
-      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true), 
-      new WristToPosition(wrist, WristPositions.HIGH_WRIST_POSITION)).withTimeout(2),
+        swerve.setSlowPose2d(4.98, 5.18, (Units.degreesToRadians(236))),
 
-    new ParallelCommandGroup(
-      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
-      swerve.setSlowPose2d(4.98, 5.18, (Units.degreesToRadians(236)))).withTimeout(3),
-
-    new ParallelCommandGroup(
-      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
-      new Outtake(wrist, claw)).withTimeout(1),
+        new Outtake(wrist, claw).withTimeout(0.2),
       
-    new ParallelCommandGroup(
-      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
-      swerve.setPose2d(6.68, 6.34, (Units.degreesToRadians(236)))).withTimeout(3),
+        swerve.setSlowPose2d(6.68, 6.34, (Units.degreesToRadians(236))),
 
-    new SequentialCommandGroup(
-      new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
-      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION_L1), 
-      new WristToPosition(wrist, WristPositions.LOW_WRIST_POSITION)));
-      
+        new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
+        new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION_L1), 
+        new WristToPosition(wrist, WristPositions.LOW_WRIST_POSITION)
+
+      );
+       
     }
 
     public static Command test(SwerveDrive swerve, Elevator elevator, Wrist wrist, Claw claw){
@@ -155,39 +135,43 @@ public final class Autos {
 
       Commands.runOnce(() -> {swerve.resetOdometry(new Pose2d(7.18, 4.05, new Rotation2d(0)));}),
       
-      //new RotateToAngle(180, swerve),
+      new RotateToAngle(180, swerve),
 
       swerve.setPose2d(6.68, 4.05, Math.PI),
 
       Commands.runOnce(() -> {swerve.resetPoseLimelight();}),
 
-      swerve.setPose2d(6.68, 4.30,  Math.PI),
+      new ParallelCommandGroup(
 
-      new SequentialCommandGroup(
-        new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
-        new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4),
-        new WristToPosition(wrist, WristPositions.HIGH_WRIST_POSITION)).withTimeout(2),  
+        swerve.setSlowPose2d(6.68, 4.30,  Math.PI),
+
+        new SequentialCommandGroup(
+          new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
+          new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4),
+          new WristToPosition(wrist, WristPositions.HIGH_WRIST_POSITION) 
+        )
+      ),
 
       swerve.setSlowPose2d(5.56, 4.38,  Math.PI),
+     
+      new Outtake(wrist, claw).withTimeout(.2),
 
+        
       new ParallelCommandGroup(
-      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true),
-      new Outtake(wrist, claw)).withTimeout(1),
-
+        
       swerve.setSlowPose2d(6.68, 4.30,  Math.PI),
 
       new SequentialCommandGroup(
+        new WaitCommand(.5),
         new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
         new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION_L1), 
-        new WristToPosition(wrist, WristPositions.LOW_WRIST_POSITION),
-        swerve.setPose2d(6.68, 2.00,  Math.PI)
-        ),
+        new WristToPosition(wrist, WristPositions.LOW_WRIST_POSITION))
+  
+      ).withTimeout(1.7),
 
-      swerve.setPose2d(.0, 1, Units.degreesToRadians(-270)),
+      swerve.setPose2d(.1, 1.2, Units.degreesToRadians(-270)),
 
-      new Intake(claw, wrist)
-      
-      );
+       new Intake(claw, wrist));
 
     }
 
@@ -202,9 +186,8 @@ public final class Autos {
     }
 
 
-
-
   private Autos() {
     throw new UnsupportedOperationException("This is a utility class!");
   }
 }
+
