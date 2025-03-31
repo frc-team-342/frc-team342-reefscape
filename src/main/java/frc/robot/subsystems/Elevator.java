@@ -182,6 +182,10 @@ public class Elevator extends SubsystemBase {
     atPosition = Math.abs(getEncoderPosition() - nextPosition) < ELEVATOR_ERROR;
   }
 
+  public void resetElevator(){
+    elevatorEncoder.setPosition(0);
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

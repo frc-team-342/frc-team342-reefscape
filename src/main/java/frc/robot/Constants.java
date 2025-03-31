@@ -161,10 +161,10 @@ public final class Constants {
 
     public static final double WHEEL_DIAMETER = Units.inchesToMeters(3.77);
 
-    public static final double FL_WHEEL_DIAMETER = Units.inchesToMeters(3.913);
-    public static final double FR_WHEEL_DIAMETER = Units.inchesToMeters(3.906);
-    public static final double BL_WHEEL_DIAMETER = Units.inchesToMeters(3.913);
-    public static final double BR_WHEEL_DIAMETER = Units.inchesToMeters(3.918);
+    public static final double FL_WHEEL_DIAMETER = Units.inchesToMeters(3.886);
+    public static final double FR_WHEEL_DIAMETER = Units.inchesToMeters(3.804);
+    public static final double BL_WHEEL_DIAMETER = Units.inchesToMeters(3.808);
+    public static final double BR_WHEEL_DIAMETER = Units.inchesToMeters(3.881);
 
     public static final double WHEEL_CIRCUMFERENCE = 2 * Math.PI;
 
@@ -227,7 +227,7 @@ public final class Constants {
         new PIDConstants(0.25, 0, 0.3));
 
 
-    public static final PathConstraints CONSTRAINTS = new PathConstraints(2.5, 4, 15, 20);
+    public static final PathConstraints CONSTRAINTS = new PathConstraints(2.5, 4, 5, 5);
 
     public static final PathConstraints SLOW_CONSTRAINTS = new PathConstraints(1,2, 5, 5);
 

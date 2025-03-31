@@ -129,7 +129,7 @@ public final class Autos {
        
     }
 
-    public static Command test(SwerveDrive swerve, Elevator elevator, Wrist wrist, Claw claw){
+    public static Command twoPieceMiddle(SwerveDrive swerve, Elevator elevator, Wrist wrist, Claw claw){
 
       return Commands.sequence(
 
@@ -169,9 +169,34 @@ public final class Autos {
   
       ).withTimeout(1.7),
 
-      swerve.setPose2d(.1, 1.2, Units.degreesToRadians(-270)),
+      new ParallelCommandGroup(
+        new WristToPosition(wrist, WristPositions.LOW_WRIST_POSITION),
+        Commands.runOnce(() -> {wrist.resetEncoder();}),
+        swerve.setPose2d(1.5, 2.2, Units.degreesToRadians(70))),
 
-       new Intake(claw, wrist));
+      Commands.runOnce(() -> {swerve.resetPoseLimelight();}),
+
+      swerve.setSlowPose2d(.6, 1.2, Units.degreesToRadians(-312)),
+      
+      new Intake(claw, wrist).until(() -> claw.hasCoral()),
+
+      new ParallelCommandGroup(
+
+      swerve.setSlowPose2d(1.5, 2.2, Units.degreesToRadians(-312)),
+
+      new SequentialCommandGroup(
+        new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
+        new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4),
+        new WristToPosition(wrist, WristPositions.HIGH_WRIST_POSITION)
+      )),
+
+      Commands.runOnce(() -> {swerve.resetPoseLimelight();}),
+
+      swerve.setSlowPose2d(3.96, 3.02, Units.degreesToRadians(-312)),
+
+      new Outtake(wrist, claw).withTimeout(.2)
+        
+       );
 
     }
 
