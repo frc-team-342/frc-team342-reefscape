@@ -227,9 +227,9 @@ public final class Constants {
         new PIDConstants(0.25, 0, 0.3));
 
 
-    public static final PathConstraints CONSTRAINTS = new PathConstraints(2.5, 4, 5, 5);
+    public static final PathConstraints CONSTRAINTS = new PathConstraints(2.5, 4, 7, 8);
 
-    public static final PathConstraints SLOW_CONSTRAINTS = new PathConstraints(1,2, 5, 5);
+    public static final PathConstraints SLOW_CONSTRAINTS = new PathConstraints(1,2, 6, 7);
 
 
 
