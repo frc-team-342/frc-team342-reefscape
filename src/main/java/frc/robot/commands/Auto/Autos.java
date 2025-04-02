@@ -197,14 +197,20 @@ public final class Autos {
 
       //Drive to safe position while putting elevator up
 
-        new SequentialCommandGroup(
+      new ParallelCommandGroup(
+
+        //Drive to scoring position
+        
+      swerve.setSlowPose2d(4.048, 3.017, Units.degreesToRadians(-312)),
+      
+      
+      new SequentialCommandGroup(
           new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
           new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4),
           new WristToPosition(wrist, WristPositions.HIGH_WRIST_POSITION)
-        ),
+        )
 
-      //Drive to scoring position
-      swerve.setSlowPose2d(4.048, 3.017, Units.degreesToRadians(-312)),
+      ),
 
       //Score
       new Outtake(wrist, claw).withTimeout(.2)
@@ -288,6 +294,57 @@ public final class Autos {
       Commands.runOnce(() -> {swerve.resetOdometry(new Pose2d(7.18, 4.05, new Rotation2d(0)));}),
 
       swerve.setPose2d(5.68, 4.05, 0));
+
+    }
+
+
+    public static Command rightTwoPiece(SwerveDrive swerve, Elevator elevator, Wrist wrist, Claw claw){
+
+      return Commands.sequence(
+
+      Commands.runOnce(() -> {swerve.resetOdometry(new Pose2d(7.18, 2.1641, new Rotation2d(0)));}),
+
+      new RotateToAngle(-240, swerve),
+
+      swerve.setPose2d(5.807, 2.143, Units.degreesToRadians(-240)),
+
+      Commands.runOnce(() -> {swerve.resetPoseLimelight();}),
+
+      new SequentialCommandGroup(
+          new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
+          new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4),
+          new WristToPosition(wrist, WristPositions.HIGH_WRIST_POSITION) 
+        ),
+
+      swerve.setSlowPose2d(4.934, 2.913, Units.degreesToRadians(-240)),
+
+      Commands.runOnce(() -> {wrist.resetEncoder();}),
+
+      new Outtake(wrist, claw).withTimeout(.3), 
+    
+      new ParallelCommandGroup( 
+
+          swerve.setSlowPose2d(5.807, 2.143, Units.degreesToRadians(-240)),
+
+      new SequentialCommandGroup(
+          new WaitCommand(1.5),
+          new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
+          new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION_L1), 
+          new WristToPosition(wrist, WristPositions.LOW_WRIST_POSITION))
+
+    ),
+
+    swerve.setPose2d(2.988, 1.9667, Units.degreesToRadians(-240)),
+
+    Commands.runOnce(() -> {swerve.resetPoseLimelight();}),
+
+     swerve.setPose2d(.6, 1.2, Units.degreesToRadians(-312)),
+      
+     new Intake(claw, wrist).until(() -> claw.hasCoral()),
+     
+     swerve.setPose2d(3.02, 2.358, Units.degreesToRadians(-312)),
+
+     swerve.setPose2d(3.65, 3.044, Units.degreesToRadians(-312)));
 
     }
 

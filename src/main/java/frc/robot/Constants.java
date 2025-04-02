@@ -140,7 +140,7 @@ public final class Constants {
     public static final double L2_HEIGHT = 241.7 /**300.0*/;
     public static final double L3_HEIGHT = 644.58 /**485.0*/;
     public static final double L4_HEIGHT = 1384.0 /**850.0*/;
-    public static final double PROCESSOR_HEIGHT = 0.0;
+    public static final double PROCESSOR_HEIGHT = 36.0;
 
     public static final double ALGAE_LOW_HEIGHT = 462.36;
     public static final double ALGAE_HIGH_HEIGHT = 884.672;
