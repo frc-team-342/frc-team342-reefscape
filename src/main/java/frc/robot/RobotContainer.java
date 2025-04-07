@@ -243,12 +243,10 @@ public class RobotContainer {
     climbSequence = new ParallelCommandGroup(
       new Climb(climber),
       Commands.run(() -> {
-        if(climber.getClimbMode()){
-          if(Climb.getIter() % 2 == 1)
+        if(climber.getClimbMode())
             climber.funnelUp();
-          else
+        else
             climber.funnelDown();
-        }
       }, climber)
     );
     // Button Assigments 

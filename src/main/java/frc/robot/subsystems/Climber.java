@@ -61,7 +61,7 @@ public class Climber extends SubsystemBase {
     didReset = false;
 
     climbConfig
-      .idleMode(IdleMode.kBrake) //TODO kBrake
+      .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(30);
     climbConfig.closedLoop
       .p(CLIMB_P)
@@ -69,7 +69,7 @@ public class Climber extends SubsystemBase {
       .d(CLIMB_D);
       
     funnelConfig
-      .idleMode(IdleMode.kBrake) //TODO kBrake
+      .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(30);
     funnelConfig.closedLoop
       .p(FUNNEL_P)
@@ -125,6 +125,7 @@ public class Climber extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    //if time has passed and we have not reset, set the encoder to the absolute position
     if(timer.get()>= 1.5 && !didReset){
       funnelEncoder.setPosition(funnelDuty.get());
       didReset = true;

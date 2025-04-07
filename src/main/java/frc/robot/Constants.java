@@ -229,15 +229,15 @@ public final class Constants {
     public static final int FUNNEL_ID = 12;
     public static final int FUNNEL_DUTY_ID = 9;
 
-    public static final double CLIMB_UP = -200;
+    public static final double CLIMB_UP = -200; //TODO
     //replace with accurate values TODO
     public static final double FUNNEL_UP = -30;
     public static final double FUNNEL_DOWN = 0;
 
     public static final double FUNNEL_P = 0.06;
-    public static final double FUNNEL_I = 0.01;
-    public static final double FUNNEL_D = 0.03;
-    public static final double CLIMB_P = 0.03;
+    public static final double FUNNEL_I = 0.00;
+    public static final double FUNNEL_D = 0.05;
+    public static final double CLIMB_P = 0.005;
     public static final double CLIMB_I = 0;
     public static final double CLIMB_D = 0.04;
 
