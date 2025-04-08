@@ -16,11 +16,13 @@ import org.json.simple.parser.ParseException;
 import com.fasterxml.jackson.core.filter.FilteringGeneratorDelegate;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.PathConstraints;
 import com.studica.frc.AHRS;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.SwerveModule;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.PoseEstimate;
@@ -81,6 +83,7 @@ public class SwerveDrive extends SubsystemBase {
 <<<<<<< HEAD
   
 =======
+
         redSide = isRed();
 
 >>>>>>> 5f54c1526ed61b70e9f670bf83f92035509db04a
@@ -286,11 +289,19 @@ public class SwerveDrive extends SubsystemBase {
     }
 
     public Command setSlowPose2d(double X, double Y, double rotation){
-      return AutoBuilder.pathfindToPose(new Pose2d(X, Y, new Rotation2d(rotation)), DriveConstants.CONSTRAINTS);
+      return AutoBuilder.pathfindToPose(new Pose2d(X, Y, new Rotation2d(rotation)), DriveConstants.SLOW_CONSTRAINTS);
     }
 
     public Command posetest(double X, double Y, double rotation){
       return AutoBuilder.pathfindToPose(new Pose2d(X, Y, new Rotation2d(rotation)), DriveConstants.CONSTRAINTS);
+    }
+
+    public Command setPose2d(AutoConstants.FieldPoses pose){
+      return AutoBuilder.pathfindToPose(pose.getPose2d(redSide), DriveConstants.CONSTRAINTS);
+    }
+
+    public Command setSlowPose2d(AutoConstants.FieldPoses pose){
+      return AutoBuilder.pathfindToPose(pose.getPose2d(redSide), DriveConstants.SLOW_CONSTRAINTS);
     }
 
     public void resetOdometry(Pose2d pose){
@@ -396,6 +407,7 @@ public class SwerveDrive extends SubsystemBase {
 
     sendableBuilder.addDoubleProperty("Pose2d  X", () ->  odometry.getPoseMeters().getX(), null);
     sendableBuilder.addDoubleProperty("Pose2d  Y", () ->  odometry.getPoseMeters().getY(), null);
+    
 
     sendableBuilder.addDoubleProperty("Rotations", () ->  odometry.getPoseMeters().getRotation().getRadians(), null);
 
