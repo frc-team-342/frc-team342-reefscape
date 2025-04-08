@@ -38,7 +38,9 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Commands;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.commands.PathfindingCommand;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
@@ -153,6 +155,43 @@ public class RobotContainer {
     claw = new Claw();
     swerve = new SwerveDrive();
 
+
+    //PathPlanner Commands
+
+    NamedCommands.registerCommand("Outake", new Outtake(wrist, claw));
+    NamedCommands.registerCommand("Intake", new Intake(claw, wrist));
+
+    NamedCommands.registerCommand("Rotate to 0", new RotateToAngle(0, swerve));
+    NamedCommands.registerCommand("Rotate to 90", new RotateToAngle(90, swerve));
+    NamedCommands.registerCommand("Rotate to 180", new RotateToAngle(180, swerve));
+    NamedCommands.registerCommand("Rotate to 270", new RotateToAngle(270, swerve));
+
+    NamedCommands.registerCommand("Intake", new SequentialCommandGroup(
+      new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION_L1),
+      new WristToPosition(wrist, WristPositions.LOW_WRIST_POSITION)
+      ));
+
+
+    NamedCommands.registerCommand("L2", new SequentialCommandGroup(
+      new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_MIDDLE_POSITION_L2), 
+      new WristToPosition(wrist, WristPositions.MIDDLE_WRIST_POSITION)
+        ));
+
+    NamedCommands.registerCommand("L3", new SequentialCommandGroup(
+      new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_MIDDLE_POSITION_L3),  
+      new WristToPosition(wrist, WristPositions.L3_WRIST_POSITION)
+        ));
+
+    
+    NamedCommands.registerCommand("L4", new SequentialCommandGroup(
+      new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4),
+      new WristToPosition(wrist, WristPositions.HIGH_WRIST_POSITION) 
+    ));
+
     // Commands 
     wristWithJoy = new WristWithJoystick(operator, wrist);
     moveElevatorWithJoystick = new MoveElevatorWithJoystick(elevator,wrist, operator);
@@ -244,21 +283,14 @@ public class RobotContainer {
     autoChooser.addOption("Do Nothing", Autos.doNothing(swerve));
 
     autoChooser.addOption("Pose Drive", Autos.move(swerve));
-<<<<<<< HEAD
-
-    autoChooser.addOption("score", Autos.middleScore(swerve, elevator, wrist, claw));
-    autoChooser.addOption("Left Auto", Autos.leftScore(swerve, elevator, wrist, claw));
-=======
     autoChooser.addOption("Single Middle", Autos.middleScore(swerve, elevator, wrist, claw));
     //autoChooser.addOption("Left Auto", Autos.leftScore(swerve, elevator, wrist, claw));
 
     autoChooser.addOption("Two Piece Sketch", Autos.twoPieceMiddle(swerve, elevator, wrist, claw));
     autoChooser.addOption("Single and Load", Autos.singleLoad(swerve, elevator, wrist, claw));
     autoChooser.addOption("Two piece Right", Autos.rightTwoPiece(swerve, elevator, wrist, claw));
->>>>>>> 4d64f1f0b84adb37b9ec66f9a89b1405774243c3
 
-
-    //autoChooser.addOption("Test PATHPLANNER", new PathPlannerAuto("Test Auto"));
+    
 
     // Smartdashboard Data 
     SmartDashboard.putData(wrist);

@@ -80,13 +80,9 @@ public class SwerveDrive extends SubsystemBase {
     public SwerveDrive() {
 
          chassisSpeeds = new ChassisSpeeds(0, 0, 0);
-<<<<<<< HEAD
-  
-=======
 
         redSide = isRed();
 
->>>>>>> 5f54c1526ed61b70e9f670bf83f92035509db04a
         frontLeftModule = new SwerveModule(
           DriveConstants.FRONT_LEFT_DRIVE_ID, 
           DriveConstants.FRONT_LEFT_ROTATE_ID, 

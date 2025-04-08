@@ -26,6 +26,7 @@ import static frc.robot.Constants.ElevatorConstants.L4_HEIGHT;
 import org.opencv.core.Mat;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.MathUtil;
@@ -60,10 +61,6 @@ public final class Autos {
      
     }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 4d64f1f0b84adb37b9ec66f9a89b1405774243c3
     public static Command middleScore(SwerveDrive swerve, Elevator elevator, Wrist wrist, Claw claw){
       
       return Commands.sequence(
@@ -391,6 +388,7 @@ public final class Autos {
      swerve.setPose2d(3.65, 3.044, Units.degreesToRadians(-312)));
 
     }
+
 
   private Autos() {
     throw new UnsupportedOperationException("This is a utility class!");
