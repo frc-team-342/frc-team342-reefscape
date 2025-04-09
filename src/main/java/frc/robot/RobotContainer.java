@@ -7,7 +7,8 @@ package frc.robot;
 import frc.robot.commands.DriveWithJoystick;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.SpinClaw;
-import frc.robot.commands.Climber.Climb;
+import frc.robot.commands.Climber.ClimbDown;
+import frc.robot.commands.Climber.ClimbUp;
 import frc.robot.commands.Auto.Autos;
 import frc.robot.commands.Auto.RotateToAngle;
 import frc.robot.commands.Claw.Intake;
@@ -101,7 +102,8 @@ public class RobotContainer {
   private Command fieldOrienatedCommand;
   private Command slowModeToggle;
   private RotateToAngle rotateToAngle;
-  private Climb climb;
+  private ClimbUp climb;
+  private ClimbDown climbDown;
 
   private Command toggleCoralMode;
   private Command toggleAlgaeMode;
@@ -118,7 +120,7 @@ public class RobotContainer {
   private SequentialCommandGroup goToL3;
   private SequentialCommandGroup goToL4;
   private SequentialCommandGroup goToProcessor;
-  private ParallelCommandGroup climbSequence;
+  private ParallelCommandGroup climbUp;
 
   // Buttons
   private JoystickButton intakeButton;
@@ -182,6 +184,8 @@ public class RobotContainer {
     intake = new Intake(claw, wrist);
     outtake = new Outtake(wrist, claw);
 
+    climbDown = new ClimbDown(climber);
+
     toggleAlgaeMode = new SequentialCommandGroup(Commands.runOnce(() -> {wrist.setAlgaeMode();}, wrist), new WristToPosition(wrist, WristPositions.TOGGLE_POSITION));
     toggleCoralMode = new SequentialCommandGroup(Commands.runOnce(() -> {wrist.setCoralMode();}, wrist), new WristToPosition(wrist, WristPositions.TOGGLE_POSITION));
 
@@ -240,14 +244,14 @@ public class RobotContainer {
       )
     );
 
-    climbSequence = new ParallelCommandGroup(
-      new Climb(climber),
+    climbUp = new ParallelCommandGroup(
+      new ClimbUp(climber).withTimeout(5),
       Commands.run(() -> {
         if(climber.getClimbMode())
             climber.funnelUp();
         else
             climber.funnelDown();
-      }, climber)
+      }, climber).withTimeout(3)
     );
     // Button Assigments 
     level1Button = new JoystickButton(operator, XboxController.Button.kA.value );
@@ -337,9 +341,10 @@ public class RobotContainer {
     //Toggles climb mode
     toggleClimbButton.onTrue(Commands.runOnce(() -> {climber.toggleClimbMode();}, climber)); // X button
     //runs climber
-    climbButton.onTrue(climbSequence); // B button
+    climbButton.onTrue(climbUp.withTimeout(5)); // B button
+    climbButton.whileTrue(climbDown);
     //climbButton.whileTrue(climb); // B button
-
+//hi 342
     // claw
     intakeButton.whileTrue(intake);
     outtakeButton.whileTrue(outtake);

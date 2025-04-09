@@ -61,21 +61,22 @@ public class Climber extends SubsystemBase {
     didReset = false;
 
     climbConfig
-      .idleMode(IdleMode.kBrake)
+      .idleMode(IdleMode.kCoast)//TODO
       .smartCurrentLimit(30);
     climbConfig.closedLoop
       .p(CLIMB_P)
       .i(CLIMB_I)
-      .d(CLIMB_D);
+      .d(CLIMB_D)
+      .outputRange(-0.9, .9);
       
     funnelConfig
-      .idleMode(IdleMode.kBrake)
+      .idleMode(IdleMode.kCoast) //TODO
       .smartCurrentLimit(30);
     funnelConfig.closedLoop
       .p(FUNNEL_P)
       .i(FUNNEL_I)
       .d(FUNNEL_D)
-      .outputRange(-1, 0.3);
+      .outputRange(-0.7, 0.3);
     climbMotor.configure(climbConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     funnelMotor.configure(funnelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 

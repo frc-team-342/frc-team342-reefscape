@@ -11,12 +11,12 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Climber;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class Climb extends Command {
+public class ClimbDown extends Command {
   private Climber climber;
-  private double position;
-  private static int iter = 0;
+  private boolean isUp;
+  private double speed;
   /** Creates a new Climb. */
-  public Climb(Climber climber) {
+  public ClimbDown(Climber climber) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.climber=climber;
   }
@@ -24,21 +24,17 @@ public class Climb extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    position = climber.getClimbPosition();
-    if(climber.getClimbMode())
-      iter++;
-    System.out.println(iter);
-  }
+    isUp = ClimbUp.getIter() > 0;
+    speed = (CLIMB_UP > 0)? 0.9 : -0.9;
 
-  public static int getIter(){
-    return iter;
   }
-  // Called every time the scheduler runs while the command is scheduled.
+  
+  // Called every time 
+  //the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(climber.getClimbMode())
-      climber.climberUp(CLIMB_UP * iter);
-
+    if(isUp)
+      climber.moveClimber(speed);
   }
 
   // Called once the command ends or is interrupted.
