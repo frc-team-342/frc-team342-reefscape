@@ -30,6 +30,7 @@ public class Elevator extends SubsystemBase {
   private boolean goingDown;
   private boolean tooLow;
   private boolean tooHigh;
+  private boolean atPosition;
 
   private double currentPosition;
 
@@ -48,6 +49,7 @@ public class Elevator extends SubsystemBase {
   public Elevator() {
 
     goingDown = false;
+    atPosition = false;
 
     elevatorLeftMotor = new SparkMax(ELEVATORLEFT_ID, MotorType.kBrushless);
     elevatorRightMotor = new SparkMax(ELEVATORRIGHT_ID, MotorType.kBrushless);
@@ -89,15 +91,9 @@ public class Elevator extends SubsystemBase {
     elevatorEncoder = elevatorRightMotor.getEncoder();
 
     //PID values are still being tuned, but these values do work
-    elevatorRightMotorConfig.closedLoop.p(0.005);
-    elevatorRightMotorConfig.closedLoop.i(0);
-    elevatorRightMotorConfig.closedLoop.d(0);
-    /*
-     * Elevator is slowed right now to prevent damages during testing.
-     * Still don't know if we'll let it go full speed once everything
-     * is figured out.
-     */
-    elevatorRightMotorConfig.closedLoop.outputRange(-.3, .6);
+    elevatorRightMotorConfig.closedLoop
+      .pid(0.005, 0, 0.0015)
+      .outputRange(-.5, 1);
     // elevatorRightMotorConfig.closedLoop.maxMotion.maxAcceleration(2);
     // elevatorRightMotorConfig.closedLoop.maxMotion.maxVelocity(10);
     // elevatorRightMotorConfig.closedLoop.maxMotion.allowedClosedLoopError(10);
@@ -141,6 +137,7 @@ public class Elevator extends SubsystemBase {
 
   //Moves the elevator to the given position
   public void ElevatorToPosition(double nextPosition) {
+    atPosition = false;
 
     goingDown = currentPosition > nextPosition;
     tooLow = elevatorEncoder.getPosition() < BOTTOM_POSITION;
@@ -150,8 +147,10 @@ public class Elevator extends SubsystemBase {
       stop();
     else {
       elevatorPID.setReference(nextPosition, ControlType.kPosition);
-      currentPosition = nextPosition;}
+      currentPosition = nextPosition;
+    }
 
+    isAtPosition(nextPosition);
   }
 
   //This method will set the elevator motors to the inputted value
@@ -179,9 +178,20 @@ public class Elevator extends SubsystemBase {
     elevatorPID.setReference(currentPosition, ControlType.kPosition);
   }
 
+  public void isAtPosition(double nextPosition) {
+    atPosition = Math.abs(getEncoderPosition() - nextPosition) < ELEVATOR_ERROR;
+  }
+
+  public void resetElevator(){
+    elevatorEncoder.setPosition(0);
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if(atPosition) {
+      holdPosition();
+    }
   }
 
   @Override

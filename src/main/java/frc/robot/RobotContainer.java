@@ -18,11 +18,13 @@ import frc.robot.commands.Elevator.MoveElevatorWithJoystick;
 import frc.robot.commands.Wrist.WristToPosition;
 import frc.robot.commands.Wrist.WristWithJoystick;
 import frc.robot.Constants.ElevatorConstants.ElevatorHeights;
-import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.WristConstants.WristPositions;
 import frc.robot.subsystems.*;
 
 import static frc.robot.Constants.ElevatorConstants.*;
 import static frc.robot.Constants.WristConstants.*;
+import static frc.robot.Constants.ElevatorConstants.*;
 
 import java.io.Writer;
 import java.security.AlgorithmConstraints;
@@ -40,6 +42,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoSink;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -101,7 +106,8 @@ public class RobotContainer {
   private DriveWithJoystick driveWithJoystick;
   private Command fieldOrienatedCommand;
   private Command slowModeToggle;
-  private RotateToAngle rotateToAngle;
+
+  private Command driveAssistToggle;
   private ClimbUp climb;
   private ClimbDown climbDown;
 
@@ -111,7 +117,10 @@ public class RobotContainer {
   private Command reverseCoralIntake;
   private Command slowOuttake;
 
+  private Command limeLightReset;
+
   private Command resetEncoder;
+  private Command resetElevator;
 
   private SendableChooser<Command> autoChooser;
 
@@ -133,6 +142,8 @@ public class RobotContainer {
   private JoystickButton fieldOrienatedButton;
   private JoystickButton slowModeButton;
 
+  private JoystickButton driveAssistButton;
+
   private JoystickButton elevatorOverrideButton;
   private JoystickButton wristOverrideButton;
 
@@ -140,11 +151,14 @@ public class RobotContainer {
   private POVButton toggleAlgaeModeButton;
 
   private POVButton resetEncoderButton;
-
-  private JoystickButton rotate90Button;
+  private POVButton resetElevatorButton;
 
   private JoystickButton reverseCoralButton;
   private JoystickButton slowOuttakeButton;
+
+  private JoystickButton limeLighButton;
+
+  public UsbCamera camera;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -173,13 +187,13 @@ public class RobotContainer {
     // Commands 
     wristWithJoy = new WristWithJoystick(operator, wrist);
     moveElevatorWithJoystick = new MoveElevatorWithJoystick(elevator,wrist, operator);
-    rotateToAngle = new RotateToAngle(180, swerve);
 
     reverseCoralIntake = Commands.startEnd(() -> {claw.spin(.1);}, () -> {claw.spin(0);}, claw);
     
-    slowOuttake = Commands.runOnce(() -> { claw.slowOutakeCoral(); });
+    slowOuttake = Commands.startEnd(() -> {claw.slowOutakeCoral();}, () -> {claw.spin(0);}, claw);
 
-    resetEncoder = Commands.runOnce(() -> { wrist.resetEncoder(); });
+    resetEncoder = Commands.runOnce(() -> {wrist.resetEncoder();});
+    resetElevator = Commands.runOnce(() -> {elevator.resetEncoder();});
 
     intake = new Intake(claw, wrist);
     outtake = new Outtake(wrist, claw);
@@ -194,54 +208,38 @@ public class RobotContainer {
       }, swerve);
 
     slowModeToggle = Commands.runOnce(() -> {swerve.toggleSlowMode();}, swerve);
-    onStop = Commands.runOnce(() -> { claw.stopButton(); }, claw);
-    outtakeCommand = Commands.runOnce(() -> { claw.outTakeCoral(); }, claw);
-    intakeCommand = new SpinClaw(claw);
-
+    
+    limeLightReset = Commands.runOnce(() -> {swerve.resetPoseLimelight();}, swerve);
+ 
     // Creating sequential command groups that use wrist and elevator
     goToIntake = new SequentialCommandGroup(
       new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
       new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION_L1),
-      new ParallelCommandGroup(
-      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION_L1, true), 
       new WristToPosition(wrist, WristPositions.LOW_WRIST_POSITION)
-      )
     );
 
     goToL2 = new SequentialCommandGroup(
       new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
       new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_MIDDLE_POSITION_L2), 
-      new ParallelCommandGroup(
-        new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_MIDDLE_POSITION_L2, true), 
-        new WristToPosition(wrist, WristPositions.MIDDLE_WRIST_POSITION)
-      )
+      new WristToPosition(wrist, WristPositions.MIDDLE_WRIST_POSITION)
     );
 
     goToL3 = new SequentialCommandGroup(
       new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
-      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_MIDDLE_POSITION_L3), 
-      new ParallelCommandGroup(
-        new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_MIDDLE_POSITION_L3, true), 
-        new WristToPosition(wrist, WristPositions.MIDDLE_WRIST_POSITION)
-      )
+      new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_MIDDLE_POSITION_L3),  
+      new WristToPosition(wrist, WristPositions.L3_WRIST_POSITION)
     );
 
     goToL4 = new SequentialCommandGroup(
       new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
       new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4),
-      new ParallelCommandGroup(
-        new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4, true), 
-        new WristToPosition(wrist, WristPositions.HIGH_WRIST_POSITION)
-      )
+      new WristToPosition(wrist, WristPositions.HIGH_WRIST_POSITION)
     );
 
     goToProcessor = new SequentialCommandGroup(
       new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
       new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.PROCESSOR_POSITION),
-      new ParallelCommandGroup(
-        new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.PROCESSOR_POSITION, true), 
-        new WristToPosition(wrist, WristPositions.ALGAE_WRIST_POSITION)
-      )
+      new WristToPosition(wrist, WristPositions.ALGAE_WRIST_POSITION)
     );
 
     climbUp = new ParallelCommandGroup(
@@ -277,25 +275,36 @@ public class RobotContainer {
 
 
     resetEncoderButton = new POVButton(operator, 270);
+    resetElevatorButton = new POVButton(operator, 90);
 
-    fieldOrienatedButton = new JoystickButton(driver, XboxController.Button.kY.value);
-    slowModeButton = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+    fieldOrienatedButton = new JoystickButton(driver, XboxController.Button.kA.value);
+    slowModeButton = new JoystickButton(driver, XboxController.Button.kX.value);
     driveWithJoystick = new DriveWithJoystick(swerve, driver);
 
+    driveAssistButton = new JoystickButton(driver, XboxController.Button.kB.value);
     wristOverrideButton = new JoystickButton(operator, XboxController.Button.kStart.value);
     elevatorOverrideButton = new JoystickButton(operator, XboxController.Button.kBack.value);
-
-    rotate90Button = new JoystickButton(driver, XboxController.Button.kA.value);
 
     slowOuttakeButton = new JoystickButton(operator, XboxController.Button.kRightStick.value);
     reverseCoralButton = new JoystickButton(operator, XboxController.Button.kLeftStick.value);
 
+    limeLighButton = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+
     // Autos
     autoChooser = new SendableChooser<>();
     //autoChooser.addOption("PathPlannerTest", new PathPlannerAuto("New Auto"));
-    autoChooser.addOption("Drive Foward", Autos.driveFoward(swerve));
-    autoChooser.addOption("Score Middle", Autos.scoreMiddle(swerve,wrist,claw));
+
     autoChooser.addOption("Do Nothing", Autos.doNothing(swerve));
+
+    autoChooser.addOption("Pose Drive", Autos.move(swerve));
+    autoChooser.addOption("Single Middle", Autos.middleScore(swerve, elevator, wrist, claw));
+    //autoChooser.addOption("Left Auto", Autos.leftScore(swerve, elevator, wrist, claw));
+
+    autoChooser.addOption("Two Piece Sketch", Autos.twoPieceMiddle(swerve, elevator, wrist, claw));
+    autoChooser.addOption("Single and Load", Autos.singleLoad(swerve, elevator, wrist, claw));
+    autoChooser.addOption("Two piece Right", Autos.rightTwoPiece(swerve, elevator, wrist, claw));
+
+    //autoChooser.addOption("Test PATHPLANNER", new PathPlannerAuto("Test Auto"));
 
     // Smartdashboard Data 
     SmartDashboard.putData(wrist);
@@ -307,6 +316,10 @@ public class RobotContainer {
     wrist.setDefaultCommand(wristWithJoy);
     elevator.setDefaultCommand(moveElevatorWithJoystick);
     swerve.setDefaultCommand(driveWithJoystick);
+
+    camera = CameraServer.startAutomaticCapture();
+    camera.setResolution(320, 420);
+    camera.setFPS(30);
 
     configureBindings();
   }
@@ -330,7 +343,11 @@ public class RobotContainer {
     toggleAlgaeModeButton.onTrue(toggleAlgaeMode);
     toggleCoralModeButton.onTrue(toggleCoralMode);
 
+    driveAssistButton.whileTrue(Commands.startEnd(()->{swerve.driveAssistOn();},()->{swerve.driveAssistOff();}));
+
     resetEncoderButton.onTrue(resetEncoder);
+    resetElevatorButton.onTrue(resetElevator);
+
 
     // Moves the wrist to a certain position based on what button is pressed
     level1Button.onTrue(goToIntake); //Right button on d-pad
@@ -351,11 +368,10 @@ public class RobotContainer {
     slowOuttakeButton.whileTrue(slowOuttake);
     reverseCoralButton.whileTrue(reverseCoralIntake);
 
-    rotate90Button.onTrue(rotateToAngle);
-    
-
     elevatorOverrideButton.onTrue(moveElevatorWithJoystick);
     wristOverrideButton.onTrue(wristWithJoy);
+
+    limeLighButton.whileTrue(limeLightReset);
 
     //outtakeButton.whileTrue();
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`

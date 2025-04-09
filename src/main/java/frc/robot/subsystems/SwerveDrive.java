@@ -16,11 +16,17 @@ import org.json.simple.parser.ParseException;
 import com.fasterxml.jackson.core.filter.FilteringGeneratorDelegate;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.PathConstraints;
 import com.studica.frc.AHRS;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.SwerveModule;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.LimelightHelpers;
+import frc.robot.LimelightHelpers.PoseEstimate;
+import frc.robot.commands.DriveWithJoystick;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -32,7 +38,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class SwerveDrive extends SubsystemBase {
@@ -45,6 +54,9 @@ public class SwerveDrive extends SubsystemBase {
   
   private boolean fieldOriented; 
   private boolean slowMode;
+  private boolean redSide;
+  
+  private int tag;
   
   private SwerveModule frontLeftModule;
   private SwerveModule frontRightModule;
@@ -57,82 +69,96 @@ public class SwerveDrive extends SubsystemBase {
   private Supplier<ChassisSpeeds> chasisSpeedSupplier;
   private BooleanSupplier shouldFlipSupplier;
   private RobotConfig config;
-  private Field2d feild;
+  private Field2d field;
+  public boolean driveAssist;
+  
+  
+    SwerveModuleState[] swerveModuleStates;
+    SwerveModulePosition[] swerveModulePositions;
+  
+    /** Creates a new SwerveDrive. */
+    public SwerveDrive() {
 
+         chassisSpeeds = new ChassisSpeeds(0, 0, 0);
 
-  SwerveModuleState[] swerveModuleStates;
-  SwerveModulePosition[] swerveModulePositions;
+        redSide = isRed();
 
-  /** Creates a new SwerveDrive. */
-  public SwerveDrive() {
+        frontLeftModule = new SwerveModule(
+          DriveConstants.FRONT_LEFT_DRIVE_ID, 
+          DriveConstants.FRONT_LEFT_ROTATE_ID, 
+          DriveConstants.FL_ENCODER_PORT, 
+          false, true, 
+          DriveConstants.FRONT_LEFT_OFFSET, 
+          "FL",
+          DriveConstants.FL_WHEEL_DIAMETER
+          );
+  
+          frontRightModule = new SwerveModule(
+          DriveConstants.FRONT_RIGHT_DRIVE_ID, 
+          DriveConstants.FRONT_RIGHT_ROTATE_ID, 
+          DriveConstants.FR_ENCODER_PORT, 
+          false, true, 
+          DriveConstants.FRONT_RIGHT_OFFSET, 
+          "FR",
+          DriveConstants.FR_WHEEL_DIAMETER
+          );
+  
+          backLeftModule = new SwerveModule(
+          DriveConstants.BACK_LEFT_DRIVE_ID, 
+          DriveConstants.BACK_LEFT_ROTATE_ID, 
+          DriveConstants.BL_ENCODER_PORT, 
+          false, true, 
+          DriveConstants.BACK_LEFT_OFFSET, 
+          "BL",
+          DriveConstants.BL_WHEEL_DIAMETER
+          );
+  
+          backRightModule = new SwerveModule(
+          DriveConstants.BACK_RIGHT_DRIVE_ID, 
+          DriveConstants.BACK_RIGHT_ROTATE_ID, 
+          DriveConstants.BR_ENCODER_PORT, 
+          false, true, 
+          DriveConstants.BACK_RIGHT_OFFSET, 
+          "BR",
+          DriveConstants.BR_WHEEL_DIAMETER
+          );
+  
+          field = new Field2d();
 
-      frontLeftModule = new SwerveModule(
-        DriveConstants.FRONT_LEFT_DRIVE_ID, 
-        DriveConstants.FRONT_LEFT_ROTATE_ID, 
-        DriveConstants.FL_ENCODER_PORT, 
-        false, false, 
-        DriveConstants.FRONT_LEFT_OFFSET, 
-        "FL"
+        /* Initalizes Kinematics */
+        kinematics = new SwerveDriveKinematics(
+  
+          /*Front Left */ new Translation2d(Units.inchesToMeters(14.5), Units.inchesToMeters(14.5)),
+          /*Front Right */ new Translation2d(Units.inchesToMeters(14.5), Units.inchesToMeters(-14.5)),
+          /*Back Left */ new Translation2d(Units.inchesToMeters(-14.5), Units.inchesToMeters(14.5)),
+          /*Back Right */ new Translation2d(Units.inchesToMeters(-14.5), Units.inchesToMeters(-14.5))
+  
         );
+  
+        /* Initalize NavX (Gyro) */
+        NavX = new AHRS(AHRS.NavXComType.kUSB1);
+  
+        /* Initalizes Odometry */
+        odometry = new SwerveDriveOdometry( 
+  
+          kinematics, 
+          Rotation2d.fromDegrees(-NavX.getAngle() % 360),
+          getCurrentSwerveModulePositions()
+  
+          );
 
-        frontRightModule = new SwerveModule(
-        DriveConstants.FRONT_RIGHT_DRIVE_ID, 
-        DriveConstants.FRONT_RIGHT_ROTATE_ID, 
-        DriveConstants.FR_ENCODER_PORT, 
-        false, false, 
-        DriveConstants.FRONT_RIGHT_OFFSET, 
-        "FR"
-        );
-
-        backLeftModule = new SwerveModule(
-        DriveConstants.BACK_LEFT_DRIVE_ID, 
-        DriveConstants.BACK_LEFT_ROTATE_ID, 
-        DriveConstants.BL_ENCODER_PORT, 
-        false, false, 
-        DriveConstants.BACK_LEFT_OFFSET, 
-        "BL"
-        );
-
-        backRightModule = new SwerveModule(
-        DriveConstants.BACK_RIGHT_DRIVE_ID, 
-        DriveConstants.BACK_RIGHT_ROTATE_ID, 
-        DriveConstants.BR_ENCODER_PORT, 
-        false, false, 
-        DriveConstants.BACK_RIGHT_OFFSET, 
-        "BR"
-        );
-
-      /* Initalizes Kinematics */
-      kinematics = new SwerveDriveKinematics(
-
-        /*Front Left */ new Translation2d(Units.inchesToMeters(14.5), Units.inchesToMeters(14.5)),
-        /*Front Right */ new Translation2d(Units.inchesToMeters(14.5), Units.inchesToMeters(-14.5)),
-        /*Back Left */ new Translation2d(Units.inchesToMeters(-14.5), Units.inchesToMeters(14.5)),
-        /*Back Right */ new Translation2d(Units.inchesToMeters(-14.5), Units.inchesToMeters(-14.5))
-
-      );
-
-      /* Initalize NavX (Gyro) */
-      NavX = new AHRS(AHRS.NavXComType.kUSB1);
-
-      /* Initalizes Odometry */
-      odometry = new SwerveDriveOdometry( 
-
-        kinematics, 
-        new Rotation2d(NavX.getAngle()),
-        getCurrentSwerveModulePositions()
-
-        );
-
+          odometry.resetPose(new Pose2d(7,3,new Rotation2d(0)));
+      
         fieldOriented = false;
         slowMode = false;
+        
 
       poseSupplier = () -> getPose2d();
       resetPoseConsumer = pose -> resetOdometry(pose);
       robotRelativeOutput = chassisSpeeds -> drive(chassisSpeeds);
       chasisSpeedSupplier = () -> getChassisSpeeds();
-      shouldFlipSupplier = () -> false;
-
+      shouldFlipSupplier = () -> isRed();
+                       
         try {
           config = RobotConfig.fromGUISettings();
         } catch (IOException e) {
@@ -141,89 +167,107 @@ public class SwerveDrive extends SubsystemBase {
           e.printStackTrace();
         }    
 
-        feild = new Field2d();
-
-        new Thread(() -> {
-          try {
-            Thread.sleep(1000);
-            NavX.reset();
-          } catch (Exception e) {}
-        }).start();
-
-        configureAutoBuilder();
-    }
-
-    public void toggleFieldOriented (){
-      
-      fieldOriented = !fieldOriented;
-
-    }
-
-    public void toggleSlowMode() {
-      slowMode = !slowMode;
-    }
-
-    public boolean getSlowMode() {
-      return slowMode;
-    }
-
-    public ChassisSpeeds getChassisSpeeds(){
-
-      return new ChassisSpeeds(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond);
-
-    }
-
-      /* This drive method takes the values from the chassisspeeds and 
-      applys in to each indivual Module using the "SetState" Method created in SwereMoudule */
+        field = new Field2d();
   
-      public void drive(ChassisSpeeds chassisSpeeds) {
+          new Thread(() -> {
+            try {
+              Thread.sleep(1000);
+              NavX.reset();
+            } catch (Exception e) {}
+          }).start();
+  
+          configureAutoBuilder();
+      }
 
-        /* When Field Orientated is True, passes the chassis speed and the Gryo's current angle through "fromFieldRelativeSpeeds",
-         before passing it through the rest of the drive Method */
+      public Boolean isRed(){
+        var alliance = DriverStation.getAlliance();
+        return alliance.get() == DriverStation.Alliance.Red;
+      }
+  
+      public void toggleFieldOriented (){
+        
+        fieldOriented = !fieldOriented;
+  
+      }
+  
+      public void toggleSlowMode() {
+      slowMode = !slowMode;
+      }
 
-        if (fieldOriented) {
-          chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, new Rotation2d(NavX.getRotation2d().getRadians()));
+      public boolean getSlowMode() {
+        return slowMode;
+      }
+  
+      public ChassisSpeeds getChassisSpeeds(){
+  
+        return chassisSpeeds;
+  
+      }
+  
+        /* This drive method takes the values from the chassisspeeds and 
+        applys in to each indivual Module using the "SetState" Method created in SwereMoudule */
+    
+        public void drive(ChassisSpeeds chassisSpeeds) {
+  
+          /* When Field Oriented is True, passes the chassis speed and the Gryo's current angle through "fromFieldRelativeSpeeds",
+           before passing it through the rest of the drive Method */
+  
+          if (fieldOriented) {
+            chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, new Rotation2d(NavX.getRotation2d().getRadians()));
+  
+          }
 
+          SwerveModuleState swerveModuleStates[] = kinematics.toWheelSpeeds(chassisSpeeds);
+
+  
+          frontLeftModule.setState(swerveModuleStates[0]);
+          frontRightModule.setState(swerveModuleStates[1]);
+          backLeftModule.setState(swerveModuleStates[2]);
+          backRightModule.setState(swerveModuleStates[3]);
+
+          this.chassisSpeeds = chassisSpeeds;
+
+    }
+  
+        /* This drive method simply spins wheels  */
+  
+        public void testDrive(){
+  
+          ChassisSpeeds testSpeeds = new ChassisSpeeds(Units.inchesToMeters(1), Units.inchesToMeters(0), Units.degreesToRadians(0));
+  
+          SwerveModuleState[] swerveModuleStates = kinematics.toWheelSpeeds(testSpeeds);
+  
+          frontLeftModule.setState(swerveModuleStates[0]);
+          frontRightModule.setState(swerveModuleStates[1]);
+          backLeftModule.setState(swerveModuleStates[2]);
+          backRightModule.setState(swerveModuleStates[3]);
+        }
+  
+  
+  
+        /* Method that returns the Module positions */
+        public SwerveModulePosition[] getCurrentSwerveModulePositions(){
+          return new SwerveModulePosition[]{
+  
+              new SwerveModulePosition(frontLeftModule.getDistance(), new Rotation2d(frontLeftModule.getRotateEncoderPosition())), // Front left
+              new SwerveModulePosition(frontRightModule.getDistance(), new Rotation2d(frontRightModule.getRotateEncoderPosition())), // Front Right
+              new SwerveModulePosition(backLeftModule.getDistance(), new Rotation2d(backLeftModule.getRotateEncoderPosition())), // Back Left
+              new SwerveModulePosition(backRightModule.getDistance(), new Rotation2d(backRightModule.getRotateEncoderPosition())) // Back Right
+  
+          };
+        } 
+        public void driveAssistOn() {
+          driveAssist = true;
+          System.out.println("driveassist is true!!");
+        }
+        public void driveAssistOff() {
+          driveAssist = false;
+          System.out.println("driveassist is false!!");
         }
     
-        SwerveModuleState swerveModuleStates[] = kinematics.toWheelSpeeds(chassisSpeeds);
-
-        frontLeftModule.setState(swerveModuleStates[0]);
-        frontRightModule.setState(swerveModuleStates[1]);
-        backLeftModule.setState(swerveModuleStates[2]);
-        backRightModule.setState(swerveModuleStates[3]);
-
-
+        public boolean getDriveAssist() {
+          return driveAssist;
       }
-
-      /* This drive method simply spins wheels  */
-
-      public void testDrive(){
-
-        ChassisSpeeds testSpeeds = new ChassisSpeeds(Units.inchesToMeters(1), Units.inchesToMeters(0), Units.degreesToRadians(0));
-
-        SwerveModuleState[] swerveModuleStates = kinematics.toWheelSpeeds(testSpeeds);
-
-        frontLeftModule.setState(swerveModuleStates[0]);
-        frontRightModule.setState(swerveModuleStates[1]);
-        backLeftModule.setState(swerveModuleStates[2]);
-        backRightModule.setState(swerveModuleStates[3]);
-      }
-
-
-
-      /* Method that returns the Moudle positions */
-      public SwerveModulePosition[] getCurrentSwerveModulePositions(){
-        return new SwerveModulePosition[]{
-
-            new SwerveModulePosition(frontLeftModule.getDistance(), new Rotation2d(frontLeftModule.getRotateEncoderPosition())), // Front left
-            new SwerveModulePosition(frontRightModule.getDistance(), new Rotation2d(frontRightModule.getRotateEncoderPosition())), // Front Right
-            new SwerveModulePosition(backLeftModule.getDistance(), new Rotation2d(backLeftModule.getRotateEncoderPosition())), // Back Left
-            new SwerveModulePosition(backRightModule.getDistance(), new Rotation2d(backRightModule.getRotateEncoderPosition())) // Back Right
-
-        };
-      } 
-
       /* Method that stops all modules */
       public void stopModules() {
         frontLeftModule.stop();
@@ -236,12 +280,58 @@ public class SwerveDrive extends SubsystemBase {
       return odometry.getPoseMeters();
     }
 
+    public Command setPose2d(double X, double Y, double rotation){
+      return AutoBuilder.pathfindToPose(new Pose2d(X, Y, new Rotation2d(rotation)), DriveConstants.CONSTRAINTS);
+    }
+
+    public Command setSlowPose2d(double X, double Y, double rotation){
+      return AutoBuilder.pathfindToPose(new Pose2d(X, Y, new Rotation2d(rotation)), DriveConstants.SLOW_CONSTRAINTS);
+    }
+
+    public Command posetest(double X, double Y, double rotation){
+      return AutoBuilder.pathfindToPose(new Pose2d(X, Y, new Rotation2d(rotation)), DriveConstants.CONSTRAINTS);
+    }
+
+    public Command setPose2d(AutoConstants.FieldPoses pose){
+      return AutoBuilder.pathfindToPose(pose.getPose2d(redSide), DriveConstants.CONSTRAINTS);
+    }
+
+    public Command setSlowPose2d(AutoConstants.FieldPoses pose){
+      return AutoBuilder.pathfindToPose(pose.getPose2d(redSide), DriveConstants.SLOW_CONSTRAINTS);
+    }
+
     public void resetOdometry(Pose2d pose){
        odometry.resetPosition(NavX.getRotation2d(), getCurrentSwerveModulePositions(), pose);
     }
     
     public AHRS getGyro(){
       return NavX;
+    }
+
+    public void resetPose(Pose2d pose){
+      odometry.resetPose(pose);
+    }
+
+  
+    public void resetPoseLimelight(){
+
+      PoseEstimate estimate;
+
+      if(redSide){
+        estimate = LimelightHelpers.getBotPoseEstimate_wpiRed("limelight");
+      }else{
+        estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+      }
+
+      if(estimate.tagCount > 0 && LimelightHelpers.getTA("limelight") >= .5){
+        System.out.println(LimelightHelpers.getTargetCount("limelight"));
+        tag = estimate.rawFiducials[0].id;
+        resetPose(estimate.pose);
+      } else {
+        System.out.println("NO tags found");
+        tag = 0;
+
+      } 
     }
 
     public void configureAutoBuilder() {
@@ -262,6 +352,7 @@ public class SwerveDrive extends SubsystemBase {
       sendableBuilder.addDoubleProperty(frontLeftModule.printLabel() + " Offset", ()-> frontLeftModule.getRawOffsets(), null);
       sendableBuilder.addDoubleProperty(frontLeftModule.printLabel() + " Rotate Encoder(Radians): " , ()-> frontLeftModule.getRotateEncoderPosition(), null);
       sendableBuilder.addDoubleProperty(frontLeftModule.printLabel() + " Absoulete Position " , ()-> frontLeftModule.getAnalogEnoderValue(), null);
+      sendableBuilder.addDoubleProperty(frontLeftModule.printLabel() + "Velocity", () -> frontLeftModule.getDriveVelocity(), null);
       if(swerveModuleStates != null)
         sendableBuilder.addDoubleProperty(frontLeftModule.printLabel() + " Analog Offest " , ()-> swerveModuleStates[0].angle.getRadians(), null);
 
@@ -271,6 +362,7 @@ public class SwerveDrive extends SubsystemBase {
       sendableBuilder.addDoubleProperty(frontRightModule.printLabel() + " Offset", ()-> frontRightModule.getRawOffsets(), null);
       sendableBuilder.addDoubleProperty(frontRightModule.printLabel() + " Rotate Encoder(Radians): " , ()-> frontRightModule.getRotateEncoderPosition(), null);
       sendableBuilder.addDoubleProperty(frontRightModule.printLabel() + " Absoulete Position " , ()-> frontRightModule.getAnalogEnoderValue(), null);
+      sendableBuilder.addDoubleProperty(frontRightModule.printLabel() + "Velocity", () -> frontRightModule.getDriveVelocity(), null);
       if(swerveModuleStates != null)
         sendableBuilder.addDoubleProperty(frontRightModule.printLabel() + " Analog Offest " , ()-> swerveModuleStates[1].angle.getRadians(), null);
     }
@@ -279,6 +371,7 @@ public class SwerveDrive extends SubsystemBase {
       sendableBuilder.addDoubleProperty(backLeftModule.printLabel() + " Offset", ()-> backLeftModule.getRawOffsets(), null);
       sendableBuilder.addDoubleProperty(backLeftModule.printLabel() + " Rotate Encoder(Radians): " , ()-> backLeftModule.getRotateEncoderPosition(), null);
       sendableBuilder.addDoubleProperty(backLeftModule.printLabel() + " Absoulete Position " , ()-> backLeftModule.getAnalogEnoderValue(), null);
+      sendableBuilder.addDoubleProperty(backLeftModule.printLabel() + "Velocity", () -> backLeftModule.getDriveVelocity(), null);
       if(swerveModuleStates != null)
         sendableBuilder.addDoubleProperty(backLeftModule.printLabel() + " Analog Offest " , ()-> swerveModuleStates[2].angle.getRadians(), null);
 
@@ -288,6 +381,7 @@ public class SwerveDrive extends SubsystemBase {
       sendableBuilder.addDoubleProperty(backRightModule.printLabel() + " Offset", ()-> backRightModule.getRawOffsets(), null);
       sendableBuilder.addDoubleProperty(backRightModule.printLabel() + " Rotate Encoder(Radians): " , ()-> backRightModule.getRotateEncoderPosition(), null);
       sendableBuilder.addDoubleProperty(backRightModule.printLabel() + " Absoulete Position " , ()-> backRightModule.getAnalogEnoderValue(), null);
+      sendableBuilder.addDoubleProperty(backRightModule.printLabel() + "Velocity", () -> backRightModule.getDriveVelocity(), null);
       if(swerveModuleStates != null)
         sendableBuilder.addDoubleProperty(backRightModule.printLabel() + " Analog Offest " , ()-> swerveModuleStates[3].angle.getRadians(), null);
     }
@@ -302,10 +396,30 @@ public class SwerveDrive extends SubsystemBase {
 
     sendableBuilder.addBooleanProperty("Field Orienated", ()-> fieldOriented, null);
     sendableBuilder.addBooleanProperty("Slow Mode", ()-> slowMode, null);
-    sendableBuilder.addDoubleProperty("Gyro Reading", ()-> NavX.getAngle(), null);
+    sendableBuilder.addDoubleProperty("Gyro Reading", ()-> NavX.getAngle() % 360, null);
 
-    sendableBuilder.addDoubleProperty("FL Distance Travlled", ()-> frontLeftModule.getDistance(), null);
+    sendableBuilder.addDoubleProperty("FL Distance Travelled", ()-> frontLeftModule.getDistance(), null);
     sendableBuilder.addDoubleProperty("FL Velocity", ()-> frontLeftModule.getDriveVelocity(), null);
+
+    sendableBuilder.addDoubleProperty("Pose2d  X", () ->  odometry.getPoseMeters().getX(), null);
+    sendableBuilder.addDoubleProperty("Pose2d  Y", () ->  odometry.getPoseMeters().getY(), null);
+    
+
+    sendableBuilder.addDoubleProperty("Rotations", () ->  odometry.getPoseMeters().getRotation().getRadians(), null);
+
+    sendableBuilder.addDoubleProperty("Chasis speeds, X", () -> getChassisSpeeds().vxMetersPerSecond, null);
+    sendableBuilder.addDoubleProperty("Chasis speeds, Y", () -> getChassisSpeeds().vyMetersPerSecond, null);
+    sendableBuilder.addDoubleProperty("Chasis speeds, rotation", () -> getChassisSpeeds().omegaRadiansPerSecond, null);
+
+    sendableBuilder.addFloatProperty("Tag Number", () -> tag, null);
+
+    sendableBuilder.addBooleanProperty("Am i red?", () -> redSide, null);
+
+    sendableBuilder.addDoubleProperty("Field setter", () -> {return 0.0;}, (double dummy) -> resetPoseLimelight());
+
+    sendableBuilder.addDoubleProperty("Match Time", () -> DriverStation.getMatchTime(), null);
+    
+    SmartDashboard.putData(field);
 
   }
       
@@ -314,7 +428,9 @@ public class SwerveDrive extends SubsystemBase {
     // This method will be called once per scheduler run
 
     //Updates the odometry every run
-    odometry.update(NavX.getRotation2d(), getCurrentSwerveModulePositions());
+    odometry.update(Rotation2d.fromDegrees(-NavX.getAngle() % 360), getCurrentSwerveModulePositions());
+    field.setRobotPose(odometry.getPoseMeters());
+    
 
   }
 }
