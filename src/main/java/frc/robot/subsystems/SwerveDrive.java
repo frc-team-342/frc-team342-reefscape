@@ -13,6 +13,9 @@ import javax.print.attribute.standard.MediaSize.NA;
 
 import org.json.simple.parser.ParseException;
 
+import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.sensors.WPI_PigeonIMU;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.fasterxml.jackson.core.filter.FilteringGeneratorDelegate;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
@@ -39,6 +42,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.ADIS16448_IMU.IMUAxis;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -49,6 +53,9 @@ public class SwerveDrive extends SubsystemBase {
   private SwerveDriveKinematics kinematics;
   private SwerveDriveOdometry odometry;
   private AHRS NavX;
+
+  private PigeonIMU pigeon;
+  private WPI_PigeonIMU piegon2;
 
   private ChassisSpeeds chassisSpeeds;
   
@@ -137,12 +144,14 @@ public class SwerveDrive extends SubsystemBase {
   
         /* Initalize NavX (Gyro) */
         NavX = new AHRS(AHRS.NavXComType.kUSB1);
+
+        piegon2 = new WPI_PigeonIMU(16);
   
         /* Initalizes Odometry */
         odometry = new SwerveDriveOdometry( 
   
           kinematics, 
-          Rotation2d.fromDegrees(-NavX.getAngle() % 360),
+          Rotation2d.fromDegrees(/*-NavX.getAngle() % 360*/  piegon2.getYaw()),
           getCurrentSwerveModulePositions()
   
           );
@@ -172,7 +181,7 @@ public class SwerveDrive extends SubsystemBase {
           new Thread(() -> {
             try {
               Thread.sleep(1000);
-              NavX.reset();
+              piegon2.setYaw(0); //NAVX WAS HERE
             } catch (Exception e) {}
           }).start();
   
@@ -213,7 +222,7 @@ public class SwerveDrive extends SubsystemBase {
            before passing it through the rest of the drive Method */
   
           if (fieldOriented) {
-            chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, new Rotation2d(NavX.getRotation2d().getRadians()));
+            chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, new Rotation2d(Units.degreesToRadians(piegon2.getYaw()))); //NAVX USED TO BE HERE
   
           }
 
@@ -301,11 +310,17 @@ public class SwerveDrive extends SubsystemBase {
     }
 
     public void resetOdometry(Pose2d pose){
-       odometry.resetPosition(NavX.getRotation2d(), getCurrentSwerveModulePositions(), pose);
+       odometry.resetPosition(piegon2.getRotation2d(), getCurrentSwerveModulePositions(), pose);
+
+      
     }
     
     public AHRS getGyro(){
       return NavX;
+    }
+
+    public WPI_PigeonIMU getPiegon(){
+      return piegon2;
     }
 
     public void resetPose(Pose2d pose){
@@ -396,7 +411,7 @@ public class SwerveDrive extends SubsystemBase {
 
     sendableBuilder.addBooleanProperty("Field Orienated", ()-> fieldOriented, null);
     sendableBuilder.addBooleanProperty("Slow Mode", ()-> slowMode, null);
-    sendableBuilder.addDoubleProperty("Gyro Reading", ()-> NavX.getAngle() % 360, null);
+    sendableBuilder.addDoubleProperty("Gyro Reading", ()-> piegon2.getYaw(), null); //NAVX USED TO BE HERE
 
     sendableBuilder.addDoubleProperty("FL Distance Travelled", ()-> frontLeftModule.getDistance(), null);
     sendableBuilder.addDoubleProperty("FL Velocity", ()-> frontLeftModule.getDriveVelocity(), null);
@@ -404,7 +419,6 @@ public class SwerveDrive extends SubsystemBase {
     sendableBuilder.addDoubleProperty("Pose2d  X", () ->  odometry.getPoseMeters().getX(), null);
     sendableBuilder.addDoubleProperty("Pose2d  Y", () ->  odometry.getPoseMeters().getY(), null);
     
-
     sendableBuilder.addDoubleProperty("Rotations", () ->  odometry.getPoseMeters().getRotation().getRadians(), null);
 
     sendableBuilder.addDoubleProperty("Chasis speeds, X", () -> getChassisSpeeds().vxMetersPerSecond, null);
@@ -428,7 +442,7 @@ public class SwerveDrive extends SubsystemBase {
     // This method will be called once per scheduler run
 
     //Updates the odometry every run
-    odometry.update(Rotation2d.fromDegrees(-NavX.getAngle() % 360), getCurrentSwerveModulePositions());
+    odometry.update(Rotation2d.fromDegrees(piegon2.getYaw()), getCurrentSwerveModulePositions());
     field.setRobotPose(odometry.getPoseMeters());
     
 

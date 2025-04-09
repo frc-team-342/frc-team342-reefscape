@@ -45,7 +45,7 @@ public final class Constants {
     public static final double WRIST_SPEED_LIMITER = 4.0;
     public static final double WRIST_POSITION_CONVERSION = (WRIST_GEAR_RATIO) * (2 * Math.PI);
     public static final int WRIST_CURRENT_LIMIT = 30;
-    public static final double WRIST_ZERO = 0.136; //.336
+    public static final double WRIST_ZERO = 2.233; //.336
 
     // Wrist PID values; they're a list for sake of simplicity
     public static final double[] WRIST_PID_VALUES = { 0.35, 0, 0.1 };

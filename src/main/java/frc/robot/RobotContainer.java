@@ -285,8 +285,8 @@ public class RobotContainer {
     autoChooser.addOption("Single and Load", Autos.singleLoad(swerve, elevator, wrist, claw));
     autoChooser.addOption("Two piece Right", Autos.rightTwoPiece(swerve, elevator, wrist, claw));
 
+    autoChooser.addOption("PathPlanner test", new PathPlannerAuto("Test Auto"));
     
-
     // Smartdashboard Data 
     SmartDashboard.putData(wrist);
     SmartDashboard.putData(swerve);
