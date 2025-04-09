@@ -61,7 +61,7 @@ public class Climber extends SubsystemBase {
     didReset = false;
 
     climbConfig
-      .idleMode(IdleMode.kCoast)//TODO
+      .idleMode(IdleMode.kBrake)//TODO
       .smartCurrentLimit(30);
     climbConfig.closedLoop
       .p(CLIMB_P)
@@ -70,7 +70,7 @@ public class Climber extends SubsystemBase {
       .outputRange(-0.9, .9);
       
     funnelConfig
-      .idleMode(IdleMode.kCoast) //TODO
+      .idleMode(IdleMode.kBrake) //TODO
       .smartCurrentLimit(30);
     funnelConfig.closedLoop
       .p(FUNNEL_P)

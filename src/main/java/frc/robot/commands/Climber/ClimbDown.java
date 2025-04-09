@@ -33,7 +33,7 @@ public class ClimbDown extends Command {
   //the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(isUp)
+    if(isUp && climber.getClimbMode())
       climber.moveClimber(speed);
   }
 
