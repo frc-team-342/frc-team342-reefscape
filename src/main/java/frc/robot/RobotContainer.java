@@ -161,11 +161,6 @@ public class RobotContainer {
     NamedCommands.registerCommand("Outake", new Outtake(wrist, claw));
     NamedCommands.registerCommand("Intake", new Intake(claw, wrist));
 
-    NamedCommands.registerCommand("Rotate to 0", new RotateToAngle(0, swerve));
-    NamedCommands.registerCommand("Rotate to 90", new RotateToAngle(90, swerve));
-    NamedCommands.registerCommand("Rotate to 180", new RotateToAngle(180, swerve));
-    NamedCommands.registerCommand("Rotate to 270", new RotateToAngle(270, swerve));
-
     NamedCommands.registerCommand("Intake", new SequentialCommandGroup(
       new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
       new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.LOW_POSITION_L1),
