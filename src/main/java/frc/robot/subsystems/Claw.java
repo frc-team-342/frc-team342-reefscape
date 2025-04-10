@@ -45,7 +45,7 @@ public class Claw extends SubsystemBase {
   }
 
   public void outTakeAlgae(){
-    claw.set(-.5);
+    claw.set(-.85);
   }
 
   public void stopButton(){

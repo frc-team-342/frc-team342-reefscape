@@ -87,6 +87,7 @@ public class RobotContainer {
   private MoveElevatorWithJoystick moveElevatorWithJoystick;
   private WristWithJoystick wristWithJoy;
   private DriveWithJoystick driveWithJoystick;
+  private RotateToAngle rotate90;
   private Command fieldOrienatedCommand;
   private Command slowModeToggle;
 
@@ -122,7 +123,7 @@ public class RobotContainer {
   private JoystickButton fieldOrienatedButton;
   private JoystickButton slowModeButton;
 
-  private JoystickButton driveAssistButton;
+  // private JoystickButton driveAssistButton;
 
   private JoystickButton elevatorOverrideButton;
   private JoystickButton wristOverrideButton;
@@ -135,6 +136,8 @@ public class RobotContainer {
 
   private JoystickButton reverseCoralButton;
   private JoystickButton slowOuttakeButton;
+
+  private JoystickButton rotate90Button;
 
   private JoystickButton limeLighButton;
 
@@ -190,6 +193,7 @@ public class RobotContainer {
     // Commands 
     wristWithJoy = new WristWithJoystick(operator, wrist);
     moveElevatorWithJoystick = new MoveElevatorWithJoystick(elevator,wrist, operator);
+    rotate90 = new RotateToAngle(180, swerve);
 
     reverseCoralIntake = Commands.startEnd(() -> {claw.spin(.1);}, () -> {claw.spin(0);}, claw);
     
@@ -262,7 +266,7 @@ public class RobotContainer {
     slowModeButton = new JoystickButton(driver, XboxController.Button.kX.value);
     driveWithJoystick = new DriveWithJoystick(swerve, driver);
 
-    driveAssistButton = new JoystickButton(driver, XboxController.Button.kB.value);
+    rotate90Button = new JoystickButton(driver, XboxController.Button.kB.value);
     wristOverrideButton = new JoystickButton(operator, XboxController.Button.kStart.value);
     elevatorOverrideButton = new JoystickButton(operator, XboxController.Button.kBack.value);
 
@@ -326,7 +330,7 @@ public class RobotContainer {
     toggleAlgaeModeButton.onTrue(toggleAlgaeMode);
     toggleCoralModeButton.onTrue(toggleCoralMode);
 
-    driveAssistButton.whileTrue(Commands.startEnd(()->{swerve.driveAssistOn();},()->{swerve.driveAssistOff();}));
+   // driveAssistButton.whileTrue(Commands.startEnd(()->{swerve.driveAssistOn();},()->{swerve.driveAssistOff();}));
 
     resetEncoderButton.onTrue(resetEncoder);
     resetElevatorButton.onTrue(resetElevator);
@@ -346,6 +350,8 @@ public class RobotContainer {
 
     elevatorOverrideButton.onTrue(moveElevatorWithJoystick);
     wristOverrideButton.onTrue(wristWithJoy);
+
+    rotate90Button.onTrue(rotate90);
 
     limeLighButton.whileTrue(limeLightReset);
 

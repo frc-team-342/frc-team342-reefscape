@@ -151,7 +151,7 @@ public class SwerveDrive extends SubsystemBase {
         odometry = new SwerveDriveOdometry( 
   
           kinematics, 
-          Rotation2d.fromDegrees(/*-NavX.getAngle() % 360*/  piegon2.getYaw()),
+          Rotation2d.fromDegrees(/*-NavX.getAngle() % 360*/  piegon2.getAngle() % 360),
           getCurrentSwerveModulePositions()
   
           );
@@ -411,7 +411,7 @@ public class SwerveDrive extends SubsystemBase {
 
     sendableBuilder.addBooleanProperty("Field Orienated", ()-> fieldOriented, null);
     sendableBuilder.addBooleanProperty("Slow Mode", ()-> slowMode, null);
-    sendableBuilder.addDoubleProperty("Gyro Reading", ()-> piegon2.getYaw(), null); //NAVX USED TO BE HERE
+    sendableBuilder.addDoubleProperty("Gyro Reading", ()-> piegon2.getAngle(), null); //NAVX USED TO BE HERE
 
     sendableBuilder.addDoubleProperty("FL Distance Travelled", ()-> frontLeftModule.getDistance(), null);
     sendableBuilder.addDoubleProperty("FL Velocity", ()-> frontLeftModule.getDriveVelocity(), null);

@@ -161,10 +161,10 @@ public final class Constants {
 
     public static final double WHEEL_DIAMETER = Units.inchesToMeters(3.77);
 
-    public static final double FL_WHEEL_DIAMETER = Units.inchesToMeters(3.886);
-    public static final double FR_WHEEL_DIAMETER = Units.inchesToMeters(3.804);
-    public static final double BL_WHEEL_DIAMETER = Units.inchesToMeters(3.808);
-    public static final double BR_WHEEL_DIAMETER = Units.inchesToMeters(3.881);
+    public static final double FL_WHEEL_DIAMETER = Units.inchesToMeters(3.826);
+    public static final double FR_WHEEL_DIAMETER = Units.inchesToMeters(3.860);
+    public static final double BL_WHEEL_DIAMETER = Units.inchesToMeters(3.834);
+    public static final double BR_WHEEL_DIAMETER = Units.inchesToMeters(3.694);
 
     public static final double WHEEL_CIRCUMFERENCE = 2 * Math.PI;
 
