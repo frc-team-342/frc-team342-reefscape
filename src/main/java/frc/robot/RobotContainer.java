@@ -242,6 +242,7 @@ public class RobotContainer {
       new WristToPosition(wrist, WristPositions.ALGAE_WRIST_POSITION)
     );
 
+    //bring climb up and funnel up simultaneously
     climbUp = new ParallelCommandGroup(
       new ClimbUp(climber).withTimeout(5),
       Commands.run(() -> {
@@ -358,6 +359,8 @@ public class RobotContainer {
     //Toggles climb mode
     toggleClimbButton.onTrue(Commands.runOnce(() -> {climber.toggleClimbMode();}, climber)); // X button
     //runs climber
+    //press = bring up
+    //hold = bring down
     climbButton.onTrue(climbUp.withTimeout(5)); // B button
     climbButton.whileTrue(climbDown);
     //climbButton.whileTrue(climb); // B button

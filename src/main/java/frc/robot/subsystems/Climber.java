@@ -90,7 +90,7 @@ public class Climber extends SubsystemBase {
   public double getFunnelPosition(){
     return funnelDuty.get();
   }
-
+  //move climber set speed
   public void moveClimber(double speed){
     climbMotor.set(speed);
   }
@@ -98,14 +98,17 @@ public class Climber extends SubsystemBase {
     return climbEncoder;
   }
 
+  //bring climber to up position
   public void climberUp(double position){
     climbPID.setReference(position, ControlType.kPosition);
   }
 
+  //bring funnel up
   public void funnelUp(){
     funnelPID.setReference(FUNNEL_UP, ControlType.kPosition);
   }
 
+  //bring funnel down
   public void funnelDown(){
     funnelPID.setReference(FUNNEL_DOWN, ControlType.kPosition);
   }
@@ -135,6 +138,7 @@ public class Climber extends SubsystemBase {
   }
   @Override
   public void initSendable(SendableBuilder sendableBuilder) {
+    //send climb info to drivers
     sendableBuilder.addBooleanProperty("Climb Mode", () -> climbMode, null);
     sendableBuilder.addDoubleProperty("Climber Relative Position", () -> getClimbPosition(), null);
     sendableBuilder.addDoubleProperty("Funnel Relative Position", () -> funnelEncoder.getPosition(), null);

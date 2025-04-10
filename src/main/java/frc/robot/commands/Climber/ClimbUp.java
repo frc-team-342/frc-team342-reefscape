@@ -33,6 +33,7 @@ public class ClimbUp extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    //if climb mode is true and this is the first run, bring the climber up
     if(climber.getClimbMode() && iter==0)
       climber.climberUp(CLIMB_UP);
 //-(CLIMB_UP*0.1)
@@ -42,6 +43,7 @@ public class ClimbUp extends Command {
   @Override
   public void end(boolean interrupted) {
     climber.stop();
+    //signify up by increasing iteration
     if(climber.getClimbMode())
       iter++;
   }

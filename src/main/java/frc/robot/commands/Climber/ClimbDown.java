@@ -24,7 +24,10 @@ public class ClimbDown extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    //if the climber is up & out, set isUp to true
     isUp = ClimbUp.getIter() > 0;
+    //set speed based on the relative up position of the climber
+    //for safety
     speed = (CLIMB_UP > 0)? 0.9 : -0.9;
 
   }
@@ -33,6 +36,7 @@ public class ClimbDown extends Command {
   //the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    //if the climber is up and climb mode is true, pressing and holding b will retract the climber
     if(isUp && climber.getClimbMode())
       climber.moveClimber(speed);
   }
