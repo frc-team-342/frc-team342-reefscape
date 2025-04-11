@@ -312,7 +312,6 @@ public class SwerveDrive extends SubsystemBase {
     public void resetOdometry(Pose2d pose){
        odometry.resetPosition(piegon2.getRotation2d(), getCurrentSwerveModulePositions(), pose);
 
-      
     }
     
     public AHRS getGyro(){
@@ -321,6 +320,10 @@ public class SwerveDrive extends SubsystemBase {
 
     public WPI_PigeonIMU getPiegon(){
       return piegon2;
+    }
+
+    public void resetGyro(){
+      piegon2.setYaw(0);
     }
 
     public void resetPose(Pose2d pose){
@@ -411,6 +414,8 @@ public class SwerveDrive extends SubsystemBase {
 
     sendableBuilder.addBooleanProperty("Field Orienated", ()-> fieldOriented, null);
     sendableBuilder.addBooleanProperty("Slow Mode", ()-> slowMode, null);
+
+
     sendableBuilder.addDoubleProperty("Gyro Reading", ()-> piegon2.getAngle(), null); //NAVX USED TO BE HERE
 
     sendableBuilder.addDoubleProperty("FL Distance Travelled", ()-> frontLeftModule.getDistance(), null);
@@ -430,6 +435,7 @@ public class SwerveDrive extends SubsystemBase {
     sendableBuilder.addBooleanProperty("Am i red?", () -> redSide, null);
 
     sendableBuilder.addDoubleProperty("Field setter", () -> {return 0.0;}, (double dummy) -> resetPoseLimelight());
+    sendableBuilder.addDoubleProperty("Gyro Rester", () -> {return 0.0;}, (double dummy) -> resetGyro());
 
     sendableBuilder.addDoubleProperty("Match Time", () -> DriverStation.getMatchTime(), null);
     

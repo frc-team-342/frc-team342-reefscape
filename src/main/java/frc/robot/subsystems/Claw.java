@@ -23,6 +23,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Claw extends SubsystemBase {
   /** Creates a new Claw. */
+
+    private Elevator elevator;
   
     private TalonFX claw;
     private DigitalInput forwardSensor;
@@ -42,10 +44,18 @@ public class Claw extends SubsystemBase {
     forwardSensor = new DigitalInput(6);
     backwardSensor = new DigitalInput(7);
 
+    elevator = new Elevator();
+
   }
 
   public void outTakeAlgae(){
-    claw.set(-.85);
+
+    if(elevator.getEncoderPosition() > 1420){
+      claw.set(-.85);
+    }
+    
+    claw.set(-.5);
+    
   }
 
   public void stopButton(){
