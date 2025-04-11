@@ -13,12 +13,14 @@ import frc.robot.commands.Claw.Intake;
 import frc.robot.commands.Claw.Outtake;
 import frc.robot.commands.Elevator.MoveElevatorToPosition;
 import frc.robot.commands.Elevator.MoveElevatorWithJoystick;
+import frc.robot.commands.Limelight.AlignRightCoral;
 import frc.robot.commands.Wrist.WristToPosition;
 import frc.robot.commands.Wrist.WristWithJoystick;
 import frc.robot.Constants.ElevatorConstants.ElevatorHeights;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.WristConstants.WristPositions;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.Vision.Limelight;
 
 import static frc.robot.Constants.ElevatorConstants.*;
 import static frc.robot.Constants.WristConstants.*;
@@ -54,6 +56,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import frc.robot.commands.Limelight.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -75,6 +78,7 @@ public class RobotContainer {
   private Elevator elevator;
   private SwerveDrive swerve;
   private Claw claw;
+  private Limelight limelight;
 
   // Commands
   private Intake intake;
@@ -86,6 +90,9 @@ public class RobotContainer {
   private Command slowModeToggle;
   private RotateToAngle rotateToAngle;
 
+  private Command alignLeftCoral;
+  private Command alignRightCoral;
+
   private Command driveAssistToggle;
 
   private Command toggleCoralMode;
@@ -93,6 +100,8 @@ public class RobotContainer {
 
   private Command reverseCoralIntake;
   private Command slowOuttake;
+
+  private Command camCheck;
 
   private Command resetEncoder;
 
@@ -115,7 +124,12 @@ public class RobotContainer {
   private JoystickButton fieldOrienatedButton;
   private JoystickButton slowModeButton;
 
+  private POVButton leftCoralButton;
+  private POVButton rightCoralButton;
+
   private JoystickButton driveAssistButton;
+
+  private JoystickButton camCheckButton;
 
   private JoystickButton elevatorOverrideButton;
   private JoystickButton wristOverrideButton;
@@ -144,6 +158,8 @@ public class RobotContainer {
     elevator = new Elevator();
     claw = new Claw();
     swerve = new SwerveDrive();
+    limelight = new Limelight("");
+  
 
     // Commands 
     wristWithJoy = new WristWithJoystick(operator, wrist);
@@ -167,7 +183,13 @@ public class RobotContainer {
       }, swerve);
 
     slowModeToggle = Commands.runOnce(() -> {swerve.toggleSlowMode();}, swerve);
- 
+      System.out.println("llama");
+    camCheck = new CamCheck(swerve);
+      System.out.println("moose");
+    // silly little limelight funsies
+    alignLeftCoral = Commands.runOnce(() -> {/*SILLY STUFF MEOW MEOW MEOWM EMOEW MOEWMEOW MEOWMEWMM MOEW :333 */});
+    alignRightCoral = Commands.runOnce(() -> {new AlignRightCoral(limelight, swerve);/*SILLier STUFF MEOW MEOW MEOWM EMOEW MOEWMEOW MEOWMEWMM MOEW :333 */});
+
 
     // Creating sequential command groups that use wrist and elevator
     goToIntake = new SequentialCommandGroup(
@@ -239,8 +261,14 @@ public class RobotContainer {
 
     rotate90Button = new JoystickButton(driver, XboxController.Button.kA.value);
 
+    camCheckButton = new JoystickButton(driver, XboxController.Button.kX.value);
+
     slowOuttakeButton = new JoystickButton(operator, XboxController.Button.kRightStick.value);
     reverseCoralButton = new JoystickButton(operator, XboxController.Button.kLeftStick.value);
+
+    leftCoralButton = new POVButton(driver, 270);
+    rightCoralButton = new POVButton(driver, 90);
+
 
     // Autos
     autoChooser = new SendableChooser<>();
@@ -293,7 +321,7 @@ public class RobotContainer {
 
     resetEncoderButton.onTrue(resetEncoder);
 
-
+    camCheckButton.onTrue(camCheck);
     // Moves the wrist to a certain position based on what button is pressed
     level1Button.onTrue(goToIntake); 
     level2Button.onTrue(goToL2);
@@ -319,6 +347,9 @@ public class RobotContainer {
 
     fieldOrienatedButton.whileTrue(fieldOrienatedCommand);
     slowModeButton.whileTrue(slowModeToggle);
+
+    leftCoralButton.onTrue(alignLeftCoral);
+    rightCoralButton.onTrue(alignRightCoral);
 
   }
 
