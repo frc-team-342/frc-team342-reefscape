@@ -65,33 +65,44 @@ public final class Autos {
       
       return Commands.sequence(
 
-        // Reset Odometry
-        Commands.runOnce(() -> {swerve.resetOdometry(new Pose2d(7.18, 4.05, new Rotation2d(0)));}),
+        Commands.runOnce(() -> {swerve.getPiegon().setYaw(180);}),
+        Commands.runOnce(() -> System.out.println("Reset Gyro")),
       
-        // Rotate 180
-        new RotateToAngle(180, swerve).withTimeout(2.5),
-
+        // Reset Odometry
+        Commands.runOnce(() -> {swerve.resetOdometry(new Pose2d(7.18, 3.92, new Rotation2d(Math.PI)));}),
+        Commands.runOnce(() -> System.out.println("Reset Odometry")),
+  
         // Drives to Approach pose
-        swerve.setPose2d(6.68, 4.30, 180),  // MIDDLE APPROACH  //6.68, 4.05, Math.PI
+        swerve.setPose2d(6.68, 3.864, 180),  // MIDDLE APPROACH  //6.68, 4.05, Math.PI
+        Commands.runOnce(() -> System.out.println("First Apporach")),
 
         // Flashes for Camera
-        Commands.runOnce(() -> {swerve.resetPoseLimelight();}),
+        new CamCheck(swerve),
+        Commands.runOnce(() -> System.out.println("Camera Check")),
 
         //Adjust pose again
         swerve.setPose2d(FieldPoses.MIDDLE_APPROACH_POSE),
+        Commands.runOnce(() -> System.out.println("Second Approach")),
+
+        new CamCheck(swerve),
 
         // Takes Elevator and wrist to L4 Scoring Position
         new WristToPosition(wrist, WristPositions.TOGGLE_POSITION),
         new MoveElevatorToPosition(elevator, wrist, ElevatorHeights.HIGH_POSITION_L4),
         new WristToPosition(wrist, WristPositions.HIGH_WRIST_POSITION),
+        Commands.runOnce(() -> System.out.println("Elevator and wrist nonsense")),
 
-        Commands.runOnce(() -> {wrist.resetEncoder();}),
+        //Commands.runOnce(() -> {wrist.resetEncoder();}),
+
+        new CamCheck(swerve),
 
         // Slowly Drives To Scorring Position 
         swerve.setSlowPose2d(FieldPoses.MIDDLE_SCORE_POSE),  // MIDDLE SCORE //5.64, 4.22, Math.PI
+        Commands.runOnce(() -> System.out.println("Score pose")),
 
         // Outtakes
         new Outtake(wrist, claw, elevator).withTimeout(0.3),
+        Commands.runOnce(() -> System.out.println("Outtake")),
 
         // Slowly Backs up From Reef
         swerve.setSlowPose2d(FieldPoses.MIDDLE_APPROACH_POSE),

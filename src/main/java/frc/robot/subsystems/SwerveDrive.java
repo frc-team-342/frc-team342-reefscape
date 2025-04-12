@@ -159,7 +159,7 @@ public class SwerveDrive extends SubsystemBase {
         odometry = new SwerveDriveOdometry( 
   
           kinematics, 
-          Rotation2d.fromDegrees(/*-NavX.getAngle() % 360*/  piegon2.getYaw()),
+          new Rotation2d(gyroRad()),
           getCurrentSwerveModulePositions()
   
           );
@@ -233,7 +233,7 @@ public class SwerveDrive extends SubsystemBase {
            before passing it through the rest of the drive Method */
   
           if (fieldOriented) {
-            chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, new Rotation2d(Units.degreesToRadians(piegon2.getYaw()))); //NAVX USED TO BE HERE
+            chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, new Rotation2d(gyroRad())); //NAVX USED TO BE HERE
   
           }
 
@@ -317,7 +317,7 @@ public class SwerveDrive extends SubsystemBase {
     }
 
     public void resetOdometry(Pose2d pose){
-       odometry.resetPosition(piegon2.getRotation2d(), getCurrentSwerveModulePositions(), pose);
+       odometry.resetPosition(new Rotation2d(gyroRad()), getCurrentSwerveModulePositions(), pose);
 
     }
     
@@ -327,6 +327,10 @@ public class SwerveDrive extends SubsystemBase {
 
     public WPI_PigeonIMU getPiegon(){
       return piegon2;
+    }
+
+    public double gyroRad(){
+      return piegon2.getYaw() * Math.PI/180;
     }
 
     public void resetGyro(){
@@ -424,7 +428,8 @@ public class SwerveDrive extends SubsystemBase {
     sendableBuilder.addBooleanProperty("Field Orienated", ()-> fieldOriented, null);
     sendableBuilder.addBooleanProperty("Slow Mode", ()-> slowMode, null);
 
-    sendableBuilder.addDoubleProperty("Gyro Reading", ()-> piegon2.getYaw(), null); //NAVX USED TO BE HERE
+    sendableBuilder.addDoubleProperty("Gyro Reading", ()-> gyroRad(), null); //NAVX USED TO BE HERE
+    sendableBuilder.addDoubleProperty("Raw Gyro Reading", ()-> piegon2.getYaw(), null); //NAVX USED TO BE HERE
 
     sendableBuilder.addDoubleProperty("FL Distance Travelled", ()-> frontLeftModule.getDistance(), null);
     sendableBuilder.addDoubleProperty("FL Velocity", ()-> frontLeftModule.getDriveVelocity(), null);
@@ -457,7 +462,7 @@ public class SwerveDrive extends SubsystemBase {
     // This method will be called once per scheduler run
 
     //Updates the odometry every run
-    odometry.update(Rotation2d.fromDegrees(piegon2.getYaw()), getCurrentSwerveModulePositions());
+    odometry.update(new Rotation2d(gyroRad()), getCurrentSwerveModulePositions());
     field.setRobotPose(odometry.getPoseMeters());
 
   }
