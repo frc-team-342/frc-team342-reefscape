@@ -4,6 +4,8 @@
 
 package frc.robot.commands.Claw;
 
+import static frc.robot.Constants.ElevatorConstants.L4_HEIGHT;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Elevator;
@@ -37,7 +39,7 @@ public class Outtake extends Command {
     if(!wrist.getAlageMode()){
       claw.outTakeCoral();
     }
-    else if (elevator.getEncoderPosition() > 1400) {
+    else if (elevator.getEncoderPosition() > L4_HEIGHT) {
       claw.outTakeAlgaeFast();
     } 
     else {

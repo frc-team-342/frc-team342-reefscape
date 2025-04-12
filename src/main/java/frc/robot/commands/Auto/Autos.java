@@ -91,7 +91,7 @@ public final class Autos {
         swerve.setSlowPose2d(FieldPoses.MIDDLE_SCORE_POSE),  // MIDDLE SCORE //5.64, 4.22, Math.PI
 
         // Outtakes
-        new Outtake(wrist, claw).withTimeout(0.3),
+        new Outtake(wrist, claw, elevator).withTimeout(0.3),
 
         // Slowly Backs up From Reef
         swerve.setSlowPose2d(FieldPoses.MIDDLE_APPROACH_POSE),
@@ -168,7 +168,7 @@ public final class Autos {
       swerve.setSlowPose2d(FieldPoses.MIDDLE_SCORE_POSE),
      
       //Drop off
-      new Outtake(wrist, claw).withTimeout(.3),
+      new Outtake(wrist, claw, elevator).withTimeout(.3),
       
       //Backs us up while bringing elevator down
       new ParallelCommandGroup(
@@ -257,7 +257,7 @@ public final class Autos {
       swerve.setSlowPose2d(FieldPoses.MIDDLE_SCORE_POSE),
      
       //Drop off
-      new Outtake(wrist, claw).withTimeout(.2),
+      new Outtake(wrist, claw, elevator).withTimeout(.2),
       
       //Backs us up while bringing elevator down
       new ParallelCommandGroup(
@@ -311,7 +311,7 @@ public final class Autos {
 
       Commands.runOnce(() -> {wrist.resetEncoder();}),
 
-      new Outtake(wrist, claw).withTimeout(.3), 
+      new Outtake(wrist, claw, elevator).withTimeout(.3), 
     
       new ParallelCommandGroup( 
 
@@ -361,7 +361,7 @@ public final class Autos {
 
       Commands.runOnce(() -> {wrist.resetEncoder();}),
 
-      new Outtake(wrist, claw).withTimeout(.3), 
+      new Outtake(wrist, claw, elevator).withTimeout(.3), 
     
       new ParallelCommandGroup( 
 

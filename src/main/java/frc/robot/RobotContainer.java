@@ -178,21 +178,16 @@ public class RobotContainer {
     swerve = new SwerveDrive();
     climber = new Climber();
 
-    
-
     SmartDashboard.putData(wrist);
-
 
     // Controllers
     driver = new XboxController(0);
     operator = new XboxController(1);
 
-    
-
 
     //PathPlanner Commands
 
-    NamedCommands.registerCommand("Outake", new Outtake(wrist, claw));
+    NamedCommands.registerCommand("Outake", new Outtake(wrist, claw, elevator));
     NamedCommands.registerCommand("Intake", new Intake(claw, wrist));
 
     NamedCommands.registerCommand("Intake", new SequentialCommandGroup(
@@ -234,7 +229,7 @@ public class RobotContainer {
     resetElevator = Commands.runOnce(() -> {elevator.resetEncoder();});
 
     intake = new Intake(claw, wrist);
-    outtake = new Outtake(wrist, claw);
+    outtake = new Outtake(wrist, claw, elevator);
 
     climbDown = new ClimbDown(climber);
 

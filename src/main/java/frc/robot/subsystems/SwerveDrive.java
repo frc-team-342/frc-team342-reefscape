@@ -290,15 +290,11 @@ public class SwerveDrive extends SubsystemBase {
     }
 
     public Command setPose2d(double X, double Y, double rotation){
-      return AutoBuilder.pathfindToPose(new Pose2d(X, Y, new Rotation2d(rotation)), DriveConstants.CONSTRAINTS);
+      return AutoBuilder.pathfindToPose(new Pose2d(X, Y, new Rotation2d(Units.degreesToRadians(rotation))), DriveConstants.CONSTRAINTS);
     }
 
     public Command setSlowPose2d(double X, double Y, double rotation){
-      return AutoBuilder.pathfindToPose(new Pose2d(X, Y, new Rotation2d(rotation)), DriveConstants.SLOW_CONSTRAINTS);
-    }
-
-    public Command posetest(double X, double Y, double rotation){
-      return AutoBuilder.pathfindToPose(new Pose2d(X, Y, new Rotation2d(rotation)), DriveConstants.CONSTRAINTS);
+      return AutoBuilder.pathfindToPose(new Pose2d(X, Y, new Rotation2d(Units.degreesToRadians(rotation))), DriveConstants.SLOW_CONSTRAINTS);
     }
 
     public Command setPose2d(AutoConstants.FieldPoses pose){

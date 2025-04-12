@@ -48,12 +48,11 @@ public class Claw extends SubsystemBase {
 
   public void outTakeAlgae(){
       claw.set(-.5);
-    
+      System.out.println("hello algae outake");
   }
 
   public void outTakeAlgaeFast(){
     claw.set(-.95);
-  
 }
 
   public void stopButton(){
