@@ -9,12 +9,12 @@ import java.util.ArrayList;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.Vision.Limelight;
-import java.util.ArrayList;
 
 public class CamCheck extends Command {
   /** Creates a new AutoAlign :3<< */
@@ -34,7 +34,6 @@ public class CamCheck extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("initialized");
     arrayList.clear();
     failedAttempts = 0;
   }
@@ -42,11 +41,15 @@ public class CamCheck extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("executing");
-    if (LimelightHelpers.getTA("") != 0){
+    //checks if we're seeing a tag and if we're red
+    if (LimelightHelpers.getTA("") != 0 && swerve.isRed()){
+      pose = LimelightHelpers.getBotPose2d_wpiRed("");
+      arrayList.add(pose);
+    } else if (LimelightHelpers.getTA("") != 0 && !swerve.isRed()){ // if we're blue
       pose = LimelightHelpers.getBotPose2d_wpiBlue("");
       arrayList.add(pose);
     } else {
+      //if we don't see a tag or our alliance is invalid (or something blows up i guess)
       failedAttempts += 1;
     } 
   }
@@ -54,6 +57,7 @@ public class CamCheck extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    //keeps track of poses then averages them out
     if (arrayList.size() > 2){
       double xsum = 0;
       double ysum = 0;
