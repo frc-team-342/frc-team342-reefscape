@@ -44,19 +44,17 @@ public class Claw extends SubsystemBase {
     forwardSensor = new DigitalInput(6);
     backwardSensor = new DigitalInput(7);
 
-    elevator = new Elevator();
-
   }
 
   public void outTakeAlgae(){
-
-    if(elevator.getEncoderPosition() > 1420){
-      claw.set(-.85);
-    }
-    
-    claw.set(-.5);
+      claw.set(-.5);
     
   }
+
+  public void outTakeAlgaeFast(){
+    claw.set(-.95);
+  
+}
 
   public void stopButton(){
     claw.set(0);

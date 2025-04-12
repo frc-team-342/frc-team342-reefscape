@@ -6,19 +6,22 @@ package frc.robot.commands.Claw;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Claw;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Wrist;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class Outtake extends Command {
 
   private Wrist wrist;
+  private Elevator elevator;
   private Claw claw;
   
   /** Creates a new Outtake. */
-  public Outtake(Wrist wrist, Claw claw) {
+  public Outtake(Wrist wrist, Claw claw, Elevator elevator) {
 
     this.wrist = wrist;
     this.claw = claw;
+    this.elevator = elevator;
 
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -33,7 +36,11 @@ public class Outtake extends Command {
 
     if(!wrist.getAlageMode()){
       claw.outTakeCoral();
-    } else {
+    }
+    else if (elevator.getEncoderPosition() > 1400) {
+      claw.outTakeAlgaeFast();
+    } 
+    else {
       claw.outTakeAlgae();
     }
 
