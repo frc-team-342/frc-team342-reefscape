@@ -13,6 +13,7 @@ import frc.robot.commands.Claw.Intake;
 import frc.robot.commands.Claw.Outtake;
 import frc.robot.commands.Elevator.MoveElevatorToPosition;
 import frc.robot.commands.Limelight.AutoAlign;
+import frc.robot.commands.Limelight.CamCheck;
 import frc.robot.commands.Wrist.WristToPosition;
 import frc.robot.subsystems.Claw;
 import frc.robot.subsystems.Elevator;
@@ -51,13 +52,12 @@ public final class Autos {
     return Commands.sequence(
       
     // Reset Odometry 
-    Commands.runOnce(() -> {swerve.resetOdometry(new Pose2d(7.18, 4.05, new Rotation2d(0)));}),
+    Commands.runOnce(() -> {swerve.resetOdometry(new Pose2d(7.678, 3.995, new Rotation2d(Math.PI)));}),
 
-    // Rotate 180
-    new RotateToAngle(180, swerve),
+    new CamCheck(swerve),
 
     // Drives Forward
-    swerve.setPose2d(5.713, 4.271, 0));
+    swerve.setPose2d(6.371, 3.995, 180));
      
     }
 
@@ -72,7 +72,7 @@ public final class Autos {
         new RotateToAngle(180, swerve).withTimeout(2.5),
 
         // Drives to Approach pose
-        swerve.setPose2d(6.68, 4.30, Math.PI),  // MIDDLE APPROACH  //6.68, 4.05, Math.PI
+        swerve.setPose2d(6.68, 4.30, 180),  // MIDDLE APPROACH  //6.68, 4.05, Math.PI
 
         // Flashes for Camera
         Commands.runOnce(() -> {swerve.resetPoseLimelight();}),
@@ -131,7 +131,6 @@ public final class Autos {
         new WristToPosition(wrist, WristPositions.LOW_WRIST_POSITION)
 
       );
-       
     }
     */
 

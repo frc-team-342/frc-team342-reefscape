@@ -21,6 +21,7 @@ import frc.robot.Constants.ElevatorConstants.ElevatorHeights;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.WristConstants.WristPositions;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.Vision.Limelight;
 
 import static frc.robot.Constants.ElevatorConstants.*;
 import static frc.robot.Constants.WristConstants.*;
@@ -61,6 +62,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import frc.robot.commands.Limelight.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -100,6 +102,7 @@ public class RobotContainer {
   private Claw claw;
   private Climber climber;
 
+  private Limelight limelight;
 
   // Commands
   private Intake intake;
@@ -110,6 +113,9 @@ public class RobotContainer {
   private Command fieldOrienatedCommand;
   private Command slowModeToggle;
 
+  private Command alignLeftCoral;
+  private Command alignRightCoral;
+
   private Command driveAssistToggle;
   private ClimbUp climb;
   private ClimbDown climbDown;
@@ -119,6 +125,8 @@ public class RobotContainer {
 
   private Command reverseCoralIntake;
   private Command slowOuttake;
+
+  private Command camCheck;
 
   private Command limeLightReset;
 
@@ -145,7 +153,7 @@ public class RobotContainer {
   private JoystickButton fieldOrienatedButton;
   private JoystickButton slowModeButton;
 
-  // private JoystickButton driveAssistButton;
+  private JoystickButton camCheckButton;
 
   private JoystickButton elevatorOverrideButton;
   private JoystickButton wristOverrideButton;
@@ -176,6 +184,8 @@ public class RobotContainer {
     elevator = new Elevator();
     claw = new Claw();
     swerve = new SwerveDrive();
+    limelight = new Limelight("");
+  
     climber = new Climber();
 
     SmartDashboard.putData(wrist);
@@ -183,7 +193,6 @@ public class RobotContainer {
     // Controllers
     driver = new XboxController(0);
     operator = new XboxController(1);
-
 
     //PathPlanner Commands
 
@@ -241,8 +250,8 @@ public class RobotContainer {
       }, swerve);
 
     slowModeToggle = Commands.runOnce(() -> {swerve.toggleSlowMode();}, swerve);
-    
-    limeLightReset = Commands.runOnce(() -> {swerve.resetPoseLimelight();}, swerve);
+  
+    limeLightReset = new CamCheck(swerve);
  
     // Creating sequential command groups that use wrist and elevator
     goToIntake = new SequentialCommandGroup(
@@ -319,6 +328,8 @@ public class RobotContainer {
     wristOverrideButton = new JoystickButton(operator, XboxController.Button.kStart.value);
     elevatorOverrideButton = new JoystickButton(operator, XboxController.Button.kBack.value);
 
+    camCheckButton = new JoystickButton(driver, XboxController.Button.kX.value);
+
     slowOuttakeButton = new JoystickButton(operator, XboxController.Button.kRightStick.value);
     reverseCoralButton = new JoystickButton(operator, XboxController.Button.kLeftStick.value);
 
@@ -381,7 +392,6 @@ public class RobotContainer {
 
     resetEncoderButton.onTrue(resetEncoder);
     resetElevatorButton.onTrue(resetElevator);
-
 
     // Moves the wrist to a certain position based on what button is pressed
     level1Button.onTrue(goToIntake); //Right button on d-pad
