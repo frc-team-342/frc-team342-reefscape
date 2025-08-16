@@ -124,8 +124,8 @@ public final class Constants {
     public static final int ELEVATORLEFT_ID = 9;
     public static final int ELEVATORRIGHT_ID = 10;
 
-    public static final double ELEVATOR_MAX_VELOCITY = 75; //In rotations
-    public static final double ELEVATOR_MAX_ACCELERATION = 450; //In rotations per second
+    public static final double ELEVATOR_MAX_VELOCITY = 50; //In rotations per second
+    public static final double ELEVATOR_MAX_ACCELERATION = 300; //In rotations per second
 
     public static final Constraints ELEVATOR_CONSTRAINTS = new Constraints(ELEVATOR_MAX_VELOCITY, ELEVATOR_MAX_ACCELERATION);
 
@@ -142,7 +142,7 @@ public final class Constants {
 
     public static final double BOTTOM_POSITION = 0.0;
     public static final double TOP_POSITION = 48.3178246001; /**1500*/
-    public static final double ELEVATOR_ERROR = 0.25;
+    public static final double ELEVATOR_ERROR = 0.5;
 
     /*
      * Still tuning values for positions because
