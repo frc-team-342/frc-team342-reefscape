@@ -60,7 +60,7 @@ public class RotateToAngle extends Command {
 
     rotateController.setSetpoint(end);
 
-    current = swerve.getPiegon().getYaw().getValueAsDouble(); //NAVX WAS HERE
+    current = swerve.getPiegon().getYaw(); //NAVX WAS HERE
 
     double rotationSpeed = -rotateController.calculate(current, end);
 

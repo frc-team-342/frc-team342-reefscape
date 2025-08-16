@@ -13,6 +13,9 @@ import javax.print.attribute.standard.MediaSize.NA;
 
 import org.json.simple.parser.ParseException;
 
+import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.sensors.PigeonImuJNI;
+import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.fasterxml.jackson.core.filter.FilteringGeneratorDelegate;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -52,7 +55,8 @@ public class SwerveDrive extends SubsystemBase {
   public SwerveDriveOdometry odometry;
   private AHRS NavX;
 
-  private Pigeon2 pigeon2;
+  private PigeonIMU pigeon;
+  private WPI_PigeonIMU pigeon2;
 
   private ChassisSpeeds chassisSpeeds;
   
@@ -149,7 +153,7 @@ public class SwerveDrive extends SubsystemBase {
         /* Initalize NavX (Gyro) */
         NavX = new AHRS(AHRS.NavXComType.kUSB1);
 
-        pigeon2 = new Pigeon2(16);
+        pigeon2 = new WPI_PigeonIMU(16);
   
         /* Initalizes Odometry */
         odometry = new SwerveDriveOdometry( 
@@ -321,12 +325,12 @@ public class SwerveDrive extends SubsystemBase {
       return NavX;
     }
 
-    public Pigeon2 getPiegon(){
+    public WPI_PigeonIMU getPiegon(){
       return pigeon2;
     }
 
     public double gyroRad(){
-      return pigeon2.getYaw().getValueAsDouble() * Math.PI/180;
+      return pigeon2.getYaw() * Math.PI/180;
     }
 
     public void resetGyro(){
@@ -425,7 +429,7 @@ public class SwerveDrive extends SubsystemBase {
     sendableBuilder.addBooleanProperty("Slow Mode", ()-> slowMode, null);
 
     sendableBuilder.addDoubleProperty("Gyro Reading", ()-> gyroRad(), null); //NAVX USED TO BE HERE
-    sendableBuilder.addDoubleProperty("Raw Gyro Reading", ()-> pigeon2.getYaw().getValueAsDouble(), null); //NAVX USED TO BE HERE
+    sendableBuilder.addDoubleProperty("Raw Gyro Reading", ()-> pigeon2.getYaw(), null); //NAVX USED TO BE HERE
 
     sendableBuilder.addDoubleProperty("FL Distance Travelled", ()-> frontLeftModule.getDistance(), null);
     sendableBuilder.addDoubleProperty("FL Velocity", ()-> frontLeftModule.getDriveVelocity(), null);
