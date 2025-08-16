@@ -11,11 +11,14 @@ import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -31,10 +34,12 @@ public class Elevator extends SubsystemBase {
 
   private ProfiledPIDController elevatorPID;
   private ElevatorFeedforward elevatorFF;
+  private SparkClosedLoopController joystickPID;
 
   private boolean goingDown;
   private boolean tooLow;
   private boolean tooHigh;
+  private boolean isManual;
 
   private double pidOutput;
   private double ffOutput;
@@ -55,12 +60,14 @@ public class Elevator extends SubsystemBase {
   public Elevator() {
 
     goingDown = false;
+    isManual = false;
 
     elevatorLeftMotor = new SparkMax(ELEVATORLEFT_ID, MotorType.kBrushless);
     elevatorRightMotor = new SparkMax(ELEVATORRIGHT_ID, MotorType.kBrushless);
 
     elevatorPID = new ProfiledPIDController(ELEVATOR_P, ELEVATOR_I, ELEVATOR_D, ELEVATOR_CONSTRAINTS);
     elevatorFF = new ElevatorFeedforward(ELEVATOR_KS, ELEVATOR_KG, ELEVATOR_KV, ELEVATOR_KA);
+    joystickPID = elevatorRightMotor.getClosedLoopController();
 
     elevatorLeftMotorConfig = new SparkMaxConfig();
 
@@ -83,6 +90,11 @@ public class Elevator extends SubsystemBase {
       .inverted(false)
       .idleMode(IdleMode.kBrake)
       .smartCurrentLimit(60);
+
+    elevatorRightMotorConfig.closedLoop
+      .p(0.005)
+      .i(0)
+      .d(0.0015);
   
     elevatorEncoder = elevatorRightMotor.getEncoder();
     
@@ -180,8 +192,7 @@ public class Elevator extends SubsystemBase {
   //This method will set the elevator motors to the inputted value
   public void moveElevator(double speed) {
     if(Math.abs(speed) > 0.15) {
-      goal += speed * 10;
-      setSetpoint(goal);
+      elevatorRightMotor.set(speed);
     }
   }
 
@@ -192,15 +203,20 @@ public class Elevator extends SubsystemBase {
 
   //Holds the current position
   public void holdPosition(double position) {
-    pidOutput = MathUtil.clamp(elevatorPID.calculate(getEncoderPosition(), position), -1, 1);
-    elevatorRightMotor.set(pidOutput);
+    joystickPID.setReference(position, ControlType.kPosition);
   }
 
   //Resets elevator to starting position
   public void resetElevator(){
     this.goal = 0;
-    elevatorEncoder.setPosition(goal);
     setSetpoint(goal);
+    if(getEncoderPosition() <= 0.5 && goal == 0.0) {
+      elevatorEncoder.setPosition(goal);
+    }
+  }
+
+  public void manualToggle() {
+    isManual = !isManual;
   }
 
   //Checks if the elevator is at the correct position
@@ -229,15 +245,21 @@ public class Elevator extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if(getEncoderPosition() <= 0.5 && goal == 0.0) {
-      elevatorFF.setKg(0);
-    }else{
-      if(elevatorFF.getKg() == 0) {
-        elevatorFF.setKg(ELEVATOR_KG);
-      }
-    }
+    if(isManual) {}
+    
+    else{
 
-    ElevatorToPosition();
+      if(getEncoderPosition() <= 0.5 && goal == 0.0) {
+        elevatorFF.setKg(0);
+      }else{
+        if(elevatorFF.getKg() == 0) {
+          elevatorFF.setKg(ELEVATOR_KG);
+        }
+      }
+
+      ElevatorToPosition();
+
+    }
   }
 
   @Override
