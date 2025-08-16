@@ -132,6 +132,7 @@ public class RobotContainer {
 
   private Command resetEncoder;
   private Command resetElevator;
+  private Command toggleManual;
 
   private SendableChooser<Command> autoChooser;
 
@@ -236,6 +237,7 @@ public class RobotContainer {
 
     resetEncoder = Commands.runOnce(() -> {wrist.resetEncoder();});
     resetElevator = Commands.runOnce(() -> {elevator.resetElevator();});
+    toggleManual = Commands.runOnce(() -> {elevator.manualToggle();});
 
     intake = new Intake(claw, wrist);
     outtake = new Outtake(wrist, claw, elevator);
@@ -415,6 +417,7 @@ public class RobotContainer {
     slowOuttakeButton.whileTrue(slowOuttake);
     reverseCoralButton.whileTrue(reverseCoralIntake);
 
+    elevatorOverrideButton.onTrue(toggleManual);
     elevatorOverrideButton.onTrue(moveElevatorWithJoystick);
     wristOverrideButton.onTrue(wristWithJoy);
 
