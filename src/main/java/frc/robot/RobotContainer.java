@@ -133,6 +133,7 @@ public class RobotContainer {
   private Command resetEncoder;
   private Command resetElevator;
   private Command toggleManual;
+  private SequentialCommandGroup manualElevatorToggle;
 
   private SendableChooser<Command> autoChooser;
 
@@ -239,6 +240,11 @@ public class RobotContainer {
     resetElevator = Commands.runOnce(() -> {elevator.resetElevator();});
     toggleManual = Commands.runOnce(() -> {elevator.manualToggle();});
 
+    manualElevatorToggle = new SequentialCommandGroup(
+      Commands.runOnce(() -> {elevator.manualToggle();}),
+      Commands.runOnce(() -> {elevator.setDefaultCommand(moveElevatorWithJoystick);})
+    );
+
     intake = new Intake(claw, wrist);
     outtake = new Outtake(wrist, claw, elevator);
 
@@ -314,7 +320,6 @@ public class RobotContainer {
     climbButton = new JoystickButton(driver, XboxController.Button.kB.value);
     
     //wrist.setDefaultCommand(wristToAlgae);
-    elevator.setDefaultCommand(moveElevatorWithJoystick);
 
     // Configure the trigger bindings
 
@@ -360,9 +365,9 @@ public class RobotContainer {
     SmartDashboard.putData(claw);
     SmartDashboard.putData(autoChooser);
     SmartDashboard.putData(climber);
+    SmartDashboard.putData(elevator);
     
     wrist.setDefaultCommand(wristWithJoy);
-    elevator.setDefaultCommand(moveElevatorWithJoystick);
     swerve.setDefaultCommand(driveWithJoystick);
 
     camera = CameraServer.startAutomaticCapture();
@@ -417,8 +422,9 @@ public class RobotContainer {
     slowOuttakeButton.whileTrue(slowOuttake);
     reverseCoralButton.whileTrue(reverseCoralIntake);
 
-    elevatorOverrideButton.onTrue(toggleManual);
-    elevatorOverrideButton.onTrue(moveElevatorWithJoystick);
+    elevatorOverrideButton.onTrue(manualElevatorToggle);
+    // elevatorOverrideButton.onTrue(toggleManual);
+    // elevatorOverrideButton.onTrue(Commands.runOnce(() -> {elevator.setDefaultCommand(moveElevatorWithJoystick);}, elevator));
     wristOverrideButton.onTrue(wristWithJoy);
 
     rotate90Button.onTrue(rotate90);
