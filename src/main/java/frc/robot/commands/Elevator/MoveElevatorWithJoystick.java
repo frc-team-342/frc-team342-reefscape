@@ -45,13 +45,12 @@ public class MoveElevatorWithJoystick extends Command {
     double speed;
     speed = -MathUtil.applyDeadband(operator.getLeftY(), 0.15)/2;
     speed = MathUtil.clamp(speed, -.3, .6);
-    //System.out.println("The joystick speed is inputting " + operator.getLeftY());
 
     if(wrist.isSafe()) {
-      if(speed < 0.05) {
-        elevator.holdPosition(elevator.getEncoderPosition());
-      }else{
+      if(Math.abs(speed) > 0.05) {
         elevator.moveElevator(speed);
+      }else{
+        elevator.holdPosition();
       }
     }
 

@@ -17,6 +17,7 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.RelativeEncoder;
@@ -92,9 +93,10 @@ public class Elevator extends SubsystemBase {
       .smartCurrentLimit(60);
 
     elevatorRightMotorConfig.closedLoop
-      .p(0.005)
+      .p(0.015)
       .i(0)
-      .d(0.0015);
+      .d(0.0005)
+      .outputRange(-.3, .6);
   
     elevatorEncoder = elevatorRightMotor.getEncoder();
     
@@ -202,8 +204,8 @@ public class Elevator extends SubsystemBase {
   }
 
   //Holds the current position
-  public void holdPosition(double position) {
-    joystickPID.setReference(position, ControlType.kPosition);
+  public void holdPosition() {
+    joystickPID.setReference(getEncoderPosition(), ControlType.kPosition, ClosedLoopSlot.kSlot0, ELEVATOR_KG);
   }
 
   //Resets elevator to starting position
