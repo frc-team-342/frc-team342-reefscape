@@ -124,25 +124,25 @@ public final class Constants {
     public static final int ELEVATORLEFT_ID = 9;
     public static final int ELEVATORRIGHT_ID = 10;
 
-    public static final double ELEVATOR_MAX_VELOCITY = 50; //In rotations per second
-    public static final double ELEVATOR_MAX_ACCELERATION = 300; //In rotations per second
+    public static final double ELEVATOR_MAX_VELOCITY = 75; //In rotations per second
+    public static final double ELEVATOR_MAX_ACCELERATION = 375; //In rotations per second
 
     public static final Constraints ELEVATOR_CONSTRAINTS = new Constraints(ELEVATOR_MAX_VELOCITY, ELEVATOR_MAX_ACCELERATION);
 
     public static final double ELEVATOR_P = 1;
     public static final double ELEVATOR_I = 0.0;
     public static final double ELEVATOR_D = 0.01;
-    public static final double ELEVATOR_KS = 0.20137;
-    public static final double ELEVATOR_KG = 0.56541;
-    public static final double ELEVATOR_KV = 0.001756;
-    public static final double ELEVATOR_KA = 0.00043344;
+    public static final double ELEVATOR_KS = 0.08915; //0.20137;
+    public static final double ELEVATOR_KG = 0.58621; //0.56541;
+    public static final double ELEVATOR_KV = 0.00176615; //0.001756;
+    public static final double ELEVATOR_KA = 0.00048597; //0.00043344;
 
     //public static final double ELEVATOR_POSITION_CONVERSION_FACTOR = (139.7 * 2) / 9; //Converts the encoder to millimeters
     //public static final double ELEVATOR_VELOCITY_CONVERSION_FACTOR = ELEVATOR_POSITION_CONVERSION_FACTOR / 60;
 
     public static final double BOTTOM_POSITION = 0.0;
     public static final double TOP_POSITION = 48.3178246001; /**1500*/
-    public static final double ELEVATOR_ERROR = 0.5;
+    public static final double ELEVATOR_ERROR = 0.25;
 
     /*
      * Still tuning values for positions because
